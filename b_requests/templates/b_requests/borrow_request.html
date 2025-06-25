@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center p-10">
+  <div class="bg-white border border-gray-300 p-8 rounded-2xl shadow-xl w-full max-w-lg">
+
+    <h2 class="text-2xl font-bold text-center mb-6 text-gray-800">Borrow Device</h2>
+
+    <div class="space-y-4 text-gray-700 text-base">
+      <p><strong>User:</strong> <span class="text-blue-700">{{ request.user.username }}</span></p>
+      <p><strong>Device:</strong> <span class="text-blue-700">{{ device.name }}</span></p>
+      <p><strong>Borrow Date:</strong> <span class="text-green-700">{{ today }}</span></p>
+    </div>
+
+    <form method="post" class="mt-6 space-y-4">
+      {% csrf_token %}
+      
+      <label class="block font-medium text-gray-700">Request Date:<span class="text-red-500">*</span></label>
+      {{ form.date_requested }}
+
+      <label class="block font-medium text-gray-700">Return Date:<span class="text-red-500">*</span></label>
+      {{ form.return_date }}
+
+        <div class="flex justify-end space-x-4 mt-6">
+            <a href="{% url 'devices:device-detail' device.id %}"
+               class="inline-flex items-center justify-center bg-gray-500 hover:bg-gray-600 text-white font-medium px-5 py-2.5 rounded-md shadow transition duration-150 ease-in-out">
+                Cancel
+            </a>
+            <button type="submit"
+                    class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2.5 rounded-md shadow transition duration-150 ease-in-out">
+                Submit Borrow
+            </button>
+        </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+

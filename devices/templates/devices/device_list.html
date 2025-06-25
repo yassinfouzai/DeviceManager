@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen flex items-start justify-center mt-20 px-4 bg-mint-500">
+    <div class="w-full max-w-2xl bg-white border border-[#899ea9] text-[#334155] p-6 rounded-2xl shadow-lg" style="box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);">
+        
+        <h2 class="text-3xl font-bold text-center mb-8 text-black">Devices List</h2>
+        
+        {% if object_list %}
+            <div class="space-y-4">
+                {% for instance in object_list %}
+                    <a href="{% url 'devices:device-detail' instance.id %}" class="block bg-[#f1f5f9] rounded-xl p-5 shadow-sm hover:shadow-md hover:bg-[#e2e8f0] transition duration-300">
+                        <h3 class="text-xl font-semibold text-[#334155]">{{ instance.name }}</h3>
+                <p class="text-[#475569]">{{ instance.type }} &bull; {{ instance.status }}</p>
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-center text-gray-500">No devices available.</p>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock content %}

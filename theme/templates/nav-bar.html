@@ -1,0 +1,27 @@
+<nav class="bg-[#edf3f7] text-black border-[#899ea9] py-2">
+<ul class="flex justify-between items-center px-6 py-3 space-x-6 text-base font-medium">
+    <!-- Left side -->
+    <div class="flex items-center space-x-6">
+
+        {% if request.user.is_authenticated and not request.user.is_superuser %}
+            {% include 'nav-items/user.html'%}
+        {% endif %}
+            
+        {% if request.user.is_superuser %}
+            {% include 'nav-items/admin.html'%} 
+        {% endif %}
+    </div>
+
+    <!-- Right side -->
+    <div class="flex items-center space-x-6">
+        {% if request.user.is_authenticated %}
+        <li class="hover:text-[#a60000]">
+          <a href="/accounts/log_out/">Logout</a>
+        </li>
+        {% else %}
+            {% include 'nav-items/guest.html'%} 
+        {% endif %}
+    </div>
+</ul>
+</nav>
+

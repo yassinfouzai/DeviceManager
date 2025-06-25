@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-xl mx-auto mt-20 p-6 bg-white rounded-2xl shadow">
+  <h2 class="text-2xl font-bold mb-4">Return Request Details</h2>
+
+  <ul class="mb-6">
+    <li><strong>User:</strong> {{ request_obj.borrower.username }}</li>
+    <li><strong>Device:</strong> {{ request_obj.device.name }}</li>
+    <li><strong>Condition:</strong> {{ request_obj.condition }}</li>
+    <li><strong>Feedback:</strong> {{ request_obj.feedback }}</li>
+    <li><strong>Status:</strong>
+      {% if request_obj.approved %}
+        <span class="text-green-600">Approved</span>
+      {% else %}
+        <span class="text-yellow-600">Pending</span>
+      {% endif %}
+    </li>
+  </ul>
+
+  <form method="post">
+    {% csrf_token %}
+    {% if not request_obj.approved %}
+      <button name="approve" type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded mr-4">
+        Approve
+      </button>
+      <button name="reject" type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
+        Reject
+      </button>
+    {% else %}
+      <p class="text-sm text-gray-500">This request has already been approved.</p>
+    {% endif %}
+  </form>
+</div>
+{% endblock %}

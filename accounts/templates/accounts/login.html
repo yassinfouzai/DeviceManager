@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+  {% if next %}
+    {% if user.is_authenticated %}
+      <p>Your account doesn't have access to this page. To proceed,
+      please login with an account that has access.</p>
+    {% else %}
+      <p>Please login to see this page.</p>
+    {% endif %}
+  {% endif %}
+    <div class="min-h-screen flex items-start justify-center mt-40">
+    <div class="w-sm h-sm bg-white border border-[#899ea9] text-[#334155] p-6 rounded-2xl shadow-lg">
+    <h2 class="text-2xl font-semibold text-center mb-4">Login</h2>
+        <form method="post" action="{% url 'accounts:login' %}">
+            {% csrf_token %}
+            
+            <label for="username" class="block mb-1">Username</label>
+            <input type="text" id="username" name="username" class="w-full p-2 mb-4 rounded bg-[#f1f5f9] text-black border border-[#899ea9]">
+
+            <label for="pwd" class="block mb-1">Password</label>
+            <input type="password" id="pwd" name="password" class="w-full p-2 mb-4 rounded bg-[#f1f5f9] text-black border border-[#899ea9]">
+
+            <input type="hidden" name="next" value="{{ next }}">
+            <br><br>
+            <input type="submit" value="Login" class="bg-[#BF1E2E] hover:bg-[#9c1b28] text-white py-2 px-4 rounded cursor-pointer" required>
+        </form> 
+    </div>
+    </div>
+
+{% endblock %}
+

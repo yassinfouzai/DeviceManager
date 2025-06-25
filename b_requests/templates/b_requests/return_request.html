@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center p-6 sm:p-10">
+  <div class="bg-white border border-gray-300 p-8 rounded-2xl shadow-xl w-full max-w-lg">
+
+    <h2 class="text-3xl font-bold text-center mb-8 text-gray-900">Return Device</h2>
+
+    <div class="mb-6 text-gray-700 text-base space-y-2">
+      <p><strong>User:</strong> <span class="text-blue-700">{{ request.user.username }}</span></p>
+      <p><strong>Device:</strong> <span class="text-blue-700">{{ device.name }}</span></p>
+    </div>
+    
+    <form method="post" class="space-y-6">
+        {% csrf_token %}
+
+        <div>
+            <label class="block mb-2 font-medium text-gray-700">
+            Condition <span class="text-red-500">*</span>
+            </label>
+            {{ form.condition }}
+        </div>
+        
+        <div>
+            <label class="block mb-2 font-medium text-gray-700">
+            Feedback
+            </label>
+            {{ form.feedback }}
+        </div>            
+        
+        <div class="flex justify-end space-x-4 mt-6">
+            <a href="{% url 'devices:device-detail' device.id %}"
+               class="inline-flex items-center justify-center bg-gray-500 hover:bg-gray-600 text-white font-medium px-5 py-2.5 rounded-md shadow transition duration-150 ease-in-out">
+                Cancel
+            </a>
+            <button type="submit"
+                    class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2.5 rounded-md shadow transition duration-150 ease-in-out">
+                Submit Return
+            </button>
+        </div>
+
+    </form>
+
+  </div>
+</div>
+{% endblock %}
+
+

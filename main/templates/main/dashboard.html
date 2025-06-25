@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+
+    
+
+<div class="min-h-screen flex items-start justify-center mt-20 px-4">
+  <div class="w-full max-w-7xl bg-white border border-[#899ea9] text-[#334155] p-10 rounded-2xl shadow-2xl">
+    
+    <h2 class="text-3xl font-bold text-center mb-8 text-black font-inter ">Dashboard</h2>
+
+
+    <div class="grid grid-cols-3 gap-4 max-w-4xl mx-auto">
+
+        <!-- Row 1 -->
+
+
+        <div class="col-span-1 bg-[#f1f5f9] p-4 rounded-xl shadow hover:shadow-md transition">
+            <div class="bg-[#f1f5f9] p-4  relative h-72 flex items-center justify-center">
+                <span class="text-6xl font-bold text-gray-900">
+                    {{ device_count }}
+                </span>
+                <span class="absolute bottom-4 text-xl font-semibold text-gray-700">
+                    Total Devices
+                </span>
+            </div>
+        </div>
+
+
+        
+        <div class="col-span-2 bg-[#f1f5f9] p-4 rounded-xl shadow hover:shadow-md transition">
+            <h2 class="text-lg font-semibold text-gray-800 mb-4">Requested Devices Frequency</h2>
+            <div class="bg-[#f1f5f9] p-4">
+                <canvas id="DeviceChart" class="w-full aspect-[2/1] "></canvas>
+            </div>
+        </div>
+
+
+
+        <!-- Row 2 -->
+
+        <div class="col-span-1 bg-[#f1f5f9] p-4 rounded-xl shadow hover:shadow-md transition">
+            <div class="bg-[#f1f5f9] p-4  relative h-72 flex items-center justify-center">
+                <span class="text-6xl font-bold text-gray-900">
+                    {{ user_count }}
+                </span>
+                <span class="absolute bottom-4 text-xl font-semibold text-gray-700">
+                    Total Users
+                </span>
+            </div>
+        </div>
+
+        <div class="col-span-2 bg-[#f1f5f9] p-4 rounded-xl shadow hover:shadow-md transition">
+            <h2 class="text-lg font-semibold text-gray-800 mb-4">Top Active Users</h2>
+           <div class="bg-[#f1f5f9] p-4">
+                <canvas id="UserChart" class="w-full aspect-[2/1]"></canvas>
+            </div>
+        </div>
+
+
+        <!-- Row 3 -->
+        <div class="col-span-1 bg-[#f1f5f9] p-4 rounded-xl shadow hover:shadow-md transition">
+            <div class="bg-[#f1f5f9] p-4  relative h-72 flex items-center justify-center">
+                <span class="text-6xl font-bold text-gray-900">
+                {{ borrow_request_count|add:return_request_count }}
+                </span>
+                <span class="absolute bottom-4 text-xl font-semibold text-gray-700">
+                    Total Requests
+                </span>
+            </div>
+        </div>
+
+        <div class="col-span-2 bg-[#f1f5f9] p-4 rounded-xl shadow hover:shadow-md transition">
+            <h2 class="text-lg font-semibold text-gray-800 mb-4">Requests</h2>
+           <div class="bg-[#f1f5f9] p-4">
+                <canvas id="RequestChart" class="w-full aspect-[2/1]"></canvas>
+            </div>
+        </div>
+
+      </div>
+    </div>
+
+
+  </div>
+</div>
+
+
+<script>
+
+    const DeviceContext = document.getElementById('DeviceChart').getContext('2d');
+    const DeviceChart = new Chart(DeviceContext, {
+        type: 'doughnut',
+        data: {
+            labels: {{ device_type_labels|safe }},
+            datasets: [{
+                label: 'Devices',
+                data: {{ device_type_data|safe }},
+                backgroundColor: [
+                    'rgba(59, 130, 246, 0.6)',
+                    'rgba(236, 72, 153, 0.6)',
+                    'rgba(16, 185, 129, 0.6)',
+                    'rgba(251, 191, 36, 0.6)',
+                    'rgba(168, 85, 247, 0.6)'
+                ],
+                borderColor: [
+                    'rgba(59, 130, 246, 1)',
+                    'rgba(236, 72, 153, 1)',
+                    'rgba(16, 185, 129, 1)',
+                    'rgba(251, 191, 36, 1)',
+                    'rgba(168, 85, 247, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                }
+            }
+        }
+    });
+
+    const RequestContext = document.getElementById('RequestChart').getContext('2d');
+    const RequestChart = new Chart(RequestContext, {
+        type: 'doughnut',
+        data: {
+            labels: ['Borrows','Returns'],
+            datasets: [{
+                label: 'Devices',
+                data: [{{ borrow_request_count|safe }}, {{return_request_count|safe }}],
+                backgroundColor: [
+                    'rgba(59, 130, 246, 0.6)',
+                    'rgba(236, 72, 153, 0.6)',
+
+                ],
+                borderColor: [
+                    'rgba(59, 130, 246, 1)',
+                    'rgba(236, 72, 153, 1)',
+
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                }
+            }
+        }
+    });
+
+    const UserContext = document.getElementById('UserChart').getContext('2d');
+    const UserChart = new Chart(UserContext, {
+        type: 'bar',
+        data: {
+            labels: {{ top_borrowers_labels|safe }},
+            datasets: [{
+                label: 'Requests',
+                data: {{ top_borrowers_data|safe }},
+                backgroundColor: 'rgba(37, 99, 235, 0.6)',
+                borderColor: 'rgba(37, 99, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    suggestedMax: 10,
+                    ticks: {
+                        stepSize: 1
+                    },
+                    grid: {
+                        display: false
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    suggestedMax: 10,
+                    ticks: {
+                        stepSize: 1
+                    },
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+
+        }
+    });
+</script>
+
+
+{% endblock content %}

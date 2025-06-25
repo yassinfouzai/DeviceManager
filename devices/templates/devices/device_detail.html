@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen flex items-start justify-center mt-20 px-4">
+    <div class="w-full max-w-2xl bg-white border border-[#899ea9] text-[#334155] p-6 rounded-2xl shadow-lg" style="box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);">
+        
+        <h2 class="text-3xl font-bold text-center mb-6 text-black">{{ object.name }}</h2>
+
+        <div class="mb-4">
+            <p class="text-lg text-gray-700">
+                <span class="font-semibold text-[#475569]">Type:</span> {{ object.type }}
+            </p>
+        </div>
+
+        <div class="mb-4">
+            <p class="text-lg text-gray-700">
+                <span class="font-semibold text-[#475569]">Status:</span>
+                {% if object.status == 'available' %}
+                    <span class="text-green-600 font-semibold capitalize">{{ object.status }}</span>
+                {% elif object.status == 'borrowed' %}
+                    <span class="text-orange-600 font-semibold capitalize">{{ object.status }}</span>
+                {% else %}
+                    <span class="text-red-600 font-semibold capitalize">{{ object.status }}</span>
+                {% endif %}
+            </p>
+        </div>
+
+        <div class="mb-4">
+            <p class="text-lg text-gray-700">
+                <span class="font-semibold text-[#475569]">Location:</span> {{ object.location }}
+            </p>
+        </div>
+
+
+        <div class="flex justify-between items-center mt-6">
+            <a href="{% url 'devices:device-list' %}" class="text-white bg-gray-500 hover:bg-gray-600 px-4 py-2 rounded transition">
+                Back to List
+            </a>
+
+            
+
+        {% if object.status == 'available' %}
+            {% if has_requested_borrow %}
+                <span class="px-4 py-2 rounded bg-yellow-500 text-white font-semibold">
+                    Requested a Borrow
+                </span>
+            {% else %}
+                <a href="{% url 'requests:borrow-request' object.id %}" class="bg-[#BF1E2E] hover:bg-[#9c1b28] text-white px-4 py-2 rounded transition">
+                    Borrow
+                </a>
+            {% endif %}
+
+        {% elif object.status == 'borrowed' %}
+            {% if is_borrowed_by_user %}
+                {% if has_requested_return %}
+                    <span class="px-4 py-2 rounded bg-yellow-500 text-white font-semibold">
+                        Requested a Return
+                    </span>
+                {% else %}
+                    <a href="{% url 'requests:return-request' object.id %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition">
+                        Return
+                    </a>
+                {% endif %}
+            {% else %}
+                {% if has_requested_borrow %}
+                    <span class="px-4 py-2 rounded bg-yellow-500 text-white font-semibold">
+                        Requested a Reservation
+                    </span>
+                {% else %}
+                    <a href="{% url 'requests:borrow-request' object.id %}" class="bg-[#BF1E2E] hover:bg-[#9c1b28] text-white px-4 py-2 rounded transition">
+                        Reserve
+                    </a>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+
+
+        </div>
+
+
+    </div>
+</div>
+{% endblock content %}
+
