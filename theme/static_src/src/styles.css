@@ -1,10 +1,4 @@
-/* Import Inter font variable weights or regular weights */
-@import "@fontsource/inter/variable.css";
-
-/* Tailwind base import */
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
+@import "tailwindcss";
 
 /**
   * A catch-all path to Django template files, JavaScript, and Python files
