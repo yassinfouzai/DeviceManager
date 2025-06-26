@@ -1,7 +1,8 @@
-<nav class="bg-[#edf3f7] text-black border-[#899ea9] py-2">
-<ul class="flex justify-between items-center px-6 py-3 space-x-6 text-base font-medium">
+<nav class="bg-white text-black py-4 min-h-[56px] border-b-1 border-atb-g-200 font-semibold">
+<ul class="flex justify-between items-center px-16 space-x-6 text-base">
     <!-- Left side -->
-    <div class="flex items-center space-x-6">
+    <div class="flex items-center text-atb-g-600 gap-8">
+        <img class="w-16" src="https://upload.wikimedia.org/wikipedia/ar/1/14/Arab_Tunisian_Bank_logo.gif" alt="">
 
         {% if request.user.is_authenticated and not request.user.is_superuser %}
             {% include 'nav-items/user.html'%}
@@ -13,7 +14,7 @@
     </div>
 
     <!-- Right side -->
-    <div class="flex items-center space-x-6">
+    <div class="flex items-center text-atb-g-600 gap-8">
         {% if request.user.is_authenticated %}
         <li class="hover:text-[#a60000]">
           <a href="/accounts/log_out/">Logout</a>

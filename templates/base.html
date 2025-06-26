@@ -7,16 +7,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Device Manager</title>
         <link rel="stylesheet" href="{% static 'dist/styles.css' %}">
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
-        <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
-        </style>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 		{% tailwind_css %}
     </head>
-    <body class="bg-gradient-to-bl from-[#0a00cc] to-[#8680ff] bg-no-repeat bg-cover min-h-screen font-inter" style="font-family: 'Inter', sans-serif;">
+    <body class="bg-atb-g-50 bg-no-repeat bg-cover min-h-screen" >
         {% include 'nav-bar.html'%}
         
         <div class="fixed top-25 left-1/2 transform -translate-x-1/2 w-96 z-50" id="flash-messages">
@@ -40,8 +34,7 @@
             {% endfor %}
           {% endif %}
         </div>
-
-
+    
         {% block content %}
 
         {% endblock %}

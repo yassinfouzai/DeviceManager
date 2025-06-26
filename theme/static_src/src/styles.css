@@ -1,5 +1,30 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
+@theme {
+    /* font inter */
+    --font-primary : "Inter", sans-serif;
+
+
+  /* Purple Spectrum */
+  --color-atb-p-50: #F9F5FF;
+  --color-atb-p-100: #F4EBFF;
+  --color-atb-p-200: #E9D7FE;
+  --color-atb-p-300: #D6BBFB;
+  --color-atb-p-400: #B692F6;
+  --color-atb-p-500: #9E77ED;
+  
+  /* Gray Spectrum */ 
+  --color-atb-g-50: #F9FAFB;
+  --color-atb-g-100: #F2F4F7;
+  --color-atb-g-200: #EAECF0;
+  --color-atb-g-300: #D0D5DD;
+  --color-atb-g-400: #98A2B3;
+  --color-atb-g-500: #667085;
+  --color-atb-g-600: #475467;
+  --color-atb-g-900: #101828;
+
+}
 /**
   * A catch-all path to Django template files, JavaScript, and Python files
   * that contain Tailwind CSS classes and will be scanned by Tailwind to generate the final CSS file.
