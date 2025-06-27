@@ -38,7 +38,10 @@ def device_detail_view(request, id):
 @login_required
 def device_list_view(request):
     queryset = Device.objects.all()
+    types = Device.objects.values('type').distinct()
+    types = [t['type'].replace('type-', '') for t in types]
     context = {
-        "object_list": queryset
+        "object_list": queryset,
+        "types": types,
     }
     return render(request, "devices/device_list.html", context)

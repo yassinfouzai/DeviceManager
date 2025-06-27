@@ -8,24 +8,24 @@
 
 <div class="flex flex-col min-w-4xl py-24  gap-8 font-primary text-left px-32">
     <div class="flex flex-col gap-2">
-        <h2 class="text-3xl  font-[600] text-atb-g-900 font-primary">Dashboard</h2>
-        <p class="text-atb-g-600">test test test testing a test for a test, the test is here.</p>
+        <h2 class="text-[30px]  font-[600] text-atb-g-900 font-primary">Dashboard</h2>
+        <p class="text-[16px]  text-atb-g-600">test test test testing a test for a test, the test is here.</p>
     </div>
     
     <hr class="border-atb-g-200">
     
-    <div class="text-[#334155] px*32">
-    <div class="grid grid-cols-3 gap-4 max-w-4xl mx-auto">
+    <div class="text-[#334155]">
+    <div class="grid grid-cols-3 gap-4">
 
         <!-- Row 1 -->
 
 
-        <div class="col-span-1 bg-[#f1f5f9] p-4 rounded-xl shadow hover:shadow-md transition">
-            <div class="bg-[#f1f5f9] p-4  relative h-72 flex items-center justify-center">
-                <span class="text-6xl font-bold text-gray-900">
+        <div class="col-span-1 p-12 bg-white border border-white rounded-[12px] ">
+            <div class=" p-4  relative h-100 flex items-center justify-center">
+                <span class="text-8xl font-bold text-atb-g-900">
                     {{ device_count }}
                 </span>
-                <span class="absolute bottom-4 text-xl font-semibold text-gray-700">
+                <span class="absolute bottom-4 text-xl font-semibold text-atb-g-900">
                     Total Devices
                 </span>
             </div>
@@ -33,9 +33,9 @@
 
 
         
-        <div class="col-span-2 bg-[#f1f5f9] p-4 rounded-xl shadow hover:shadow-md transition">
-            <h2 class="text-lg font-semibold text-gray-800 mb-4">Requested Devices Frequency</h2>
-            <div class="bg-[#f1f5f9] p-4">
+        <div class="col-span-2 p-12 bg-white border border-white rounded-[12px] max-h-128">
+            <h2 class="text-lg font-semibold text-atb-g-900 mb-4">Requested Devices Frequency</h2>
+            <div class=" p-4 max-h-100 text-atb-g-900">
                 <canvas id="DeviceChart" class="w-full aspect-[2/1] "></canvas>
             </div>
         </div>
@@ -44,40 +44,40 @@
 
         <!-- Row 2 -->
 
-        <div class="col-span-1 bg-[#f1f5f9] p-4 rounded-xl shadow hover:shadow-md transition">
-            <div class="bg-[#f1f5f9] p-4  relative h-72 flex items-center justify-center">
-                <span class="text-6xl font-bold text-gray-900">
+        <div class="col-span-1 p-12 bg-white border border-white rounded-[12px]">
+            <div class=" p-4  relative h-100 flex items-center justify-center">
+                <span class="text-8xl font-bold text-atb-g-900">
                     {{ user_count }}
                 </span>
-                <span class="absolute bottom-4 text-xl font-semibold text-gray-700">
+                <span class="absolute bottom-4 text-xl font-semibold text-atb-g-900">
                     Total Users
                 </span>
             </div>
         </div>
 
-        <div class="col-span-2 bg-[#f1f5f9] p-4 rounded-xl shadow hover:shadow-md transition">
+        <div class="col-span-2 p-12 bg-white border border-white rounded-[12px] max-h-128">
             <h2 class="text-lg font-semibold text-gray-800 mb-4">Top Active Users</h2>
-           <div class="bg-[#f1f5f9] p-4">
+           <div class=" p-4 max-h-100">
                 <canvas id="UserChart" class="w-full aspect-[2/1]"></canvas>
             </div>
         </div>
 
 
         <!-- Row 3 -->
-        <div class="col-span-1 bg-[#f1f5f9] p-4 rounded-xl shadow hover:shadow-md transition">
-            <div class="bg-[#f1f5f9] p-4  relative h-72 flex items-center justify-center">
-                <span class="text-6xl font-bold text-gray-900">
+        <div class="col-span-1 p-12 bg-white border border-white rounded-[12px] transition">
+            <div class=" p-4  relative h-100 flex items-center justify-center">
+                <span class="text-8xl font-bold text-atb-g-900">
                 {{ borrow_request_count|add:return_request_count }}
                 </span>
-                <span class="absolute bottom-4 text-xl font-semibold text-gray-700">
+                <span class="absolute bottom-4 text-xl font-semibold text-atb-g-900">
                     Total Requests
                 </span>
             </div>
         </div>
 
-        <div class="col-span-2 bg-[#f1f5f9] p-4 rounded-xl shadow hover:shadow-md transition">
-            <h2 class="text-lg font-semibold text-gray-800 mb-4">Requests</h2>
-           <div class="bg-[#f1f5f9] p-4">
+        <div class="col-span-2 p-12 bg-white border border-white rounded-[12px] max-h-128">
+            <h2 class="text-lg font-semibold text-atb-g-900 mb-4">Requests</h2>
+           <div class="p-4 max-h-100">
                 <canvas id="RequestChart" class="w-full aspect-[2/1]"></canvas>
             </div>
         </div>
@@ -101,18 +101,18 @@
                 label: 'Devices',
                 data: {{ device_type_data|safe }},
                 backgroundColor: [
-                    'rgba(59, 130, 246, 0.6)',
-                    'rgba(236, 72, 153, 0.6)',
-                    'rgba(16, 185, 129, 0.6)',
-                    'rgba(251, 191, 36, 0.6)',
-                    'rgba(168, 85, 247, 0.6)'
+                    'rgba(172,   0,  51, 0.75)',
+                    'rgba(186,  43,  85, 0.75)',
+                    'rgba(200,  85, 119, 0.75)',
+                    'rgba(213, 128, 153, 0.75)',
+                    'rgba(227, 170, 187, 0.75)'
                 ],
                 borderColor: [
-                    'rgba(59, 130, 246, 1)',
-                    'rgba(236, 72, 153, 1)',
-                    'rgba(16, 185, 129, 1)',
-                    'rgba(251, 191, 36, 1)',
-                    'rgba(168, 85, 247, 1)'
+                    'rgba(115,   0,  34, 1)',
+                    'rgba(172,   0,  51, 1)',
+                    'rgba(186,  43,  85, 1)',
+                    'rgba(200,  85, 119, 1)',
+                    'rgba(213, 128, 153, 1)'
                 ],
                 borderWidth: 1
             }]
@@ -137,13 +137,13 @@
                 label: 'Devices',
                 data: [{{ borrow_request_count|safe }}, {{return_request_count|safe }}],
                 backgroundColor: [
-                    'rgba(59, 130, 246, 0.6)',
-                    'rgba(236, 72, 153, 0.6)',
+                    'rgba(172,   0,  51, 0.7)',
+                    'rgba(102, 122, 133, 0.7)',
 
                 ],
                 borderColor: [
-                    'rgba(59, 130, 246, 1)',
-                    'rgba(236, 72, 153, 1)',
+                    'rgba(115,   0,  34, 1)',
+                    'rgba( 71,  84, 103, 1)',
 
                 ],
                 borderWidth: 1
@@ -168,8 +168,8 @@
             datasets: [{
                 label: 'Requests',
                 data: {{ top_borrowers_data|safe }},
-                backgroundColor: 'rgba(37, 99, 235, 0.6)',
-                borderColor: 'rgba(37, 99, 235, 1)',
+                backgroundColor: 'rgba(172,   0,  51, 0.7)',
+                borderColor: 'rgba(115,   0,  34, 1)',
                 borderWidth: 1
             }]
         },

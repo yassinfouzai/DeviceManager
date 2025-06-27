@@ -1,24 +1,98 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="min-h-screen flex items-start justify-center mt-20 px-4 bg-atb-g-50">
-    <div class="w-full max-w-2xl bg-white border border-[#899ea9] text-[#334155] p-6 rounded-2xl shadow-lg" style="box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);">
-        
-        <h2 class="text-3xl font-bold text-center mb-8 text-black">Devices List</h2>
-        
-        {% if object_list %}
-            <div class="space-y-4">
-                {% for instance in object_list %}
-                    <a href="{% url 'devices:device-detail' instance.id %}" class="block bg-[#f1f5f9] rounded-xl p-5 shadow-sm hover:shadow-md hover:bg-[#e2e8f0] transition duration-300">
-                        <h3 class="text-xl font-semibold text-[#334155]">{{ instance.name }}</h3>
-                <p class="text-[#475569]">{{ instance.type }} &bull; {{ instance.status }}</p>
-                    </a>
-                {% endfor %}
-            </div>
-        {% else %}
-            <p class="text-center text-gray-500">No devices available.</p>
-        {% endif %}
+<div class="min-h-screen flex flex-col bg-atb-g-50 text-left py-24 px-32 gap-8 font-primary">
+    <div class="flex flex-col gap-2">
+        <h2 class="text-[30px]  font-[600] text-atb-g-900 font-primary">Device List</h2>
+        <p class="text-[16px] text-atb-g-600">test test test testing a test for a test, the test is here.</p>
+    </div>
 
+    <hr class="border-atb-g-200">
+    <div class="w-full flex flex-row p-6 gap-8">
+        <!-- Tabs -->
+
+        <div class="flex flex-col gap-4 p-12 bg-white border border-white rounded-[12px] h-fit w-1/4">
+            <button 
+                class="px-12 py-2 text-[18px] font-semibold rounded-[8px] transition-colors duration-200 border-[1px] border-atb-g-300 bg-white text-atb-g-700 shadow-[0px_1px_2px_0px_#1018280D]
+           hover:bg-atb-g-50 hover:text-atb-g-800 
+           focus:bg-white focus:text-atb-g-700 focus:shadow-[0_0_0_4px_#F2F4F7]
+           disabled:bg-atb-g-50 disabled:text-atb-g-300 disabled:border-atb-g-200 disabled:opacity-70"
+                id="all-tab"
+                onclick="showTab('all')" disabled>
+                All Devices
+            </button>
+            {% for type in types %}
+            <button 
+                class="px-12 py-2 text-[18px] font-semibold rounded-[8px] transition-colors duration-200 border-[1px] border-atb-g-300 bg-white text-atb-g-700 shadow-[0px_1px_2px_0px_#1018280D]
+           hover:bg-atb-g-50 hover:text-atb-g-800 
+           focus:bg-white focus:text-atb-g-700 focus:shadow-[0_0_0_4px_#F2F4F7]
+           disabled:bg-atb-g-50 disabled:text-atb-g-300 disabled:border-atb-g-200 disabled:opacity-70"
+                id ="{{ type }}-tab" 
+                onclick="showTab('{{ type }}')">
+                    {{ type }}
+            </button>
+            {% endfor %}
+        </div>
+
+        <div class="w-3/4 border border-white bg-white rounded-[12px] p-12">
+
+
+            {% if object_list %}
+                <div class="space-y-4">
+                    {% for instance in object_list %}
+                        <a href="{% url 'devices:device-detail' instance.id %}" 
+                           class="device-card block bg-atb-g-50 rounded-[12px] p-8 hover:bg-atb-g-200 focus:border-none focus:ring-0 focus:shadow-[0_0_0_4px_#F2F4F7] transition duration-300"
+                           data-type="{{ instance.type }}">
+                            <h3 class="text-xl font-semibold text-[#334155]">{{ instance.name }}</h3>
+                    <p class="text-[#475569]">{{ instance.type }} &bull; {{ instance.status }}</p> 
+                        </a> 
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-center text-gray-500">No devices available.</p>
+            {% endif %}
+     
+        </div>
     </div>
 </div>
-{% endblock content %}
+
+
+{{ types|json_script:"device-types" }}
+<script>
+    const deviceTypes = JSON.parse(document.getElementById('device-types').textContent);
+    const Tabs = ['all'];
+    deviceTypes.forEach(function(type) {
+        Tabs.push(type);
+    });
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        showTab('all');
+    });
+
+    function showTab(selectedTab) {
+        console.log(Tabs);
+        Tabs.forEach(function(tab) {
+            const button = document.getElementById(tab + '-tab');
+            if (tab === selectedTab) {
+                button.disabled = true;
+            } else {
+                button.disabled = false;
+            }
+        });
+
+        const cards = document.querySelectorAll('.device-card');
+        cards.forEach(function(card) {
+            const deviceType = card.getAttribute('data-type');
+            if (selectedTab === 'all' || deviceType === selectedTab) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+    }
+</script>
+
+
+{% endblock content %} 

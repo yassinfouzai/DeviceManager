@@ -4,37 +4,52 @@
 {% block content %}
 
 
-<div class="min-h-screen flex items-start justify-center mt-20">
-    <div class="w-full max-w-3xl bg-white border border-[#899ea9] text-[#334155] p-6 rounded-2xl shadow-lg">
-        <h2 class="text-2xl font-semibold text-center mb-4">Profile</h2> 
+<div class="min-h-screen flex flex-col px-32 py-24 gap-8 font-primary">
+
+    <div class="flex flex-col gap-2">
+        <h2 class="text-[30px]  font-[600] text-atb-g-900 font-primary">Profile</h2>
+        <p class="text-[16px] text-atb-g-600">test test test testing a test for a test, the test is here.</p>
+    </div>
+
+    <hr class="border-atb-g-200">
+
+
+
+    <div class="w-full flex flex-row p-6 gap-8">
 
         
-        <!-- User Info -->
-        <h3 class="text-2xl font-semibold mb-4">Info :</h3> 
-        <p>
-            <span class="text-gray-600 font-semibold">Username:</span>
-            <span class="text-red-600">{{ user.username }}</span><br>
-            <span class="text-gray-600 font-semibold">First name:</span>
-            <span class="text-red-600">{{ user.first_name }}</span><br>
-            <span class="text-gray-600 font-semibold">Last name:</span>
-            <span class="text-red-600">{{ user.last_name }}</span>
-        </p>
-
 
         <!-- Tabs -->
-        <div class="flex justify-center space-x-4 mb-8 mt-6">
+        <div class="flex flex-col gap-4 p-12 bg-white border border-white rounded-[12px] h-fit w-1/4">
+            <button id="user-tab"
+                class="tab-button px-12 py-2 text-[18px] font-semibold rounded-[8px] transition-colors duration-200 border-[1px] border-atb-g-300 bg-white text-atb-g-700 shadow-[0px_1px_2px_0px_#1018280D]
+           hover:bg-atb-g-50 hover:text-atb-g-800 
+           focus:bg-white focus:text-atb-g-700 focus:shadow-[0_0_0_4px_#F2F4F7]
+           disabled:bg-atb-g-50 disabled:text-atb-g-300 disabled:border-atb-g-200 disabled:opacity-70"
+                onclick="showTab('user')" disabled>
+                Personal Info
+            </button>
             <button id="borrow-tab"
-                class="tab-button px-5 py-2 text-sm sm:text-base font-medium rounded-lg transition-colors duration-200 border border-blue-600 bg-blue-600 text-white"
+                class="tab-button px-12 py-2 text-[18px] font-semibold rounded-[8px] transition-colors duration-200 border-[1px] border-atb-g-300 bg-white text-atb-g-700 shadow-[0px_1px_2px_0px_#1018280D]
+           hover:bg-atb-g-50 hover:text-atb-g-800 
+           focus:bg-white focus:text-atb-g-700 focus:shadow-[0_0_0_4px_#F2F4F7]
+           disabled:bg-atb-g-50 disabled:text-atb-g-300 disabled:border-atb-g-200 disabled:opacity-70"
                 onclick="showTab('borrow')">
                 Borrow Requests
             </button>
             <button id="device-tab"
-                class="tab-button px-5 py-2 text-sm sm:text-base font-medium rounded-lg transition-colors duration-200 border border-blue-600 text-blue-600 bg-white hover:bg-blue-50"
+                class="tab-button px-12 py-2 text-[18px] font-semibold rounded-[8px] transition-colors duration-200 border-[1px] border-atb-g-300 bg-white text-atb-g-700 shadow-[0px_1px_2px_0px_#1018280D]
+           hover:bg-atb-g-50 hover:text-atb-g-800 
+           focus:bg-white focus:text-atb-g-700 focus:shadow-[0_0_0_4px_#F2F4F7]
+           disabled:bg-atb-g-50 disabled:text-atb-g-300 disabled:border-atb-g-200 disabled:opacity-70"
                 onclick="showTab('device')">
                 Devices
             </button>
             <button id="return-tab"
-                class="tab-button px-5 py-2 text-sm sm:text-base font-medium rounded-lg transition-colors duration-200 border border-blue-600 text-blue-600 bg-white hover:bg-blue-50"
+                class="tab-button px-12 py-2 text-[18px] font-semibold rounded-[8px] transition-colors duration-200 border-[1px] border-atb-g-300 bg-white text-atb-g-700 shadow-[0px_1px_2px_0px_#1018280D]
+           hover:bg-atb-g-50 hover:text-atb-g-800 
+           focus:bg-white focus:text-atb-g-700 focus:shadow-[0_0_0_4px_#F2F4F7]
+           disabled:bg-atb-g-50 disabled:text-atb-g-300 disabled:border-atb-g-200 disabled:opacity-70"
                 onclick="showTab('return')">
                 Return Requests
             </button>
@@ -42,11 +57,33 @@
 
 
 
+        <!-- User Info -->
+        <div id="user-section" class="tab-section border border-white bg-white rounded-[12px] p-12 w-3/4">
+        <p>
+            <span class="text-atb-g-700 font-semibold">Username:</span><br>
+            <span class="text-atb-g-500 pl-4">{{ user.username }}</span><br>
+            <span class="text-atb-g-700 font-semibold">First name:</span><br>
+            {% if user.first_name %}
+            <span class="text-atb-g-500 pl-4">{{ user.first_name }}</span><br>
+            {% else %}
+            <span class="text-atb-g-500 pl-4">Not Specified</span><br>
+            {% endif %}
+            <span class="text-atb-g-700 font-semibold">Last name:</span><br>
+            {% if user.last_name %}
+            <span class="text-atb-g-500 pl-4">{{ user.last_name }}</span>
+            {% else %}
+            <span class="text-atb-g-500 pl-4">Not Specified</span><br>
+            {% endif %}
+        </p>
+        </div>
+
+
+
         <!-- Borrow Section -->
-        <div id="borrow-section">
+        <div id="borrow-section" class="tab-section border border-white bg-white rounded-[12px] p-12 w-3/4 hidden">
             <h3 class="text-2xl font-semibold mb-4">Your Borrow Request History :</h3> 
             {% for req in borrows %}
-            <a href="#" class="block bg-[#f1f5f9] rounded-xl p-5 shadow-sm hover:shadow-md hover:bg-[#e2e8f0] transition duration-300 mb-3">
+            <a href="#"  class="block bg-atb-g-50 rounded-[12px] p-8 ">
                 <h3 class="text-xl font-semibold text-[#334155]">{{ req }}</h3>
                 <p class="text-[#475569]">
                     Borrowed on {{ req.date_requested }} &bull; Return by {{ req.return_date }}
@@ -60,34 +97,34 @@
                 </div>
             </a>
             {% empty %}
-            <p class="text-gray-500">You haven't requested any borrows yet.</p>
+            <p class="text-atb-g-500">You haven't requested any borrows yet.</p>
             {% endfor %}
         </div>
 
 
 
         <!-- Device Section -->
-        <div id="device-section" class="hidden">
+        <div id="device-section" class="tab-section border border-white bg-white rounded-[12px] p-12 w-3/4 hidden">
             <h3 class="text-2xl font-semibold mb-4">Your borrowed devices:</h3>
             {% for instance in approves %}
-            <a href="{% url 'devices:device-detail' instance.device.id %}" class="block bg-[#f1f5f9] rounded-xl p-5 shadow-sm hover:shadow-md hover:bg-[#e2e8f0] transition duration-300 mb-3">
+            <a href="{% url 'devices:device-detail' instance.device.id %}" class="block bg-atb-g-50 rounded-[12px] p-8 hover:bg-atb-g-200 focus:border-none focus:ring-0 focus:shadow-[0_0_0_4px_#F2F4F7] transition duration-300">
                 <h3 class="text-xl font-semibold text-[#334155]">{{ instance.device.name }}</h3>
                 <p class="text-[#475569]">
                     {{ instance.device.type }}<br> Borrowed on {{ instance.date_requested }} &bull; Return by {{ instance.return_date }}
                 </p>
             </a>
             {% empty %}
-            <p class="text-gray-500">You don't have any devices yet.</p>
+            <p class="text-atb-g-500">You don't have any devices yet.</p>
             {% endfor %}
         </div>
 
 
 
         <!-- Return Section -->
-        <div id="return-section" class="hidden">
+        <div id="return-section" class="tab-section border border-white bg-white rounded-[12px] p-12 w-3/4 hidden">
             <h3 class="text-2xl font-semibold mb-4">Your Return Request History :</h3> 
             {% for req in returns %}
-            <a href="#" class="block bg-[#f1f5f9] rounded-xl p-5 shadow-sm hover:shadow-md hover:bg-[#e2e8f0] transition duration-300 mb-3">
+            <a href="#" class="block bg-atb-g-50 rounded-[12px] p-8 ">
                 <h3 class="text-xl font-semibold text-[#334155]">{{ req }}</h3>
                 <p class="text-[#475569]">
                     Condition: {{ req.condition }} &bull; Feedback: {{ req.feedback|slice:":20" }}
@@ -101,7 +138,7 @@
                 </div>
             </a>
             {% empty %}
-            <p class="text-gray-500">You haven't requested any returns yet.</p>
+            <p class="text-atb-g-500">You haven't requested any returns yet.</p>
             {% endfor %}
         </div>
     </div>
@@ -109,8 +146,13 @@
 
 
 <script>
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        showTab('user');
+    });
     function showTab(selectedTab) {
-        var tabs = ['borrow', 'device', 'return'];
+        var tabs = ['user','borrow', 'device', 'return'];
 
         for (var i = 0; i < tabs.length; i++) 
         {
@@ -122,12 +164,10 @@
             if (tab === selectedTab) 
             {
                 section.classList.remove('hidden');
-                button.classList.add('bg-blue-600', 'text-white');
-                button.classList.remove('bg-white', 'text-blue-600', 'hover:bg-blue-50');
+                button.disabled = true; 
             } else {
                 section.classList.add('hidden');
-                button.classList.remove('bg-blue-600', 'text-white');
-                button.classList.add('bg-white', 'text-blue-600', 'hover:bg-blue-50');
+                button.disabled = false; 
             }
         }
     }
