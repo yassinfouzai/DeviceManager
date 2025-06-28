@@ -4,89 +4,78 @@
 {% block content %}
 
 
-    
-
-<div class="flex flex-col min-w-4xl py-24  gap-8 font-primary text-left px-32">
+<div class="flex flex-col min-w-full md:min-w-4xl py-24 gap-8 font-primary text-left px-4 md:px-32">
     <div class="flex flex-col gap-2">
-        <h2 class="text-[30px]  font-[600] text-atb-g-900 font-primary">Dashboard</h2>
-        <p class="text-[16px]  text-atb-g-600">test test test testing a test for a test, the test is here.</p>
+        <h2 class="text-[30px] font-[600] text-atb-g-900 font-primary">Dashboard</h2>
+        <p class="text-[16px] text-atb-g-600">
+            Get an insight about the users, devices and requests.
+        </p>
     </div>
-    
-    <hr class="border-atb-g-200">
-    
+
+    <hr class="border-atb-g-200" />
+
     <div class="text-[#334155]">
-    <div class="grid grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
-        <!-- Row 1 -->
-
-
-        <div class="col-span-1 p-12 bg-white border border-white rounded-[12px] ">
-            <div class=" p-4  relative h-100 flex items-center justify-center">
-                <span class="text-8xl font-bold text-atb-g-900">
-                    {{ device_count }}
-                </span>
-                <span class="absolute bottom-4 text-xl font-semibold text-atb-g-900">
-                    Total Devices
-                </span>
+            <!-- Row 1 -->
+            <div class="p-6 md:p-12 bg-white rounded-[12px]">
+                <div class="relative h-32 md:h-100 flex items-center justify-center">
+                    <span class="text-6xl md:text-8xl font-bold text-atb-g-900">
+                        {{ device_count }}
+                    </span>
+                    <span class="absolute bottom-4 text-lg md:text-xl font-semibold text-atb-g-900">
+                        Total Devices
+                    </span>
+                </div>
             </div>
-        </div>
 
-
-        
-        <div class="col-span-2 p-12 bg-white border border-white rounded-[12px] max-h-128">
-            <h2 class="text-lg font-semibold text-atb-g-900 mb-4">Requested Devices Frequency</h2>
-            <div class=" p-4 max-h-100 text-atb-g-900">
-                <canvas id="DeviceChart" class="w-full aspect-[2/1] "></canvas>
+            <div class="md:col-span-2 p-6 md:p-12 bg-white rounded-[12px]">
+                <h2 class="text-lg font-semibold text-atb-g-900 mb-4">Requested Devices Frequency</h2>
+                <div class="p-4 h-fit text-atb-g-900">
+                    <canvas id="DeviceChart" class="w-full max-h-80"></canvas>
+                </div>
             </div>
-        </div>
 
-
-
-        <!-- Row 2 -->
-
-        <div class="col-span-1 p-12 bg-white border border-white rounded-[12px]">
-            <div class=" p-4  relative h-100 flex items-center justify-center">
-                <span class="text-8xl font-bold text-atb-g-900">
-                    {{ user_count }}
-                </span>
-                <span class="absolute bottom-4 text-xl font-semibold text-atb-g-900">
-                    Total Users
-                </span>
+            <!-- Row 2 -->
+            <div class="p-6 md:p-12 bg-white rounded-[12px]">
+                <div class="relative h-32 md:h-100 flex items-center justify-center">
+                    <span class="text-6xl md:text-8xl font-bold text-atb-g-900">
+                        {{ user_count }}
+                    </span>
+                    <span class="absolute bottom-4 text-lg md:text-xl font-semibold text-atb-g-900">
+                        Total Users
+                    </span>
+                </div>
             </div>
-        </div>
 
-        <div class="col-span-2 p-12 bg-white border border-white rounded-[12px] max-h-128">
-            <h2 class="text-lg font-semibold text-gray-800 mb-4">Top Active Users</h2>
-           <div class=" p-4 max-h-100">
-                <canvas id="UserChart" class="w-full aspect-[2/1]"></canvas>
+            <div class="md:col-span-2 p-6 md:p-12 bg-white rounded-[12px]">
+                <h2 class="text-lg font-semibold text-gray-800 mb-4">Top Active Users</h2>
+                <div class="p-4 h-fit border">
+                    <canvas id="UserChart" class="w-full max-h-80"></canvas>
+                </div>
             </div>
-        </div>
 
-
-        <!-- Row 3 -->
-        <div class="col-span-1 p-12 bg-white border border-white rounded-[12px] transition">
-            <div class=" p-4  relative h-100 flex items-center justify-center">
-                <span class="text-8xl font-bold text-atb-g-900">
-                {{ borrow_request_count|add:return_request_count }}
-                </span>
-                <span class="absolute bottom-4 text-xl font-semibold text-atb-g-900">
-                    Total Requests
-                </span>
+            <!-- Row 3 -->
+            <div class="p-6 md:p-12 bg-white rounded-[12px] transition">
+                <div class="relative h-32 md:h-100 flex items-center justify-center">
+                    <span class="text-6xl md:text-8xl font-bold text-atb-g-900">
+                        {{ borrow_request_count|add:return_request_count }}
+                    </span>
+                    <span class="absolute bottom-4 text-lg md:text-xl font-semibold text-atb-g-900">
+                        Total Requests
+                    </span>
+                </div>
             </div>
-        </div>
 
-        <div class="col-span-2 p-12 bg-white border border-white rounded-[12px] max-h-128">
-            <h2 class="text-lg font-semibold text-atb-g-900 mb-4">Requests</h2>
-           <div class="p-4 max-h-100">
-                <canvas id="RequestChart" class="w-full aspect-[2/1]"></canvas>
+            <div class="md:col-span-2 p-6 md:p-12 bg-white rounded-[12px]">
+                <h2 class="text-lg font-semibold text-atb-g-900 mb-4">Requests</h2>
+                <div class="p-4 h-fit">
+                    <canvas id="RequestChart" class="w-full max-h-80"></canvas>
+                </div>
             </div>
-        </div>
 
-      </div>
+        </div>
     </div>
-
-
-  </div>
 </div>
 
 

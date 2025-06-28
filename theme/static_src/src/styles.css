@@ -7,13 +7,14 @@
 
 
     /* Primary */
-    --color-atb-p-50:  #F9F5FF;
-    --color-atb-p-100: #F4EBFF;
-    --color-atb-p-200: #E9D7FE;
+    --color-atb-p-50:  #EECCD6;
+    --color-atb-p-100: #E3AABB;
+    --color-atb-p-200: #D58099;
     --color-atb-p-300: #D6BBFB;
     --color-atb-p-400: #B692F6;
     --color-atb-p-500: #9E77ED;
     --color-atb-p-600: #8F002B;
+    --color-atb-p-700: #730022;
   
     /* Gray */ 
     --color-atb-g-50:  #F9FAFB;

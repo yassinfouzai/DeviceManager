@@ -1,26 +1,27 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="min-h-screen flex flex-col px-32 py-24 gap-8 font-primary">
+<div class="min-h-screen flex flex-col bg-atb-g-50 text-left py-24 px-4 md:px-12 lg:px-32 font-primary">
+
     <div class="flex flex-col gap-2">
-        <h2 class="text-[30px]  font-[600] text-atb-g-900 font-primary">Request List</h2>
-        <p class="text-[16px] text-atb-g-600">test test test testing a test for a test, the test is here.</p>
+        <h2 class="text-[30px]  font-[600] text-atb-g-900 font-primary">Requests</h2>
+        <p class="text-[16px] text-atb-g-600">View and manage both borrow and return requests.</p>
     </div>
 
-    <hr class="border-atb-g-200">
+    <hr class="border-atb-g-200 mt-6">
 
-    <div class="w-full flex flex-row p-6 gap-8">
+    <div class="w-full flex flex-col items-start  md:flex-row p-4 md:p-6 gap-6 md:gap-8">
 
         <!-- Tabs -->
 
-        <div class="flex flex-col gap-4 p-12 bg-white border border-white rounded-[12px] h-fit w-1/4">
+        <div class="flex flex-col gap-4 p-4 sm:p-6 md:p-8 lg:p-12 bg-white border border-white rounded-[12px] w-full md:w-1/3">
             <button id="borrow-tab"
                 class="tab-button px-12 py-2 text-[18px] font-semibold rounded-[8px] transition-colors duration-200 border-[1px] border-atb-g-300 bg-white text-atb-g-700 shadow-[0px_1px_2px_0px_#1018280D]
            hover:bg-atb-g-50 hover:text-atb-g-800 
            focus:bg-white focus:text-atb-g-700 focus:shadow-[0_0_0_4px_#F2F4F7]
            disabled:bg-atb-g-50 disabled:text-atb-g-300 disabled:border-atb-g-200 disabled:opacity-70"
                 onclick="showTab('borrow')" disabled>
-                Borrow Requests
+                Borrows
             </button>
             <button id="return-tab"
                 class="tab-button px-12 py-2 text-[18px] font-semibold rounded-[8px] transition-colors duration-200 border-[1px] border-atb-g-300 bg-white text-atb-g-700 shadow-[0px_1px_2px_0px_#1018280D]
@@ -28,7 +29,7 @@
            focus:bg-white focus:text-atb-g-700 focus:shadow-[0_0_0_4px_#F2F4F7]
            disabled:bg-atb-g-50 disabled:text-atb-g-300 disabled:border-atb-g-200 disabled:opacity-70"
                 onclick="showTab('return')" >
-                Return Requests
+                Returns
             </button>
         </div>
 
@@ -37,28 +38,28 @@
         <!-- Borrow Request List -->
 
 
-        <div id="borrow-section" class="tab-section border border-white bg-white rounded-[12px] p-12 w-3/4">
+        <div id="borrow-section" class="tab-section w-full md:w-2/3 border border-white bg-white rounded-[12px] p-4 sm:p-6 md:p-12">
             {% if borrows %}
                 <div class="space-y-4">
                     {% for instance in borrows %}
-                        <a href="{% url 'requests:borrow-detail' instance.id %}" class="block bg-atb-g-50 rounded-[12px] p-8 hover:bg-atb-g-200 focus:border-none focus:ring-0 focus:shadow-[0_0_0_4px_#F2F4F7] transition duration-300 flex flex-row items-center gap-8 text-center">
+                        <a href="{% url 'requests:borrow-detail' instance.id %}" class="block bg-atb-g-50 rounded-[12px] p-8 hover:bg-atb-g-200 focus:border-none focus:ring-0 focus:shadow-[0_0_0_4px_#F2F4F7] transition duration-300 flex flex-row items-center gap-8">
                             <div class="flex justify-start mt-2">
                                 {% if instance.approved %}
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-16 text-green-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-16 text-atb-s-500">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                             </svg>
                             <!--
-                            <span class="inline-block px-3 py-1 text-sm font-semibold text-green-800 bg-green-200 rounded-lg">
+                            <span class="inline-block px-3 py-1 text-sm font-semibold text-atb-s-500 bg-atb-s-200 rounded-lg">
                                 Approved
                             </span>
                             -->
                             {% else %}
 
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-16 text-yellow-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-16 text-atb-w-500">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                             </svg>
                             <!--
-                            <span class="inline-block px-3 py-1 text-sm font-semibold text-yellow-800 bg-yellow-200 rounded-lg">
+                            <span class="inline-block px-3 py-1 text-sm font-semibold text-atb-w-500 bg-atb-w-200 rounded-lg">
                                 Verifying
                             </span>
                             -->
@@ -72,36 +73,49 @@
                     {% endfor %}
                 </div>
             {% else %}
-                <p class="text-center text-gray-500">No borrow requests available.</p>
+                <p class="text-center text-atb-g-500">No borrow requests available.</p>
             {% endif %}
         </div>
 
         <!-- Return Request List -->
         
 
-        <div id="return-section" class="tab-section border border-white bg-white rounded-[12px] w-3/4 p-12 hidden">
+        <div id="return-section" class="tab-section w-full md:w-2/3 border border-white bg-white rounded-[12px] p-4 sm:p-6 md:p-12 hidden">
             {% if returns %}
                 <div class="space-y-4">
                     {% for instance in returns %}
-                        <a href="{% url 'requests:return-detail' instance.id %}" class="block bg-atb-g-50 rounded-[12px] p-8 hover:bg-atb-g-200 focus:border-none focus:ring-0 focus:shadow-[0_0_0_4px_#F2F4F7] transition duration-300">
+                        <a href="{% url 'requests:return-detail' instance.id %}" class="block bg-atb-g-50 rounded-[12px] p-8 hover:bg-atb-g-200 focus:border-none focus:ring-0 focus:shadow-[0_0_0_4px_#F2F4F7] transition duration-300 flex flex-row items-center gap-8">
+                            <div class="flex justify-start mt-2">
+                                {% if instance.approved %}
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-16 text-atb-s-500">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            </svg>
+                            <!--
+                            <span class="inline-block px-3 py-1 text-sm font-semibold text-atb-s-500 bg-atb-s-200 rounded-lg">
+                                Approved
+                            </span>
+                            -->
+                            {% else %}
+
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-16 text-atb-w-500">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            </svg>
+                            <!--
+                            <span class="inline-block px-3 py-1 text-sm font-semibold text-atb-w-500 bg-atb-w-200 rounded-lg">
+                                Verifying
+                            </span>
+                            -->
+                            {% endif %}
+                            </div>
+                            <div>
                             <h3 class="text-xl font-semibold text-[#334155]">{{ instance }}</h3>
                             <p class="text-[#475569]">Condition : {{ instance.condition }} &bull; Feedback : {{ instance.feedback|slice:":20" }}</p>
-                        <div class="flex justify-start mt-2">
-                            {% if instance.approved %}
-                                <span class="inline-block px-3 py-1 text-sm font-semibold text-green-800 bg-green-200 rounded-lg">
-                                    Approved
-                                </span>
-                            {% else %}
-                                <span class="inline-block px-3 py-1 text-sm font-semibold text-yellow-800 bg-yellow-200 rounded-lg">
-                                    Verifying
-                                </span>False
-                            {% endif %}
-                        </div>
+                            </div>
                         </a>
                     {% endfor %}
                 </div>
             {% else %}
-                <p class="text-center text-gray-500">No return requests available.</p>
+                <p class="text-center text-atb-g-500">No return requests available.</p>
             {% endif %}
         </div>
 
