@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     #third
     'tailwind',
     'theme',
+    'django_user_agents',
     'django_browser_reload',
 
     #my own
@@ -62,6 +63,7 @@ NPM_BIN_PATH = "/usr/bin/npm"
 
 MIDDLEWARE = [
 
+    'django_user_agents.middleware.UserAgentMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

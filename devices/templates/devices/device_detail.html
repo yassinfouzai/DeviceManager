@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="min-h-screen flex items-start justify-center mt-20 px-4">
-    <div class="w-full max-w-2xl bg-white border border-[#899ea9] text-[#334155] p-6 rounded-2xl shadow-lg" style="box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);">
+<div class="min-h-screen flex items-start justify-center md:mt-40 mt-20 px-4 sm:px-0 font-primary">
+    <div class="bg-white border border-white rounded-[12px] px-8 py-16 w-full max-w-lg ">
         
-        <h2 class="text-3xl font-bold text-center mb-6 text-black">{{ object.name }}</h2>
+        <h2 class="text-[30px] font-bold text-center mb-6 text-black">{{ object.name }}</h2>
 
         <div class="mb-4">
             <p class="text-lg text-gray-700">
@@ -16,11 +16,11 @@
             <p class="text-lg text-gray-700">
                 <span class="font-semibold text-[#475569]">Status:</span>
                 {% if object.status == 'available' %}
-                    <span class="text-green-600 font-semibold capitalize">{{ object.status }}</span>
+                    <span class="text-atb-s-500 font-semibold capitalize">{{ object.status }}</span>
                 {% elif object.status == 'borrowed' %}
-                    <span class="text-orange-600 font-semibold capitalize">{{ object.status }}</span>
+                    <span class="text-atb-w-500 font-semibold capitalize">{{ object.status }}</span>
                 {% else %}
-                    <span class="text-red-600 font-semibold capitalize">{{ object.status }}</span>
+                    <span class="text-atb-e-500 font-semibold capitalize">{{ object.status }}</span>
                 {% endif %}
             </p>
         </div>
@@ -32,51 +32,65 @@
         </div>
 
 
-        <div class="flex justify-between items-center mt-6">
-            <a href="{% url 'devices:device-list' %}" class="text-white bg-gray-500 hover:bg-gray-600 px-4 py-2 rounded transition">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mt-6 gap-4 sm:gap-4 ">
+            <!-- Back to List Button -->
+            <a href="{% url 'devices:device-list' %}"
+               class="w-full sm:w-fit text-center whitespace-nowrap 
+               px-4 sm:px-6 py-2 text-[15px] sm:text-[16px] font-semibold 
+               rounded-[8px] transition-colors duration-200 
+               border border-atb-g-300 bg-white text-atb-g-700 shadow-[0px_1px_2px_0px_#1018280D]
+               hover:bg-atb-g-50 hover:text-atb-g-800 
+               focus:bg-white focus:text-atb-g-700 focus:shadow-[0_0_0_4px_#F2F4F7]">
                 Back to List
             </a>
 
-            
-
-        {% if object.status == 'available' %}
-            {% if has_requested_borrow %}
-                <span class="px-4 py-2 rounded bg-yellow-500 text-white font-semibold">
-                    Requested a Borrow
-                </span>
-            {% else %}
-                <a href="{% url 'requests:borrow-request' object.id %}" class="bg-[#BF1E2E] hover:bg-[#9c1b28] text-white px-4 py-2 rounded transition">
-                    Borrow
-                </a>
-            {% endif %}
-
-        {% elif object.status == 'borrowed' %}
-            {% if is_borrowed_by_user %}
-                {% if has_requested_return %}
-                    <span class="px-4 py-2 rounded bg-yellow-500 text-white font-semibold">
-                        Requested a Return
-                    </span>
-                {% else %}
-                    <a href="{% url 'requests:return-request' object.id %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition">
-                        Return
-                    </a>
-                {% endif %}
-            {% else %}
+            {% if object.status == 'available' %}
                 {% if has_requested_borrow %}
-                    <span class="px-4 py-2 rounded bg-yellow-500 text-white font-semibold">
-                        Requested a Reservation
+                    <span class="w-full sm:w-fit text-center whitespace-nowrap 
+                            px-4 sm:px-6 py-2 text-[15px] sm:text-[16px] font-semibold 
+                            bg-atb-p-200 rounded-[8px] font-semibold text-white text-[18px] py-2 px-8 cursor-pointer">
+                        Requested a Borrow
                     </span>
                 {% else %}
-                    <a href="{% url 'requests:borrow-request' object.id %}" class="bg-[#BF1E2E] hover:bg-[#9c1b28] text-white px-4 py-2 rounded transition">
-                        Reserve
+                    <a href="{% url 'requests:borrow-request' object.id %}"
+                       class="w-full sm:w-fit text-center whitespace-nowrap 
+                            px-4 sm:px-6 py-2  bg-atb-p-600 rounded-[8px] font-semibold text-white text-[18px] py-2 px-8 hover:bg-atb-p-700 focus:bg-atb-p-600 focus:ring-atb-p-200 focus:outline-none focus:shadow-[0_0_0_4px_#FDE3E6] transition duration-200 cursor-pointer">
+                        Borrow
                     </a>
                 {% endif %}
+
+            {% elif object.status == 'borrowed' %}
+                {% if is_borrowed_by_user %}
+                    {% if has_requested_return %}
+                        <span class="w-full sm:w-fit text-center whitespace-nowrap 
+                            px-4 sm:px-6 py-2 text-[15px] sm:text-[16px] font-semibold 
+                            bg-atb-p-200 rounded-[8px] font-semibold text-white text-[18px] py-2 px-8 cursor-pointer">
+                            Requested a Return
+                        </span>
+                    {% else %}
+                        <a href="{% url 'requests:return-request' object.id %}"
+                           class="w-full sm:w-fit text-center whitespace-nowrap 
+                            px-4 sm:px-6 py-2  bg-atb-p-600 rounded-[8px] font-semibold text-white text-[18px] py-2 px-8 hover:bg-atb-p-700 focus:bg-atb-p-600 focus:ring-atb-p-200 focus:outline-none focus:shadow-[0_0_0_4px_#FDE3E6] transition duration-200 cursor-pointer">
+                            Return
+                        </a>
+                    {% endif %}
+                {% else %}
+                    {% if has_requested_borrow %}
+                        <span class="w-full sm:w-fit text-center whitespace-nowrap 
+                            px-4 sm:px-6 py-2 text-[15px] sm:text-[16px] font-semibold 
+                            bg-atb-p-200 rounded-[8px] font-semibold text-white text-[18px] py-2 px-8 cursor-pointer">
+                            Requested a Reservation
+                        </span>
+                    {% else %}
+                        <a href="{% url 'requests:borrow-request' object.id %}"
+                           class="w-full sm:w-fit text-center whitespace-nowrap 
+                            px-4 sm:px-6 py-2  bg-atb-p-600 rounded-[8px] font-semibold text-white text-[18px] py-2 px-8 hover:bg-atb-p-700 focus:bg-atb-p-600 focus:ring-atb-p-200 focus:outline-none focus:shadow-[0_0_0_4px_#FDE3E6] transition duration-200 cursor-pointer">
+                            Reserve
+                        </a>
+                    {% endif %}
+                {% endif %}
             {% endif %}
-        {% endif %}
-
-
         </div>
-
 
     </div>
 </div>

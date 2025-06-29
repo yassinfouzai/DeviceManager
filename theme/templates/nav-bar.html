@@ -1,3 +1,40 @@
+{% if request.user_agent.is_mobile %}
+<nav class="bg-white py-4 min-h-[56px] border-b border-atb-g-200 w-full">
+  <div class="flex justify-between items-center px-4 px-2">
+    <img class="w-16" src="https://upload.wikimedia.org/wikipedia/ar/1/14/Arab_Tunisian_Bank_logo.gif" alt="ATB Logo">
+    <button onclick="myFunction()" class="text-atb-g-600 focus:outline-none">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+    </svg>
+    </button>
+  </div>
+
+  <ul id="myLinks" class="hidden flex flex-col gap-6 px-4 mt-4 text-atb-g-600 font-primary text-lg font-semibold">
+    {% if request.user.is_authenticated and not request.user.is_superuser %}
+      {% include 'nav-items/user.html' %}
+    {% endif %}
+    {% if request.user.is_superuser %}
+      {% include 'nav-items/admin.html' %}
+    {% endif %}
+    {% if request.user.is_authenticated %}
+      <li class="hover:text-[#a60000]">
+        <a href="/accounts/log_out/">Logout</a>
+      </li>
+    {% else %}
+      {% include 'nav-items/guest.html' %}
+    {% endif %}
+  </ul>
+</nav>
+
+<script>
+  function myFunction() {
+    const menu = document.getElementById("myLinks");
+    menu.classList.toggle("hidden");
+  }
+</script>
+
+{% else %}
+
 <nav class="bg-white py-4 min-h-[56px] border-b-1 border-atb-g-200 w-full">
 <ul class="flex justify-between items-center px-4 sm:px-2 md:px-16 space-x-6 font-primary text-[16px] sm:text-[16px] md:text-[18px] font-semibold">
     <!-- Left side -->
@@ -25,3 +62,5 @@
     </div>
 </ul>
 </nav>
+
+{% endif %}

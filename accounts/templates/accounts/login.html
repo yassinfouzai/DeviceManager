@@ -2,17 +2,17 @@
 
 {% block content %}
 
-  {% if next %}
+    {% if next %}
     {% if user.is_authenticated %}
-      <p>Your account doesn't have access to this page. To proceed,
-      please login with an account that has access.</p>
+        <p>Your account doesn't have access to this page. To proceed,
+        please login with an account that has access.</p>
     {% else %}
-      <p>Please login to see this page.</p>
+        <p>Please login to see this page.</p>
     {% endif %}
-  {% endif %}
-    <div class="min-h-screen flex items-start justify-center mt-40 font-primary">
-    <div class="w-sm h-sm bg-white border-white rounded-[12px] p-6">
-    <h2 class="text-2xl text-atb-g-900 font-semibold text-center mb-3">Login</h2>
+    {% endif %}
+    <div class="min-h-screen flex items-start justify-center md:mt-40 mt-20 px-4 sm:px-0 font-primary">
+    <div class="bg-white border border-white rounded-[12px] p-12 w-full max-w-lg">
+        <h2 class="text-[24px] sm:text-[30px] text-atb-g-900 font-semibold text-center mb-4">Login</h2>
         <form method="post" action="{% url 'accounts:login' %}">
             {% csrf_token %}
             
@@ -46,7 +46,7 @@
                 </svg>
 
 
-              </button>
+             </button>
 
             </div>
             <input type="hidden" name="next" value="{{ next }}">

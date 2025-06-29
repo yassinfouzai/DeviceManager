@@ -5,15 +5,15 @@
   <h2 class="text-2xl font-bold mb-4">Return Request Details</h2>
 
   <ul class="mb-6">
-    <li><strong>User:</strong> {{ request_obj.borrower.username }}</li>
-    <li><strong>Device:</strong> {{ request_obj.device.name }}</li>
-    <li><strong>Condition:</strong> {{ request_obj.condition }}</li>
-    <li><strong>Feedback:</strong> {{ request_obj.feedback }}</li>
-    <li><strong>Status:</strong>
+    <li class="text-atb-g-700"><strong class="text-atb-g-600">User:</strong> {{ request_obj.borrower.username }}</li>
+    <li class="text-atb-g-700"><strong class="text-atb-g-600">Device:</strong> {{ request_obj.device.name }}</li>
+    <li class="text-atb-g-700"><strong class="text-atb-g-600">Condition:</strong> {{ request_obj.condition }}</li>
+    <li class="text-atb-g-700"><strong class="text-atb-g-600">Feedback:</strong> {{ request_obj.feedback }}</li>
+    <li class="text-atb-g-700"><strong class="text-atb-g-600">Status:</strong>
       {% if request_obj.approved %}
-        <span class="text-green-600">Approved</span>
+        <span class="text-atb-s-500">Approved</span>
       {% else %}
-        <span class="text-yellow-600">Pending</span>
+        <span class="text-atb-w-500">Pending</span>
       {% endif %}
     </li>
   </ul>
