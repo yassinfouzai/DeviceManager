@@ -1,38 +1,69 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="min-h-screen flex items-center justify-center p-10">
-  <div class="bg-white border border-gray-300 p-8 rounded-2xl shadow-xl w-full max-w-lg">
+<div class="min-h-screen flex items-center justify-center p-10 font-primary">
+  <div class="bg-white border border-white p-8 rounded-[12px] w-full max-w-lg">
 
-    <h2 class="text-2xl font-bold text-center mb-6 text-gray-800">Borrow Device</h2>
+    <h2 class="text-2xl font-bold text-center mb-6 text-atb-g-900">Borrow Device</h2>
 
-    <div class="space-y-4 text-gray-700 text-base">
-      <p><strong>User:</strong> <span class="text-blue-700">{{ request.user.username }}</span></p>
-      <p><strong>Device:</strong> <span class="text-blue-700">{{ device.name }}</span></p>
-      <p><strong>Borrow Date:</strong> <span class="text-green-700">{{ today }}</span></p>
+    <div class="space-y-4 text-base font-semibold">
+      <p><strong class="text-atb-g-700">User:</strong> <span class="text-atb-g-600">{{ request.user.username }}</span></p>
+      <p><strong class="text-atb-g-700">Device:</strong> <span class="text-atb-g-600">{{ device.name }}</span></p>
     </div>
 
     <form method="post" class="mt-6 space-y-4">
       {% csrf_token %}
       
-      <label class="block font-medium text-gray-700">Request Date:<span class="text-red-500">*</span></label>
+      <label class="block font-semibold text-atb-g-700">Request Date:<span class="text-atb-e-500">*</span></label>
       {{ form.date_requested }}
 
-      <label class="block font-medium text-gray-700">Return Date:<span class="text-red-500">*</span></label>
+      <label class="block font-semibold text-atb-g-700">Return Date:<span class="text-atb-e-500">*</span></label>
       {{ form.return_date }}
+      <p>{{ reserved_dates }}</p>
 
-        <div class="flex justify-end space-x-4 mt-6">
+        <div class="flex flex-col md:justify-end sm:flex-row sm:justify-between sm:items-center mt-6 gap-4 sm:gap-4 ">
             <a href="{% url 'devices:device-detail' device.id %}"
-               class="inline-flex items-center justify-center bg-gray-500 hover:bg-gray-600 text-white font-medium px-5 py-2.5 rounded-md shadow transition duration-150 ease-in-out">
+               class="inline-flex items-center justify-center w-full sm:w-fit text-center whitespace-nowrap 
+               px-4 sm:px-6 py-2 text-[18px] sm:text-[16px] font-semibold 
+               rounded-[8px] transition-colors duration-200 
+               border border-atb-g-300 bg-white text-atb-g-700 shadow-[0px_1px_2px_0px_#1018280D]
+               hover:bg-atb-g-50 hover:text-atb-g-800 
+               focus:bg-white focus:text-atb-g-700 focus:shadow-[0_0_0_4px_#F2F4F7]">
                 Cancel
             </a>
             <button type="submit"
-                    class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2.5 rounded-md shadow transition duration-150 ease-in-out">
+                    class="inline-flex items-center justify-center bg-atb-p-600 rounded-[8px] font-semibold text-white text-[18px] py-2 px-4 hover:bg-atb-p-700 focus:bg-atb-p-600 focus:ring-atb-p-200 focus:outline-none focus:shadow-[0_0_0_4px_#FDE3E6] transition duration-200 cursor-pointer">
                 Submit Borrow
             </button>
         </div>
     </form>
   </div>
 </div>
+
+<--
+{{ reserved_dates|json_script:"reservedDates" }}
+--->
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const disabledDates = JSON.parse(document.getElementById('reservedDates').textContent);
+
+    const disabledDateObjects = disabledDates.map(dateStr => new Date(dateStr));
+
+    flatpickr('.flatpickr', {
+        dateFormat: "Y-m-d",
+        minDate: "today",
+        disable: [
+            function(date) {
+            return (date.getDay() === 0 || date.getDay() === 6); // disable weekends
+        },
+        ...disabledDateObjects
+      ],
+    });
+  });
+</script>
+
+
+
 {% endblock %}
 

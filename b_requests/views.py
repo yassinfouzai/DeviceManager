@@ -3,6 +3,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render, get_object_or_404, redirect
 from .forms import BorrowRequestForm, ReturnRequestForm
 from .models import BorrowRequest, ReturnRequest
+from django.utils.dateformat import format
 from devices.models import Device
 import datetime
 
@@ -69,33 +70,34 @@ def request_list_view(request):
 @login_required
 def borrow_request_view(request, id):
     device = get_object_or_404(Device, id=id)
-
-    latest_approved = BorrowRequest.objects.filter(
-        device=device,
-        approved=True
-    ).order_by('-return_date').first()
-
     today = datetime.date.today()
-    if latest_approved and latest_approved.return_date >= today:
-        min_reservation_date = latest_approved.return_date + datetime.timedelta(days=1)
-    else:
-        min_reservation_date = today
+
+    reservations = BorrowRequest.objects.filter(device=device, approved=True)
+    reserved_dates = set()
+
+    for r in reservations:
+        current = r.date_requested
+        while current <= r.return_date:
+            reserved_dates.add(current)
+            current += datetime.timedelta(days=1)
+
+    reserved_dates = sorted([d.isoformat() for d in reserved_dates])
 
     if request.method == 'POST':
-        form = BorrowRequestForm(request.POST, min_date=min_reservation_date)
+        form = BorrowRequestForm(request.POST, min_date=today)
+        form.instance.device = device
+        form.instance.borrower = request.user
         if form.is_valid():
-            borrow_request = form.save(commit=False)
-            borrow_request.device = device
-            borrow_request.borrower = request.user
-            borrow_request.save()
+            form.save()
             return redirect('devices:device-list')
     else:
-        form = BorrowRequestForm(min_date=min_reservation_date)
+        form = BorrowRequestForm(min_date=today)
 
     return render(request, 'b_requests/borrow_request.html', {
         'form': form,
         'device': device,
-        'min_reservation_date': min_reservation_date,
+        'min_reservation_date': today,
+        'reserved_dates': reserved_dates,
     })
 
 
