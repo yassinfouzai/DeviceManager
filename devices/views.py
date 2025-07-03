@@ -40,9 +40,12 @@ def device_list_view(request):
     queryset = Device.objects.all()
     types = Device.objects.values('type').distinct()
     types = [t['type'].replace('type-', '') for t in types]
+    status = Device.objects.values('status').distinct()
+    status = [s['status'].replace('status-', '') for s in status]
     context = {
         "object_list": queryset,
         "types": types,
+        "status": status,
     }
 
     return render(request, "devices/device_list.html", context)
