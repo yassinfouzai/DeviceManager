@@ -59,18 +59,18 @@
         <div id="user-section" class="tab-section w-full md:min-h-110 md:w-2/3 border border-white bg-white rounded-[12px] p-4 sm:p-6 md:p-12">
         <p>
             <span class="text-atb-g-700 font-semibold">Username:</span><br>
-            <span class="text-atb-g-500 pl-4">{{ user.username }}</span><br>
+            <input type="text" value="{{ user.username }}"  id="username" name="username" class="w-1/2 p-2 mb-4 rounded-[8px] bg-white text-[16px] text-atb-g-500 border border-atb-g-300   focus:text-atb-g-900 focus:ring-atb-p-200 focus:border-atb-p-200 focus:outline-none focus:shadow-[0_0_0_4px_#FDE3E6] transition duration-200" disabled><br>
             <span class="text-atb-g-700 font-semibold">First name:</span><br>
             {% if user.first_name %}
-            <span class="text-atb-g-500 pl-4">{{ user.first_name }}</span><br>
+            <input type="text" value="{{ user.first_name }}"  id="username" name="username" class="w-1/2 p-2 mb-4 rounded-[8px] bg-white text-[16px] text-atb-g-500 border border-atb-g-300   focus:text-atb-g-900 focus:ring-atb-p-200 focus:border-atb-p-200 focus:outline-none focus:shadow-[0_0_0_4px_#FDE3E6] transition duration-200" disabled><br>
             {% else %}
-            <span class="text-atb-g-500 pl-4">Not Specified</span><br>
+            <input type="text" value="Not Specified"  id="username" name="username" class="w-1/2 p-2 mb-4 rounded-[8px] bg-white text-[16px] text-atb-g-500 border border-atb-g-300   focus:text-atb-g-900 focus:ring-atb-p-200 focus:border-atb-p-200 focus:outline-none focus:shadow-[0_0_0_4px_#FDE3E6] transition duration-200" disabled><br>
             {% endif %}
             <span class="text-atb-g-700 font-semibold">Last name:</span><br>
             {% if user.last_name %}
-            <span class="text-atb-g-500 pl-4">{{ user.last_name }}</span>
+            <input type="text" value="{{ user.last_name}}"  id="username" name="username" class="w-full p-2 mb-4 rounded-[8px] bg-white text-[16px] text-atb-g-500 border border-atb-g-300   focus:text-atb-g-900 focus:ring-atb-p-200 focus:border-atb-p-200 focus:outline-none focus:shadow-[0_0_0_4px_#FDE3E6] transition duration-200" disabled><br>
             {% else %}
-            <span class="text-atb-g-500 pl-4">Not Specified</span><br>
+            <input type="text" value="Not Specified"  id="username" name="username" class="w-full p-2 mb-4 rounded-[8px] bg-white text-[16px] text-atb-g-500 border border-atb-g-300   focus:text-atb-g-900 focus:ring-atb-p-200 focus:border-atb-p-200 focus:outline-none focus:shadow-[0_0_0_4px_#FDE3E6] transition duration-200" disabled><br>
             {% endif %}
         </p>
         </div>
@@ -177,7 +177,6 @@
         </div>
     </div>
 </div>
-
 
 <script>
 

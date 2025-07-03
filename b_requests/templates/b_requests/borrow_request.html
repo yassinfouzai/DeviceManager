@@ -19,7 +19,6 @@
 
       <label class="block font-semibold text-atb-g-700">Return Date:<span class="text-atb-e-500">*</span></label>
       {{ form.return_date }}
-      <p>{{ reserved_dates }}</p>
 
         <div class="flex flex-col md:justify-end sm:flex-row sm:justify-between sm:items-center mt-6 gap-4 sm:gap-4 ">
             <a href="{% url 'devices:device-detail' device.id %}"
@@ -40,9 +39,7 @@
   </div>
 </div>
 
-<--
 {{ reserved_dates|json_script:"reservedDates" }}
---->
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
@@ -55,7 +52,7 @@
         minDate: "today",
         disable: [
             function(date) {
-            return (date.getDay() === 0 || date.getDay() === 6); // disable weekends
+            return (date.getDay() === 0 || date.getDay() === 6);
         },
         ...disabledDateObjects
       ],
@@ -63,7 +60,14 @@
   });
 </script>
 
-
+<script>
+  setTimeout(() => {
+    const container = document.getElementById('flash-messages');
+    if (container) {
+      container.style.display = 'none';
+    }
+  }, 3000);
+</script>
 
 {% endblock %}
 

@@ -6,7 +6,7 @@ from .models import BorrowRequest, ReturnRequest
 from django.utils.dateformat import format
 from devices.models import Device
 import datetime
-
+from django.contrib import messages
 
 @staff_member_required
 def return_detail_view(request, pk):
@@ -90,6 +90,8 @@ def borrow_request_view(request, id):
         if form.is_valid():
             form.save()
             return redirect('devices:device-list')
+        else:
+            messages.error(request, ("Invalid date!"))
     else:
         form = BorrowRequestForm(min_date=today)
 
