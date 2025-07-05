@@ -1,0 +1,5 @@
+{% include 'sort-filter/filter.html' %}
+{% block filter_content %}
+  {% include 'sort-filter/filters/reviewfilter.html' with reviews=breviews prefix='borrow' %}
+  {% include 'sort-filter/filters/statusfilter.html' %}
+{% endblock %}

@@ -11,7 +11,7 @@ def profile_view(request):
     return_requests = ReturnRequest.objects.filter(borrower=request.user)
     approved_borrows = BorrowRequest.objects.filter(
         borrower=request.user,
-        approved=True,
+        review='approved',
         device__location=request.user
     )
 

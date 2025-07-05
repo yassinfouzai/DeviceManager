@@ -1,7 +1,7 @@
 {% load static %}
 
 <div class="flex flex-col justify-center gap-4">
-    <button class="flex flex-row items-center px-2" type="button" onclick="toggleTypeFilterBox()">
+    <button class="flex flex-row items-center px-2" type="button" onclick="toggleFilterBox('type')">
         <p class="text-[16px] text-atb-g-700 grow text-left">Type</p>
         <img id="type-arrow-down" src="{% static 'assets/icons/arrow-down.svg' %}" class="h-6 w-6" alt="Arrow Down">
         <img id="type-arrow-up" src="{% static 'assets/icons/arrow-up.svg' %}" class="h-6 w-6 hidden" alt="Arrow Up">
@@ -19,17 +19,3 @@
         {% endfor %}
     </div>
 </div>
-
-<script>
-function toggleTypeFilterBox() {
-    const filterDiv = document.querySelector('.type-filter');
-    const arrowUp = document.getElementById('type-arrow-up');
-    const arrowDown = document.getElementById('type-arrow-down');
-    if (filterDiv) {
-        filterDiv.classList.toggle('hidden');
-        arrowUp.classList.toggle('hidden');
-        arrowDown.classList.toggle('hidden');
-    }
-}
-</script>
-

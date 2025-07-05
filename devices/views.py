@@ -10,19 +10,19 @@ def device_detail_view(request, id):
     has_requested_borrow = BorrowRequest.objects.filter(
         device=obj,
         borrower=request.user,
-        approved=False
+        review=BorrowRequest.Review.PENDING
     ).exists()
 
     has_requested_return = ReturnRequest.objects.filter(
         device=obj,
         borrower=request.user,
-        approved=False
+        review=ReturnRequest.Review.PENDING
     ).exists()
 
     is_borrowed_by_user = BorrowRequest.objects.filter(
         device=obj,
         borrower=request.user,
-        approved=True
+        review=BorrowRequest.Review.APPROVED
     ).exists()
 
     context = {

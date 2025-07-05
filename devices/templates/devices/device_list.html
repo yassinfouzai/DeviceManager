@@ -23,20 +23,12 @@
 
 
             <!--Filter-->
-            {% include 'sort-filter/filter.html'%}
+            {% include 'sort-filter/device_filter.html'%}
 
-            <!--type filter-->
-            {% include 'sort-filter/filters/typefilter.html' %}
-
-            <!--status filter-->
-            {% include 'sort-filter/filters/statusfilter.html' %}
-            </div>
         </div>
 
         
         <div class="w-full md:w-2/3 border border-white bg-white rounded-[12px] p-4 sm:p-6 md:p-12">
-
-
 
             {% if object_list %}
                 <div id="device-list" class="space-y-4">
@@ -69,8 +61,6 @@ let currentSortField = 'name';
 let currentSortDirection = 'desc';
 const deviceTypes = JSON.parse(document.getElementById('device-types').textContent);
 const deviceStatus = JSON.parse(document.getElementById('device-status').textContent);
-console.log(deviceStatus);
-
 
 const activeTypeFilters = new Set();
 const activeStatusFilters = new Set();
