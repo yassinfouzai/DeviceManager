@@ -3,8 +3,8 @@
 <div class="flex flex-col justify-center gap-4">
         <button class="flex flex-row items-center px-2" type="button" onclick="toggleFilterBox('status')">
         <p class="text-[16px] text-atb-g-700 grow text-left">Status</p>
-        <img id="stat-arrow-down" src="{% static 'assets/icons/arrow-down.svg' %}" class="h-6 w-6" alt="Arrow Down">
-        <img id="stat-arrow-up" src="{% static 'assets/icons/arrow-up.svg' %}" class="h-6 w-6 hidden" alt="Arrow Up">
+        <img id="status-arrow-down" src="{% static 'assets/icons/arrow-down.svg' %}" class="h-6 w-6" alt="Arrow Down">
+        <img id="status-arrow-up" src="{% static 'assets/icons/arrow-up.svg' %}" class="h-6 w-6 hidden" alt="Arrow Up">
         </button>
     <div class="flex flex-wrap gap-2 h-auto hidden status-filter">
     {% for stat in status %}

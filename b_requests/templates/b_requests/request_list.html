@@ -58,10 +58,11 @@
                         <a href="{% url 'requests:borrow-detail' instance.id %}" 
                             class="block bg-atb-g-50 rounded-[12px] p-8 hover:bg-atb-g-200
                             focus:border-none focus:ring-0 focus:shadow-[0_0_0_4px_#F2F4F7]
-                            transition duration-300 flex flex-row items-center gap-8 request-card border"
+                            transition duration-300 flex flex-row items-center gap-8 request-card"
                             data-review='{{ instance.review }}' 
                             data-request-type='borrow'>
-                            <div class="flex justify-start mt-2 border">
+                            <div class="flex flex-row items-center gap-4 w-full">
+                            <div class="flex justify-start mt-2 ">
                                 {% if instance.review == 'approved' %}
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-16 text-atb-s-500">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
@@ -79,9 +80,10 @@
 
                             {% endif %}
                             </div>
-                            <div class="text-left border grow">
+                            <div class="text-left grow">
                             <h3 class="text-xl font-semibold text-[#334155]">{{ instance }}</h3>
                             <p class="text-[#475569]">Requested at {{ instance.date_requested }} &bull; Returning on {{ instance.return_date }}</p>
+                            </div>
                             </div>
                         </a>
                     {% endfor %}
@@ -103,22 +105,31 @@
                             focus:shadow-[0_0_0_4px_#F2F4F7] transition
                             duration-300 flex flex-row items-center gap-8 request-card"
                             data-review="{{ instance.review }}"
-                            data-request-type="return">
-                            <div class="flex justify-start mt-2">
-                                {% if instance.approved %}
+                            data-request-type="return"
+                            data-condition="{{ instance.condition }}">
+                            <div class="flex flex-row items-center gap-4 w-full">
+                            <div class="flex justify-start mt-2 ">
+                                {% if instance.review == 'approved' %}
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-16 text-atb-s-500">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                             </svg>
-                            {% else %}
+                            {% elif instance.review == 'pending' %}
 
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-16 text-atb-w-500">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                             </svg>
+                            {% else %}
+
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-16 text-atb-e-500">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            </svg>
+
                             {% endif %}
                             </div>
                             <div>
                             <h3 class="text-xl font-semibold text-[#334155]">{{ instance }}</h3>
                             <p class="text-[#475569]">Condition : {{ instance.condition }} &bull; Feedback : {{ instance.feedback|slice:":20" }}</p>
+                            </div>
                             </div>
                         </a>
                     {% endfor %}
@@ -133,18 +144,26 @@
 
 {{ breviews|json_script:"b-request-review" }}
 {{ rreviews|json_script:"r-request-review" }}
+{{ conditions|json_script:"r-request-condition" }}
 <script>
 let currentTab = 'borrow';
 const bRequestReview = JSON.parse(document.getElementById('b-request-review').textContent);
 const rRequestReview = JSON.parse(document.getElementById('r-request-review').textContent);
+const rRequestCondition = JSON.parse(document.getElementById('r-request-condition').textContent);
 
 const activeBRRFilters = new Set();
 const activeRRRFilters = new Set();
+const activeConditionFilters = new Set();
 
+
+//init
 document.addEventListener('DOMContentLoaded', function () {
     showTab('borrow');
 });
 
+document.addEventListener('DOMContentLoaded', function () {
+    resetFilters();
+});
 
 function toggleReviewFilter(review, prefix) {
     const isBorrow = prefix === 'borrow';
@@ -164,6 +183,30 @@ function toggleReviewFilter(review, prefix) {
     applyFilters();
 }
 
+function toggleConditionFilter(condition) {
+    if (activeConditionFilters.has(condition)) {
+        activeConditionFilters.delete(condition);
+    } else {
+        activeConditionFilters.add(condition);
+    }
+    updateConditionButtons();
+    applyFilters();
+}
+
+function updateConditionButtons() {
+    rRequestCondition.forEach(condition => {
+        const btn = document.getElementById(`${condition}-condition-tab`);
+        if (!btn) return;
+        if (activeConditionFilters.has(condition)) {
+            btn.classList.remove('opacity-50','text-atb-g-700','bg-white','hover:bg-atb-g-50','hover:text-atb-g-800');
+            btn.classList.add('text-white','bg-atb-p-500','hover:bg-atb-p-700','hover:text-white');
+        } else {
+            btn.classList.add('opacity-50','text-atb-g-700','bg-white','hover:bg-atb-g-50','hover:text-atb-g-800');
+            btn.classList.remove('text-white','bg-atb-p-500','hover:bg-atb-p-700','hover:text-white');
+        }
+    });
+}
+
 function updateReviewButtons(prefix, reviews, activeSet) {
     reviews.forEach(review => {
         const btn = document.getElementById(`${prefix}-${review}-review-tab`);
@@ -180,23 +223,45 @@ function updateReviewButtons(prefix, reviews, activeSet) {
 }
 
 function applyFilters() {
-    const cards = document.querySelectorAll('.request-card');
+  const cards = document.querySelectorAll('.request-card');
 
-    cards.forEach(card => {
-        const review = card.getAttribute('data-review');
-        const requestType = card.getAttribute('data-request-type');
-        let reviewMatch = true;
+  cards.forEach(card => {
+    const review   = card.getAttribute('data-review');
+    const reqType  = card.getAttribute('data-request-type');
+    const conditionAttr = card.getAttribute('data-condition');
 
-        if (requestType === 'borrow') {
-            reviewMatch = activeBRRFilters.size === 0 || activeBRRFilters.has(review);
-        } else if (requestType === 'return') {
-            reviewMatch = activeRRRFilters.size === 0 || activeRRRFilters.has(review);
-        }
+    let reviewMatch = true;
+    if (reqType === 'borrow') {
+      reviewMatch = activeBRRFilters.size === 0 || activeBRRFilters.has(review);
+    } else if (reqType === 'return') {
+      reviewMatch = activeRRRFilters.size === 0 || activeRRRFilters.has(review);
+    }
 
-        card.style.display = reviewMatch ? 'block' : 'none';
-    });
+    let conditionMatch = true;
+    if (reqType === 'return') {
+      conditionMatch = activeConditionFilters.size === 0 || activeConditionFilters.has(conditionAttr);
+    }
+
+    // Traditional if-else style
+    if (reviewMatch && conditionMatch) {
+      card.style.display = 'block';
+    } else {
+      card.style.display = 'none';
+    }
+  });
 }
 
+
+
+function resetFilters() {
+    activeBRRFilters.clear();
+    activeRRRFilters.clear();
+    activeConditionFilters.clear();
+    updateReviewButtons('borrow',bRequestReview,activeBRRFilters);
+    updateReviewButtons('return',rRequestReview,activeRRRFilters);
+    updateConditionButtons();
+    applyFilters();
+}
 
 function showTab(tab) {
     const borrowTab = document.getElementById('borrow-tab');
@@ -205,7 +270,6 @@ function showTab(tab) {
     const returnSection = document.getElementById('return-section');
     const borrowFilter = document.getElementById('borrow-filter');
     const returnFilter = document.getElementById('return-filter');
-
 
     if (tab === 'borrow') {
         // Show borrow section, hide return
@@ -230,6 +294,13 @@ function showTab(tab) {
     }
 }
 
+function toggleSorting(field, toggleDirection=true) {
+    const sortUp = document.getElementById('sort-up');
+    const sortDown = document.getElementById('sort-down');
+
+    sortUp.classList.toggle('hidden');
+    sortDown.classList.toggle('hidden');
+}
 </script>
 
 {% endblock content %}

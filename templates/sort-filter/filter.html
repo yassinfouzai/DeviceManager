@@ -19,8 +19,8 @@
 <script>
 function toggleFilterBox(type, prefix='') {
     const filterDiv = document.querySelector(`.${prefix}${type}-filter`);
-    const arrowUp = document.getElementById(`.${prefix}${type}-arrow-up`);
-    const arrowDown = document.getElementById(`.${prefix}${type}-arrow-down`);
+    const arrowUp = document.getElementById(`${prefix}${type}-arrow-up`);
+    const arrowDown = document.getElementById(`${prefix}${type}-arrow-down`);
     if (filterDiv) {
         filterDiv.classList.toggle('hidden');
         arrowUp.classList.toggle('hidden');
