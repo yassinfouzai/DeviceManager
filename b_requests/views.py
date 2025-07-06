@@ -62,28 +62,37 @@ def borrow_detail_view(request, pk):
     return render(request, 'b_requests/borrow_request_detail.html', context)
 
 
-
 @staff_member_required
 def request_list_view(request):
     borrows = BorrowRequest.objects.all()
     returns = ReturnRequest.objects.all()
-    conditions = ReturnRequest.objects.values('condition').distinct()
-    conditions = [c['condition'].replace('condition-', '') for c in conditions]
-    types = BorrowRequest.objects.values_list('device__type', flat=True).distinct()
-    types = [t.replace('type-', '') for t in types]
-    Breviews = BorrowRequest.objects.values('review').distinct()
-    Breviews = [br['review'].replace('review-', '') for br in Breviews]
-    Rreviews = ReturnRequest.objects.values('review').distinct()
-    Rreviews = [rr['review'].replace('review-', '') for rr in Rreviews]
+
+    conditions_qs = ReturnRequest.objects.values('condition').distinct()
+    conditions = [c['condition'].replace('condition-', '') for c in conditions_qs]
+
+    btypes_qs = BorrowRequest.objects.values_list('device__type', flat=True).distinct()
+    btypes = [t.replace('type-', '') for t in btypes_qs]
+
+    rtypes_qs = ReturnRequest.objects.values_list('device__type', flat=True).distinct()
+    rtypes = [t.replace('type-', '') for t in rtypes_qs]
+
+    breviews_qs = BorrowRequest.objects.values('review').distinct()
+    breviews = [br['review'].replace('review-', '') for br in breviews_qs]
+
+    rreviews_qs = ReturnRequest.objects.values('review').distinct()
+    rreviews = [rr['review'].replace('review-', '') for rr in rreviews_qs]
+
     context = {
         "borrows": borrows,
         "returns": returns,
-        "breviews": Breviews,
-        "rreviews": Rreviews,
+        "breviews": breviews,
+        "rreviews": rreviews,
         "conditions": conditions,
-        "types": types,
+        "btypes": btypes,
+        "rtypes": rtypes,
     }
     return render(request, "b_requests/request_list.html", context)
+
 
 
 @login_required

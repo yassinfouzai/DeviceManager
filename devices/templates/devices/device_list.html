@@ -104,7 +104,7 @@ function toggleStatusFilter(status) {
 
 function updateTypeButtons() {
     deviceTypes.forEach(type => {
-        const btn = document.getElementById(`${type}-type-tab`);
+        const btn = document.getElementById(`device-${type}-type-tab`);
         if (activeTypeFilters.has(type)) {
             btn.classList.remove('opacity-50','text-atb-g-700','bg-white','hover:bg-atb-g-50','hover:text-atb-g-800');
             btn.classList.add('text-white','bg-atb-p-500','hover:bg-atb-p-700','hover:text-white');
