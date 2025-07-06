@@ -1,0 +1,21 @@
+{% load static %}
+
+<div class="flex flex-col justify-center gap-4">
+    <button class="flex flex-row items-center px-2" type="button" onclick="toggleFilterBox('type','{{ prefix }}-')">
+        <p class="text-[16px] text-atb-g-700 grow text-left">Type</p>
+        <img id="{{prefix}}-type-arrow-down" src="{% static 'assets/icons/arrow-down.svg' %}" class="h-6 w-6" alt="Arrow Down">
+        <img id="{{prefix}}-type-arrow-up" src="{% static 'assets/icons/arrow-up.svg' %}" class="h-6 w-6 hidden" alt="Arrow Up">
+    </button>
+
+    <div class="flex flex-wrap gap-2 h-auto hidden {{prefix}}-type-filter">
+        {% for type in types %}
+            <button class="px-6 py-1 text-[12px] font-semibold rounded-[6px] transition-colors 
+                           duration-200 border-[1px] border-atb-g-300 bg-white text-atb-g-700 shadow-[0px_1px_2px_0px_#1018280D]
+                           hover:bg-atb-g-50 hover:text-atb-g-800"
+                    id="{{prefix}}-{{ type }}-type-tab"
+                    onclick="toggleTypeFilter('{{ type }}', '{{ prefix }}')">
+                {{ type }}
+            </button>
+        {% endfor %}
+    </div>
+</div>

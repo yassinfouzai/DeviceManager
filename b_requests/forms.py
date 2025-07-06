@@ -51,7 +51,7 @@ class BorrowRequestForm(forms.ModelForm):
             if device:
                 overlap_exists = BorrowRequest.objects.filter(
                     device=device,
-                    approved=True,
+                    review=BorrowRequest.Review.APPROVED,
                     date_requested__lte=return_date,
                     return_date__gte=date_requested
                 ).exists()

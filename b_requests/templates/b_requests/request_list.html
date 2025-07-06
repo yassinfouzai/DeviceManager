@@ -11,6 +11,8 @@
     </div>
 
     <hr class="border-atb-g-200 mt-6">
+    
+    
 
     <div class="w-full flex flex-col items-start  md:flex-row p-4 md:p-6 gap-6 md:gap-8">
 
@@ -33,87 +35,180 @@
                 onclick="showTab('return')" >
                 Returns
             </button>
+
+            {% include 'sort-filter/sort.html' %}
+
+
+            <div id="borrow-filter" class="flex flex-col gap-2">
+                {% include 'sort-filter/borrow_filter.html' %}
+            </div>
+
+            <div id="return-filter" class="flex flex-col gap-2 hidden">
+                {% include 'sort-filter/return_filter.html' %}
+            </div>
+
         </div>
-
-
 
         <!-- Borrow Request List -->
 
-
         <div id="borrow-section" class="tab-section w-full md:w-2/3 border border-white bg-white rounded-[12px] p-4 sm:p-6 md:p-12">
             {% if borrows %}
-                <div class="space-y-4">
-                    {% for instance in borrows %}
-                        <a href="{% url 'requests:borrow-detail' instance.id %}" class="block bg-atb-g-50 rounded-[12px] p-8 hover:bg-atb-g-200 focus:border-none focus:ring-0 focus:shadow-[0_0_0_4px_#F2F4F7] transition duration-300 flex flex-row items-center gap-8">
-                            <div class="flex justify-start mt-2">
-                                {% if instance.approved %}
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-16 text-atb-s-500">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                            </svg>
-                            <!--
-                            <span class="inline-block px-3 py-1 text-sm font-semibold text-atb-s-500 bg-atb-s-200 rounded-lg">
-                                Approved
-                            </span>
-                            -->
-                            {% else %}
 
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-16 text-atb-w-500">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                            </svg>
-                            <!--
-                            <span class="inline-block px-3 py-1 text-sm font-semibold text-atb-w-500 bg-atb-w-200 rounded-lg">
-                                Verifying
-                            </span>
-                            -->
-                            {% endif %}
-                            </div>
-                            <div class="text-left">
-                            <h3 class="text-xl font-semibold text-[#334155]">{{ instance }}</h3>
-                            <p class="text-[#475569]">Requested at {{ instance.date_requested }} &bull; Returning on {{ instance.return_date }}</p>
-                            </div>
-                        </a>
-                    {% endfor %}
+            <div class="space-y-4">
+              {% for instance in borrows %}
+                <div 
+                    class="group bg-atb-g-50 rounded-[12px] p-8 hover:bg-atb-g-200 transition duration-300 request-card cursor-pointer"
+                    onclick="toggleDetails('{{ instance.id }}')"
+                    data-review='{{ instance.review }}' 
+                    data-request-type='borrow'
+                    data-device-type='{{ instance.device.type }}'>
+
+              <!-- Summary (Always Visible) -->
+              <div class="flex flex-row items-center gap-4 w-full">
+
+                    <div class="flex justify-start mt-2 ">
+                        {% if instance.review == 'approved' %}
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-16 text-atb-s-500">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                    {% elif instance.review == 'pending' %}
+
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-16 text-atb-w-500">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                    {% else %}
+
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-16 text-atb-e-500">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                    {% endif %}
+                    </div>
+
+                <div class="text-left grow">
+                  <h3 class="text-xl font-semibold text-[#334155]">{{ instance }}</h3>
+                  <p class="text-[#475569]">Requested at {{ instance.date_requested }} &bull; Returning on {{ instance.return_date }}</p>
                 </div>
+              </div>
+
+              <!-- Collapsible Detail Section (Initially Hidden) -->
+                <div id="details-{{ instance.id }}" class="hidden mt-6 border-t border-atb-g-200 group-hover:border-atb-g-300 transition-colors duration-300 pt-4">
+                <ul class="text-sm text-atb-g-700 mb-4">
+                  <li><strong>User:</strong> {{ instance.borrower.username }}</li>
+                  <li><strong>Device:</strong> {{ instance.device.name }}</li>
+                  <li><strong>Requested On:</strong> {{ instance.date_requested }}</li>
+                  <li><strong>Return Date:</strong> {{ instance.return_date }}</li>
+                  <li><strong>Status:</strong> 
+                    {% if instance.review == 'approved' %}
+                      <span class="text-atb-s-500">Approved</span>
+                    {% elif instance.review == 'pending' %}
+                      <span class="text-atb-w-500">Pending</span>
+                    {% else %}
+                      <span class="text-atb-e-500">Rejected</span>
+                    {% endif %}
+                  </li>
+                </ul>
+
+                {% if instance.review == 'pending' %}
+                <form method="post" action="{% url 'requests:borrow-detail' instance.id %}">
+                  {% csrf_token %}
+                  <div class="flex flex-col sm:flex-row justify-end gap-4 pt-2">
+                  <button name="approve" type="submit" class="bg-atb-s-500 hover:bg-atb-s-400 text-white px-4 py-2 rounded-[8px] mr-2">
+                    Approve
+                  </button>
+                  <button name="reject" type="submit" class="bg-atb-e-500 hover:bg-atb-e-400 text-white px-4 py-2 rounded-[8px]">
+                    Reject
+                  </button>
+                  </div>
+                </form>
+                {% else %}
+                <p class="text-sm text-atb-g-700">
+                  {% if instance.review == 'approved' %}
+                    This request has already been approved.
+                  {% else %}
+                    This request has already been rejected.
+                  {% endif %}
+                </p>
+                {% endif %}
+              </div>
+
+            </div>
+          {% endfor %}
+        </div>
+
             {% else %}
                 <p class="text-center text-atb-g-500">No borrow requests available.</p>
             {% endif %}
         </div>
 
-        <!-- Return Request List -->
-        
 
+        <!-- Return Request List -->
         <div id="return-section" class="tab-section w-full md:w-2/3 border border-white bg-white rounded-[12px] p-4 sm:p-6 md:p-12 hidden">
             {% if returns %}
                 <div class="space-y-4">
                     {% for instance in returns %}
-                        <a href="{% url 'requests:return-detail' instance.id %}" class="block bg-atb-g-50 rounded-[12px] p-8 hover:bg-atb-g-200 focus:border-none focus:ring-0 focus:shadow-[0_0_0_4px_#F2F4F7] transition duration-300 flex flex-row items-center gap-8">
-                            <div class="flex justify-start mt-2">
-                                {% if instance.approved %}
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-16 text-atb-s-500">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                            </svg>
-                            <!--
-                            <span class="inline-block px-3 py-1 text-sm font-semibold text-atb-s-500 bg-atb-s-200 rounded-lg">
-                                Approved
-                            </span>
-                            -->
-                            {% else %}
+                        <div onclick="toggleDetails('{{ instance.id }}')" 
+                             class="group cursor-pointer bg-atb-g-50 hover:bg-atb-g-200 rounded-[12px] p-8 transition duration-300 request-card"
+                             data-review="{{ instance.review }}"
+                             data-request-type="return"
+                             data-condition="{{ instance.condition }}"
+                             data-device-type="{{ instance.device.type }}">
 
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-16 text-atb-w-500">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                            </svg>
-                            <!--
-                            <span class="inline-block px-3 py-1 text-sm font-semibold text-atb-w-500 bg-atb-w-200 rounded-lg">
-                                Verifying
-                            </span>
-                            -->
-                            {% endif %}
+                            <!-- Summary Header -->
+                            <div class="flex flex-row items-center gap-4 w-full">
+                                <div class="flex justify-start mt-2">
+                                    {% if instance.review == 'approved' %}
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-16 text-atb-s-500">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                        </svg>
+                                    {% elif instance.review == 'pending' %}
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-16 text-atb-w-500">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                        </svg>
+                                    {% else %}
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-16 text-atb-e-500">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                        </svg>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-semibold text-[#334155]">{{ instance }}</h3>
+                                    <p class="text-[#475569]">Condition: {{ instance.condition }} &bull; Feedback: {{ instance.feedback|slice:":20" }}</p>
+                                </div>
                             </div>
-                            <div>
-                            <h3 class="text-xl font-semibold text-[#334155]">{{ instance }}</h3>
-                            <p class="text-[#475569]">Condition : {{ instance.condition }} &bull; Feedback : {{ instance.feedback|slice:":20" }}</p>
+
+                            <!-- Collapsible Details -->
+                            <div id="details-{{ instance.id }}" class="hidden mt-6 border-t border-atb-g-200 group-hover:border-atb-g-300 pt-4 transition-colors duration-300">
+                                <form method="post" action="{% url 'requests:return-detail' instance.id %}" class="space-y-6">
+                                    {% csrf_token %}
+                                    <div class="space-y-2 text-sm font-semibold text-atb-g-700">
+                                        <p><strong>User:</strong> <span class="text-atb-g-600">{{ instance.borrower.username }}</span></p>
+                                        <p><strong>Device:</strong> <span class="text-atb-g-600">{{ instance.device.name }}</span></p>
+                                        <p><strong>Condition:</strong> <span class="text-atb-g-600">{{ instance.condition }}</span></p>
+                                        <p><strong>Feedback:</strong> <span class="text-atb-g-600">{{ instance.feedback|default:"No feedback provided" }}</span></p>
+                                    </div>
+                                    {% if instance.review == 'pending' %}
+                                        <div class="flex flex-col sm:flex-row justify-end gap-4 pt-2">
+                                            <button name="approve" type="submit"
+                                                    class="bg-atb-s-500 hover:bg-atb-s-400 text-white px-4 py-2 rounded-[8px]">
+                                                Approve
+                                            </button>
+                                            <button name="reject" type="submit"
+                                                    class="bg-atb-e-500 hover:bg-atb-e-400 text-white px-4 py-2 rounded-[8px]">
+                                                Reject
+                                            </button>
+                                        </div>
+                                    {% else %}
+                                        <p class="text-atb-g-500 pt-2">
+                                            {% if instance.review == 'approved' %}
+                                                This request has already been <strong>approved</strong>.
+                                            {% else %}
+                                                This request has already been <strong>rejected</strong>.
+                                            {% endif %}
+                                        </p>
+                                    {% endif %}
+                                </form>
                             </div>
-                        </a>
+                        </div>
                     {% endfor %}
                 </div>
             {% else %}
@@ -121,41 +216,232 @@
             {% endif %}
         </div>
 
+
     </div>
 </div>
 
 
+{{ breviews|json_script:"b-request-review" }}
+{{ rreviews|json_script:"r-request-review" }}
+{{ btypes|json_script:"b-request-type" }}
+{{ rtypes|json_script:"r-request-type" }}
+{{ conditions|json_script:"r-request-condition" }}
 <script>
+let currentTab = 'borrow';
+const bRequestReview = JSON.parse(document.getElementById('b-request-review').textContent);
+const rRequestReview = JSON.parse(document.getElementById('r-request-review').textContent);
+const bRequestType = JSON.parse(document.getElementById('b-request-type').textContent);
+const rRequestType = JSON.parse(document.getElementById('r-request-type').textContent);
+const rRequestCondition = JSON.parse(document.getElementById('r-request-condition').textContent);
+
+const activeBRRFilters = new Set();
+const activeRRRFilters = new Set();
+const activeBTFilters = new Set();
+const activeRTFilters = new Set();
+const activeConditionFilters = new Set();
+
+
+//init
+document.addEventListener('DOMContentLoaded', function () {
+    showTab('borrow');
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    resetFilters();
+});
+
+
+
+function toggleTypeFilter(type, prefix) {
+    const isBorrow = prefix === 'borrow';
+    const activeSet = isBorrow ? activeBTFilters : activeRTFilters;
+    const btnId = `${prefix}-${type}-type-tab`;
+    const btn = document.getElementById(btnId);
+
+    if (!btn) return;
+
+    if (activeSet.has(type)) {
+        activeSet.delete(type);
+    } else {
+        activeSet.add(type);
+    }
+
+    updateTypeButtons(prefix, isBorrow ? bRequestType : rRequestType, activeSet);
+    applyFilters();
+}
+
+
+function toggleReviewFilter(review, prefix) {
+    const isBorrow = prefix === 'borrow';
+    const activeSet = isBorrow ? activeBRRFilters : activeRRRFilters;
+    const btnId = `${prefix}-${review}-review-tab`;
+    const btn = document.getElementById(btnId);
+
+    if (!btn) return;
+
+    if (activeSet.has(review)) {
+        activeSet.delete(review);
+    } else {
+        activeSet.add(review);
+    }
+
+    updateReviewButtons(prefix, isBorrow ? bRequestReview : rRequestReview, activeSet);
+    applyFilters();
+}
+
+function toggleConditionFilter(condition) {
+    if (activeConditionFilters.has(condition)) {
+        activeConditionFilters.delete(condition);
+    } else {
+        activeConditionFilters.add(condition);
+    }
+    updateConditionButtons();
+    applyFilters();
+}
+
+function updateConditionButtons() {
+    rRequestCondition.forEach(condition => {
+        const btn = document.getElementById(`${condition}-condition-tab`);
+        if (!btn) return;
+        if (activeConditionFilters.has(condition)) {
+            btn.classList.remove('opacity-50','text-atb-g-700','bg-white','hover:bg-atb-g-50','hover:text-atb-g-800');
+            btn.classList.add('text-white','bg-atb-p-500','hover:bg-atb-p-700','hover:text-white');
+        } else {
+            btn.classList.add('opacity-50','text-atb-g-700','bg-white','hover:bg-atb-g-50','hover:text-atb-g-800');
+            btn.classList.remove('text-white','bg-atb-p-500','hover:bg-atb-p-700','hover:text-white');
+        }
+    });
+}
+
+function updateReviewButtons(prefix, reviews, activeSet) {
+    reviews.forEach(review => {
+        const btn = document.getElementById(`${prefix}-${review}-review-tab`);
+        if (!btn) return;
+
+        if (activeSet.has(review)) {
+            btn.classList.remove('opacity-50','text-atb-g-700','bg-white','hover:bg-atb-g-50','hover:text-atb-g-800');
+            btn.classList.add('text-white','bg-atb-p-500','hover:bg-atb-p-700','hover:text-white');
+        } else {
+            btn.classList.add('opacity-50','text-atb-g-700','bg-white','hover:bg-atb-g-50','hover:text-atb-g-800');
+            btn.classList.remove('text-white','bg-atb-p-500','hover:bg-atb-p-700','hover:text-white');
+        }
+    });
+}
+
+function updateTypeButtons(prefix, types, activeSet) {
+    types.forEach(type => {
+        const btn = document.getElementById(`${prefix}-${type}-type-tab`);
+        if (!btn) return;
+
+        if (activeSet.has(type)) {
+            btn.classList.remove('opacity-50','text-atb-g-700','bg-white','hover:bg-atb-g-50','hover:text-atb-g-800');
+            btn.classList.add('text-white','bg-atb-p-500','hover:bg-atb-p-700','hover:text-white');
+        } else {
+            btn.classList.add('opacity-50','text-atb-g-700','bg-white','hover:bg-atb-g-50','hover:text-atb-g-800');
+            btn.classList.remove('text-white','bg-atb-p-500','hover:bg-atb-p-700','hover:text-white');
+        }
+    });
+}
+
+
+
+function applyFilters() {
+    const cards = document.querySelectorAll('.request-card');
+
+    cards.forEach(card => {
+        const review = card.getAttribute('data-review');
+        const type = card.getAttribute('data-request-type');
+        const condition = card.getAttribute('data-condition');
+        const deviceType = card.getAttribute('data-device-type');
+
+        let reviewMatch = true;
+        let typeMatch = true;
+        let conditionMatch = true;
+
+        if (type === 'borrow') {
+            if (activeBRRFilters.size > 0 && !activeBRRFilters.has(review)) reviewMatch = false;
+            if (activeBTFilters.size > 0 && !activeBTFilters.has(deviceType)) typeMatch = false;
+        } else if (type === 'return') {
+            if (activeRRRFilters.size > 0 && !activeRRRFilters.has(review)) reviewMatch = false;
+            if (activeRTFilters.size > 0 && !activeRTFilters.has(deviceType)) typeMatch = false;
+            if (activeConditionFilters.size > 0 && !activeConditionFilters.has(condition)) conditionMatch = false;
+        }
+
+        if (reviewMatch && typeMatch && conditionMatch) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+
+
+function resetFilters() {
+    activeBRRFilters.clear();
+    activeRRRFilters.clear();
+    activeBTFilters.clear();
+    activeRTFilters.clear();
+    activeConditionFilters.clear();
+    updateReviewButtons('borrow',bRequestReview,activeBRRFilters);
+    updateReviewButtons('return',rRequestReview,activeRRRFilters);
+    updateTypeButtons('borrow',bRequestType,activeBTFilters);
+    updateTypeButtons('return',rRequestType,activeRTFilters);
+    updateConditionButtons();
+    applyFilters();
+}
 
 function showTab(tab) {
     const borrowTab = document.getElementById('borrow-tab');
     const returnTab = document.getElementById('return-tab');
     const borrowSection = document.getElementById('borrow-section');
     const returnSection = document.getElementById('return-section');
+    const borrowFilter = document.getElementById('borrow-filter');
+    const returnFilter = document.getElementById('return-filter');
+    
+    resetFilters();
 
-    document.addEventListener('DOMContentLoaded', function () {
-        showTab('borrow');
-    });
     if (tab === 'borrow') {
-        // Show borrow section, hide return
         borrowSection.classList.remove('hidden');
         returnSection.classList.add('hidden');
+        borrowFilter.classList.remove('hidden');
+        returnFilter.classList.add('hidden');
 
-        // Enable borrow, disable return
         borrowTab.disabled = true;
         returnTab.disabled = false;
     } else {
-        // Show return section, hide borrow
         borrowSection.classList.add('hidden');
         returnSection.classList.remove('hidden');
+        borrowFilter.classList.add('hidden');
+        returnFilter.classList.remove('hidden');
 
-        // Enable return, disable borrow
         borrowTab.disabled = false;
         returnTab.disabled = true;
     }
 }
 
-</script>
+function toggleSorting(field, toggleDirection=true) {
+    const sortUp = document.getElementById('sort-up');
+    const sortDown = document.getElementById('sort-down');
 
+    sortUp.classList.toggle('hidden');
+    sortDown.classList.toggle('hidden');
+}
+
+
+function toggleDetails(id) {
+  const allDetails = document.querySelectorAll('[id^="details-"]');
+  
+  allDetails.forEach(section => {
+    if (section.id !== `details-${id}`) {
+      section.classList.add('hidden');
+    }
+  });
+  
+  const currentSection = document.getElementById(`details-${id}`);
+  currentSection.classList.toggle('hidden');
+}
+
+</script>
 {% endblock content %}
 

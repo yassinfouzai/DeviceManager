@@ -10,17 +10,19 @@
     <li class="text-atb-g-700"><strong class="text-atb-g-600">Condition:</strong> {{ request_obj.condition }}</li>
     <li class="text-atb-g-700"><strong class="text-atb-g-600">Feedback:</strong> {{ request_obj.feedback }}</li>
     <li class="text-atb-g-700"><strong class="text-atb-g-600">Status:</strong>
-      {% if request_obj.approved %}
+      {% if request_obj.review == 'approved' %}
         <span class="text-atb-s-500">Approved</span>
-      {% else %}
+        {% elif request_obj.review == 'pending' %}
         <span class="text-atb-w-500">Pending</span>
-      {% endif %}
+        {% else %}
+        <span class="text-atb-e-500">Rejected</span>
+        {% endif %}
     </li>
   </ul>
 
   <form method="post">
     {% csrf_token %}
-    {% if not request_obj.approved %}
+    {% if request_obj.review == 'pending' %}
       <button name="approve" type="submit" class="bg-atb-s-500 hover:bg-atb-s-400 text-white px-4 py-2 rounded mr-4">
         Approve
       </button>
@@ -28,7 +30,11 @@
         Reject
       </button>
     {% else %}
-      <p class="text-sm text-gray-500">This request has already been approved.</p>
+        {% if request_obj.review == 'approved' %}
+        <p class="text-sm text-atb-g-700">This request has already been approved.</p>
+        {% else %}
+        <p class="text-sm text-atb-g-700">This request has already been rejected.</p>
+        {% endif %}
     {% endif %}
   </form>
 </div>

@@ -10,19 +10,19 @@ def device_detail_view(request, id):
     has_requested_borrow = BorrowRequest.objects.filter(
         device=obj,
         borrower=request.user,
-        approved=False
+        review=BorrowRequest.Review.PENDING
     ).exists()
 
     has_requested_return = ReturnRequest.objects.filter(
         device=obj,
         borrower=request.user,
-        approved=False
+        review=ReturnRequest.Review.PENDING
     ).exists()
 
     is_borrowed_by_user = BorrowRequest.objects.filter(
         device=obj,
         borrower=request.user,
-        approved=True
+        review=BorrowRequest.Review.APPROVED
     ).exists()
 
     context = {
@@ -40,9 +40,12 @@ def device_list_view(request):
     queryset = Device.objects.all()
     types = Device.objects.values('type').distinct()
     types = [t['type'].replace('type-', '') for t in types]
+    status = Device.objects.values('status').distinct()
+    status = [s['status'].replace('status-', '') for s in status]
     context = {
         "object_list": queryset,
         "types": types,
+        "status": status,
     }
 
     return render(request, "devices/device_list.html", context)

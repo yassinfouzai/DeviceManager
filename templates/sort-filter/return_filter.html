@@ -1,0 +1,6 @@
+{% include 'sort-filter/filter.html' %}
+{% block filter_content %}
+  {% include 'sort-filter/filters/typefilter.html' with types=rtypes  prefix='return' %}
+  {% include 'sort-filter/filters/reviewfilter.html' with reviews=rreviews prefix='return' %}
+  {% include 'sort-filter/filters/conditionfilter.html' %}
+{% endblock %}

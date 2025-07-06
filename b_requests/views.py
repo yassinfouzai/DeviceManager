@@ -14,20 +14,22 @@ def return_detail_view(request, pk):
 
     if request.method == 'POST':
         if 'approve' in request.POST:
-            return_request.approved = True
+            return_request.review = ReturnRequest.Review.APPROVED
             return_request.save()
 
             device = return_request.device
             device.location = 'Admin'
-            if return_request.condition == 'good':
+            if return_request.condition == ReturnRequest.Condition.GOOD:
                 device.status = Device.Status.AVAILABLE
-            elif return_request.condition == 'broken':
+            elif return_request.condition == ReturnRequest.Condition.BROKEN:
                 device.status = Device.Status.BROKEN
             else:
                 device.status = Device.Status.MISSING
             device.save()
         elif 'reject' in request.POST:
-            return_request.delete()
+            return_request.review = ReturnRequest.Review.REJECTED
+            return_request.save()
+
         return redirect('requests:request-list')
 
     context = {
@@ -42,7 +44,7 @@ def borrow_detail_view(request, pk):
 
     if request.method == 'POST':
         if 'approve' in request.POST:
-            borrow_request.approved = True
+            borrow_request.review = BorrowRequest.Review.APPROVED
             borrow_request.save()
 
             device = borrow_request.device
@@ -50,7 +52,8 @@ def borrow_detail_view(request, pk):
             device.status = Device.Status.BORROWED
             device.save()
         elif 'reject' in request.POST:
-            borrow_request.delete()
+            borrow_request.review = BorrowRequest.Review.REJECTED
+            borrow_request.save()
         return redirect('requests:request-list')
 
     context = {
@@ -63,8 +66,33 @@ def borrow_detail_view(request, pk):
 def request_list_view(request):
     borrows = BorrowRequest.objects.all()
     returns = ReturnRequest.objects.all()
-    context = {"borrows": borrows, "returns": returns}
+
+    conditions_qs = ReturnRequest.objects.values('condition').distinct()
+    conditions = [c['condition'].replace('condition-', '') for c in conditions_qs]
+
+    btypes_qs = BorrowRequest.objects.values_list('device__type', flat=True).distinct()
+    btypes = [t.replace('type-', '') for t in btypes_qs]
+
+    rtypes_qs = ReturnRequest.objects.values_list('device__type', flat=True).distinct()
+    rtypes = [t.replace('type-', '') for t in rtypes_qs]
+
+    breviews_qs = BorrowRequest.objects.values('review').distinct()
+    breviews = [br['review'].replace('review-', '') for br in breviews_qs]
+
+    rreviews_qs = ReturnRequest.objects.values('review').distinct()
+    rreviews = [rr['review'].replace('review-', '') for rr in rreviews_qs]
+
+    context = {
+        "borrows": borrows,
+        "returns": returns,
+        "breviews": breviews,
+        "rreviews": rreviews,
+        "conditions": conditions,
+        "btypes": btypes,
+        "rtypes": rtypes,
+    }
     return render(request, "b_requests/request_list.html", context)
+
 
 
 @login_required
@@ -72,7 +100,7 @@ def borrow_request_view(request, id):
     device = get_object_or_404(Device, id=id)
     today = datetime.date.today()
 
-    reservations = BorrowRequest.objects.filter(device=device, approved=True)
+    reservations = BorrowRequest.objects.filter(device=device, review='approved')
     reserved_dates = set()
 
     for r in reservations:
@@ -107,7 +135,7 @@ def borrow_request_view(request, id):
 def return_request_view(request, id):
     device = get_object_or_404(Device, id=id)
 
-    borrow_request = BorrowRequest.objects.filter(device=device, borrower=request.user, approved=True).first()
+    borrow_request = BorrowRequest.objects.filter(device=device, borrower=request.user, review='approved').first()
 
     if not borrow_request:
         return redirect('devices:device-detail', id=device.id)

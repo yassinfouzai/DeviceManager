@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-
+{% load static %}
 <div class="min-h-screen flex flex-col bg-atb-g-50 text-left py-24 px-4 md:px-12 lg:px-32 font-primary">
 
 
@@ -18,39 +18,27 @@
 
         <div class="flex flex-col gap-4 p-4 sm:p-6 md:p-8 lg:p-12 bg-white border border-white rounded-[12px] w-full md:w-1/3">
 
-            <button 
-                class="px-12 py-2 text-[18px] font-semibold rounded-[8px] transition-colors duration-200 border-[1px] border-atb-g-300 bg-white text-atb-g-700 shadow-[0px_1px_2px_0px_#1018280D]
-           hover:bg-atb-g-50 hover:text-atb-g-800 
-           focus:bg-white focus:text-atb-g-700 focus:shadow-[0_0_0_4px_#F2F4F7]
-           disabled:bg-atb-g-50 disabled:text-atb-g-300 disabled:border-atb-g-200 disabled:opacity-70"
-                id="all-tab"
-                onclick="showTab('all')" disabled>
-                All Devices
-            </button>
-            {% for type in types %}
-            <button 
-                class="px-12 py-2 text-[18px] font-semibold rounded-[8px] transition-colors duration-200 border-[1px] border-atb-g-300 bg-white text-atb-g-700 shadow-[0px_1px_2px_0px_#1018280D]
-           hover:bg-atb-g-50 hover:text-atb-g-800 
-           focus:bg-white focus:text-atb-g-700 focus:shadow-[0_0_0_4px_#F2F4F7]
-           disabled:bg-atb-g-50 disabled:text-atb-g-300 disabled:border-atb-g-200 disabled:opacity-70"
-                id ="{{ type }}-tab" 
-                onclick="showTab('{{ type }}')">
-                    {{ type }}
-            </button>
-            {% endfor %}
+            <!--Sort-->
+            {% include 'sort-filter/sort.html'%}
+
+
+            <!--Filter-->
+            {% include 'sort-filter/device_filter.html'%}
+
         </div>
 
         
         <div class="w-full md:w-2/3 border border-white bg-white rounded-[12px] p-4 sm:p-6 md:p-12">
 
-
-
             {% if object_list %}
-                <div class="space-y-4">
+                <div id="device-list" class="space-y-4">
                     {% for instance in object_list %}
                         <a href="{% url 'devices:device-detail' instance.id %}" 
                            class="device-card block bg-atb-g-50 rounded-[12px] p-8 hover:bg-atb-g-200 focus:border-none focus:ring-0 focus:shadow-[0_0_0_4px_#F2F4F7] transition duration-300"
-                           data-type="{{ instance.type }}">
+                            data-type="{{ instance.type }}"
+                            data-status="{{ instance.status }}"
+                            data-name="{{ instance.name|lower }}" 
+                            data-id="{{ instance.id }}">
                             <h3 class="text-xl font-semibold text-[#334155]">{{ instance.name }}</h3>
                     <p class="text-[#475569]">{{ instance.type }} &bull; {{ instance.status }}</p> 
                         </a> 
@@ -66,41 +54,170 @@
 
 
 {{ types|json_script:"device-types" }}
+{{ status|json_script:"device-status" }}
+
 <script>
-    const deviceTypes = JSON.parse(document.getElementById('device-types').textContent);
-    const Tabs = ['all'];
-    deviceTypes.forEach(function(type) {
-        Tabs.push(type);
-    });
+let currentSortField = 'name';
+let currentSortDirection = 'desc';
+const deviceTypes = JSON.parse(document.getElementById('device-types').textContent);
+const deviceStatus = JSON.parse(document.getElementById('device-status').textContent);
+
+const activeTypeFilters = new Set();
+const activeStatusFilters = new Set();
+
+document.addEventListener('DOMContentLoaded', function () {
+    applyFilters();
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    sortCardsByName();
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    resetFilters();
+});
 
 
-    document.addEventListener('DOMContentLoaded', function () {
-        showTab('all');
-    });
+document.addEventListener('DOMContentLoaded', function () {
+    toggleSorting(currentSortField, false);
+});
 
-    function showTab(selectedTab) {
-        console.log(Tabs);
-        Tabs.forEach(function(tab) {
-            const button = document.getElementById(tab + '-tab');
-            if (tab === selectedTab) {
-                button.disabled = true;
-            } else {
-                button.disabled = false;
-            }
-        });
-
-        const cards = document.querySelectorAll('.device-card');
-        cards.forEach(function(card) {
-            const deviceType = card.getAttribute('data-type');
-            if (selectedTab === 'all' || deviceType === selectedTab) {
-                card.style.display = 'block';
-            } else {
-                card.style.display = 'none';
-            }
-        });
-
+function toggleTypeFilter(type) {
+    if (activeTypeFilters.has(type)) {
+        activeTypeFilters.delete(type);
+    } else {
+        activeTypeFilters.add(type);
     }
-</script>
+    updateTypeButtons();
+    applyFilters();
+}
 
+function toggleStatusFilter(status) {
+    if (activeStatusFilters.has(status)) {
+        activeStatusFilters.delete(status);
+    } else {
+        activeStatusFilters.add(status);
+    }
+    updateStatusButtons();
+    applyFilters();
+}
+
+function updateTypeButtons() {
+    deviceTypes.forEach(type => {
+        const btn = document.getElementById(`device-${type}-type-tab`);
+        if (activeTypeFilters.has(type)) {
+            btn.classList.remove('opacity-50','text-atb-g-700','bg-white','hover:bg-atb-g-50','hover:text-atb-g-800');
+            btn.classList.add('text-white','bg-atb-p-500','hover:bg-atb-p-700','hover:text-white');
+        } else {
+            btn.classList.add('opacity-50','text-atb-g-700','bg-white','hover:bg-atb-g-50','hover:text-atb-g-800');
+            btn.classList.remove('text-white','bg-atb-p-500','hover:bg-atb-p-700','hover:text-white');
+        }
+    });
+}
+
+function updateStatusButtons() {
+    deviceStatus.forEach(status => {
+        const btn = document.getElementById(`${status}-status-tab`);
+        if (activeStatusFilters.has(status)) {
+            btn.classList.remove('opacity-50','text-atb-g-700','bg-white','hover:bg-atb-g-50','hover:text-atb-g-800');
+            btn.classList.add('text-white','bg-atb-p-500','hover:bg-atb-p-700','hover:text-white');
+        } else {
+            btn.classList.add('opacity-50','text-atb-g-700','bg-white','hover:bg-atb-g-50','hover:text-atb-g-800');
+            btn.classList.remove('text-white','bg-atb-p-500','hover:bg-atb-p-700','hover:text-white');
+        }
+    });
+}
+
+function applyFilters() {
+    const cards = document.querySelectorAll('.device-card');
+    cards.forEach(card => {
+        const deviceType = card.getAttribute('data-type');
+        const deviceStat = card.getAttribute('data-status');
+
+        const typeMatch = activeTypeFilters.size === 0 || activeTypeFilters.has(deviceType);
+        const statusMatch = activeStatusFilters.size === 0 || activeStatusFilters.has(deviceStat);
+
+        if (typeMatch && statusMatch) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+function resetFilters() {
+    activeTypeFilters.clear();
+    activeStatusFilters.clear();
+    updateTypeButtons();
+    updateStatusButtons();
+    applyFilters();
+}
+
+function toggleSorting(field, toggleDirection=true) {
+    const sortUp = document.getElementById('sort-up');
+    const sortDown = document.getElementById('sort-down');
+
+    if (currentSortField === field) {
+        if (toggleDirection) {
+            if (currentSortDirection === 'asc') {
+                currentSortDirection = 'desc';
+            } else {
+                currentSortDirection = 'asc';
+            }
+        }
+    } else {
+        currentSortField = field;
+        if (field === 'name') {
+            currentSortDirection = 'asc';
+        } else {
+            currentSortDirection = 'desc';
+        }
+    }
+
+    sortUp.classList.toggle('hidden', currentSortDirection === 'desc');
+    sortDown.classList.toggle('hidden', currentSortDirection === 'asc');
+
+    if (currentSortField === 'id') {
+        sortCardsById(currentSortDirection);
+    } else if (currentSortField === 'name') {
+        sortCardsByName(currentSortDirection);
+    }
+}
+
+function sortCardsById(direction = 'desc') {
+    const container = document.getElementById('device-list');
+    const cards = Array.from(container.querySelectorAll('.device-card'));
+
+    cards.sort((a, b) => {
+        const idA = parseInt(a.dataset.id);
+        const idB = parseInt(b.dataset.id);
+        if (direction === 'asc') {
+            return idA - idB;
+        } else {
+            return idB - idA;
+        }
+    });
+
+    cards.forEach(card => container.appendChild(card));
+}
+
+function sortCardsByName(direction = 'asc') {
+    const container = document.getElementById('device-list');
+    const cards = Array.from(container.querySelectorAll('.device-card'));
+
+    cards.sort((a, b) => {
+        const nameA = a.dataset.name.toLowerCase();
+        const nameB = b.dataset.name.toLowerCase();
+        if (direction === 'asc') {
+            return nameA.localeCompare(nameB);
+        } else {
+            return nameB.localeCompare(nameA);
+        }
+    });
+
+    cards.forEach(card => container.appendChild(card));
+}
+
+</script>
 
 {% endblock content %} 
