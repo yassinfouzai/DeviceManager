@@ -3,6 +3,7 @@ from .models import Device
 from django.contrib.auth.decorators import login_required
 from b_requests.models import BorrowRequest, ReturnRequest
 
+
 @login_required
 def device_detail_view(request, id):
     obj = get_object_or_404(Device, id=id)
