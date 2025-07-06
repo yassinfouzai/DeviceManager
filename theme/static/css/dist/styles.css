@@ -367,9 +367,6 @@
   .h-6 {
     height: calc(var(--spacing) * 6);
   }
-  .h-16 {
-    height: calc(var(--spacing) * 16);
-  }
   .h-32 {
     height: calc(var(--spacing) * 32);
   }
@@ -414,12 +411,6 @@
   }
   .min-w-full {
     min-width: 100%;
-  }
-  .flex-shrink-0 {
-    flex-shrink: 0;
-  }
-  .flex-grow {
-    flex-grow: 1;
   }
   .grow {
     flex-grow: 1;
@@ -853,11 +844,6 @@
     }
   }
   @media (hover: hover) {
-    .hover\:border-atb-g-300:hover {
-      border-color: var(--color-atb-g-300);
-    }
-  }
-  @media (hover: hover) {
     .hover\:bg-atb-e-400:hover {
       background-color: var(--color-atb-e-400);
     }
@@ -865,11 +851,6 @@
   @media (hover: hover) {
     .hover\:bg-atb-g-50:hover {
       background-color: var(--color-atb-g-50);
-    }
-  }
-  @media (hover: hover) {
-    .hover\:bg-atb-g-100:hover {
-      background-color: var(--color-atb-g-100);
     }
   }
   @media (hover: hover) {
