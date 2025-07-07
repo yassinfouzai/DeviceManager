@@ -1,5 +1,7 @@
 {% include 'sort-filter/filter.html' %}
 {% block filter_content %}
   {% include 'sort-filter/filters/typefilter.html' with prefix='device' %}
+  {% if not '/accounts/profile/' in request.path %}
   {% include 'sort-filter/filters/statusfilter.html' %}
+  {% endif %}
 {% endblock %}
