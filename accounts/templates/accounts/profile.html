@@ -52,27 +52,25 @@
                 Returns
             </button>
 
-
-
             <div id="device-filter" class="flex flex-col gap-2 hidden">
-                {% include 'sort-filter/sort.html' %}
+                {% include 'sort-filter/device_sort.html' %}
                 {% include 'sort-filter/device_filter.html' %}
             </div>
 
             <div id="borrow-filter" class="flex flex-col gap-2 hidden">
+                {% include 'sort-filter/borrow_sort.html' %}
                 {% include 'sort-filter/borrow_filter.html' %}
             </div>
 
             <div id="return-filter" class="flex flex-col gap-2 hidden">
+                {% include 'sort-filter/return_sort.html' %}
                 {% include 'sort-filter/return_filter.html' %}
             </div> 
 
         </div>
 
-
-
         <!-- User Info -->
-        <div id="user-section" class="tab-section w-full md:min-h-110 md:w-2/3 border border-white bg-white rounded-[12px] p-4 sm:p-6 md:p-12">
+        <div id="user-section" class="tab-section w-full md:min-h-110 md:w-2/3 border border-white bg-white rounded-[12px] p-4 sm:p-6 md:p-12 ">
         <p>
             <span class="text-atb-g-700 font-semibold">Username:</span><br>
             <input type="text" value="{{ user.username }}"  id="username" name="username" class="w-1/2 p-2 mb-4 rounded-[8px] bg-white text-[16px] text-atb-g-500 border border-atb-g-300   focus:text-atb-g-900 focus:ring-atb-p-200 focus:border-atb-p-200 focus:outline-none focus:shadow-[0_0_0_4px_#FDE3E6] transition duration-200" disabled><br>
@@ -88,14 +86,26 @@
             {% else %}
             <input type="text" value="Not Specified"  id="username" name="username" class="w-1/2 p-2 mb-4 rounded-[8px] bg-white text-[16px] text-atb-g-500 border border-atb-g-300   focus:text-atb-g-900 focus:ring-atb-p-200 focus:border-atb-p-200 focus:outline-none focus:shadow-[0_0_0_4px_#FDE3E6] transition duration-200" disabled><br>
             {% endif %}
+            <span class="text-atb-g-700 font-semibold">E-mail:</span><br>
+            {% if user.email %}
+            <input type="text" value="{{ user.email }}"  id="username" name="username" class="w-1/2 p-2 mb-4 rounded-[8px] bg-white text-[16px] text-atb-g-500 border border-atb-g-300   focus:text-atb-g-900 focus:ring-atb-p-200 focus:border-atb-p-200 focus:outline-none focus:shadow-[0_0_0_4px_#FDE3E6] transition duration-200" disabled><br>
+            {% else %}
+            <input type="text" value="Not Specified"  id="username" name="username" class="w-1/2 p-2 mb-4 rounded-[8px] bg-white text-[16px] text-atb-g-500 border border-atb-g-300   focus:text-atb-g-900 focus:ring-atb-p-200 focus:border-atb-p-200 focus:outline-none focus:shadow-[0_0_0_4px_#FDE3E6] transition duration-200" disabled><br>
+            {% endif %}
         </p>
+        <br>
+        <a href="{% url 'accounts:password' %}"
+           class="w-full sm:w-fit text-center whitespace-nowrap 
+                px-4 sm:px-6 py-2  bg-atb-p-600 rounded-[8px] font-semibold text-white text-[18px] py-2 px-8 hover:bg-atb-p-700 focus:bg-atb-p-600 focus:ring-atb-p-200 focus:outline-none focus:shadow-[0_0_0_4px_#FDE3E6] transition duration-200 cursor-pointer">
+            Change Password
+        </a>
         </div>
 
 
 
         <!-- Borrow Section -->
         <div id="borrow-section" class="tab-section md:w-2/3 md:min-h-110 border border-white bg-white rounded-[12px] p-4 sm:p-6 md:p-12 hidden">
-            <h3 class="text-2xl font-semibold mb-4">Your Borrow Request History :</h3>
+            <h3 class="text-2xl font-semibold mb-4">Your Borrow Request History:</h3>
             <div class="flex flex-col space-y-4">
             {% for req in borrows %}
             <a href="#" class="block bg-atb-g-50 rounded-[12px] p-8 flex flex-row items-center gap-8 card"
@@ -160,7 +170,7 @@
 
         <!-- Return Section -->
         <div id="return-section" class="tab-section w-full md:min-h-110 md:w-2/3 border border-white bg-white rounded-[12px] p-4 sm:p-6 md:p-12 hidden">
-            <h3 class="text-2xl font-semibold mb-4">Your Return Request History :</h3> 
+            <h3 class="text-2xl font-semibold mb-4">Your Return Request History:</h3> 
             <div class="flex flex-col space-y-4">
             {% for req in returns %}
             <a href="#" class="block bg-atb-g-50 rounded-[12px] p-8 flex flex-row items-center gap-8 card"

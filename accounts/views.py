@@ -4,7 +4,27 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from b_requests.models import BorrowRequest, ReturnRequest
 from devices.models import Device
-#from django.contrib.auth.views import PasswordChangeView
+from django.contrib.auth.views import PasswordChangeView
+from django.contrib.auth.forms import PasswordChangeForm
+from django.urls import reverse_lazy
+
+
+class PasswordsChangeView(PasswordChangeView):
+    form_class = PasswordChangeForm
+    success_url = reverse_lazy('accounts:profile')
+
+    def form_valid(self, form):
+        messages.success(self.request, "Your password has been changed successfully!!")
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        for field in form:
+            for error in field.errors:
+                messages.error(self.request, f"{field.label}: {error}")
+        for error in form.non_field_errors():
+            messages.error(self.request, error)
+        return super().form_invalid(form)
+
 
 
 @login_required

@@ -36,14 +36,15 @@
                 Returns
             </button>
 
-            {% include 'sort-filter/sort.html' %}
 
 
             <div id="borrow-filter" class="flex flex-col gap-2">
+                {% include 'sort-filter/borrow_sort.html' %}
                 {% include 'sort-filter/borrow_filter.html' %}
             </div>
 
             <div id="return-filter" class="flex flex-col gap-2 hidden">
+                {% include 'sort-filter/return_sort.html' %}
                 {% include 'sort-filter/return_filter.html' %}
             </div>
 
@@ -61,6 +62,9 @@
                     onclick="toggleDetails('{{ instance.id }}')"
                     data-review='{{ instance.review }}' 
                     data-request-type='borrow'
+                    data-name='{{ instance.name|lower }}'
+                    data-bd='{{ instance.date_requested }}'
+                    data-rd='{{ instance.return_date }}'
                     data-device-type='{{ instance.device.type }}'>
 
               <!-- Summary (Always Visible) -->
@@ -111,14 +115,19 @@
                 {% if instance.review == 'pending' %}
                 <form method="post" action="{% url 'requests:borrow-detail' instance.id %}">
                   {% csrf_token %}
-                  <div class="flex flex-col sm:flex-row justify-end gap-4 pt-2">
-                  <button name="approve" type="submit" class="bg-atb-s-500 hover:bg-atb-s-400 text-white px-4 py-2 rounded-[8px] mr-2">
-                    Approve
-                  </button>
-                  <button name="reject" type="submit" class="bg-atb-e-500 hover:bg-atb-e-400 text-white px-4 py-2 rounded-[8px]">
-                    Reject
-                  </button>
-                  </div>
+                      <div class="flex flex-col sm:flex-row justify-end gap-4 pt-2"> 
+                        <button name="reject" type="submit" class="w-full sm:w-fit text-center whitespace-nowrap 
+                   px-4 sm:px-6 py-2 text-[15px] sm:text-[16px] font-semibold 
+                   rounded-[8px] transition-colors duration-200 
+                   border border-atb-g-300 bg-white text-atb-g-700 shadow-[0px_1px_2px_0px_#1018280D]
+                   hover:bg-atb-g-50 hover:text-atb-g-800 
+                   focus:bg-white focus:text-atb-g-700 focus:shadow-[0_0_0_4px_#F2F4F7]">
+                        Reject
+                      </button>
+                      <button name="approve" type="submit" class="bg-atb-p-600 rounded-[8px] font-semibold text-white text-[18px] py-2 px-4 sm:px-6 hover:bg-atb-p-700 focus:bg-atb-p-600 focus:ring-atb-p-200 focus:outline-none focus:shadow-[0_0_0_4px_#FDE3E6] transition duration-200 cursor-pointer">
+                        Approve
+                      </button>
+                      </div>
                 </form>
                 {% else %}
                 <p class="text-sm text-atb-g-700">
@@ -187,16 +196,19 @@
                                         <p><strong>Feedback:</strong> <span class="text-atb-g-600">{{ instance.feedback|default:"No feedback provided" }}</span></p>
                                     </div>
                                     {% if instance.review == 'pending' %}
-                                        <div class="flex flex-col sm:flex-row justify-end gap-4 pt-2">
-                                            <button name="approve" type="submit"
-                                                    class="bg-atb-s-500 hover:bg-atb-s-400 text-white px-4 py-2 rounded-[8px]">
-                                                Approve
-                                            </button>
-                                            <button name="reject" type="submit"
-                                                    class="bg-atb-e-500 hover:bg-atb-e-400 text-white px-4 py-2 rounded-[8px]">
-                                                Reject
-                                            </button>
-                                        </div>
+                                      <div class="flex flex-col sm:flex-row justify-end gap-4 pt-2"> 
+                                        <button name="reject" type="submit" class="w-full sm:w-fit text-center whitespace-nowrap 
+                                   px-4 sm:px-6 py-2 text-[15px] sm:text-[16px] font-semibold 
+                                   rounded-[8px] transition-colors duration-200 
+                                   border border-atb-g-300 bg-white text-atb-g-700 shadow-[0px_1px_2px_0px_#1018280D]
+                                   hover:bg-atb-g-50 hover:text-atb-g-800 
+                                   focus:bg-white focus:text-atb-g-700 focus:shadow-[0_0_0_4px_#F2F4F7]">
+                                        Reject
+                                      </button>
+                                      <button name="approve" type="submit" class="bg-atb-p-600 rounded-[8px] font-semibold text-white text-[18px] py-2 px-4 sm:px-6 hover:bg-atb-p-700 focus:bg-atb-p-600 focus:ring-atb-p-200 focus:outline-none focus:shadow-[0_0_0_4px_#FDE3E6] transition duration-200 cursor-pointer">
+                                        Approve
+                                      </button>
+                                      </div>
                                     {% else %}
                                         <p class="text-atb-g-500 pt-2">
                                             {% if instance.review == 'approved' %}
@@ -240,6 +252,8 @@ const activeBTFilters = new Set();
 const activeRTFilters = new Set();
 const activeConditionFilters = new Set();
 
+let currentSortField = 'name';
+let currentSortDirection = 'asc';
 
 //init
 document.addEventListener('DOMContentLoaded', function () {
@@ -250,6 +264,9 @@ document.addEventListener('DOMContentLoaded', function () {
     resetFilters();
 });
 
+document.addEventListener('DOMContentLoaded', function () {
+    toggleSorting(currentSortField, false);
+});
 
 
 function toggleTypeFilter(type, prefix) {
@@ -420,12 +437,64 @@ function showTab(tab) {
     }
 }
 
-function toggleSorting(field, toggleDirection=true) {
+function toggleSorting(field, toggleDirection = true) {
     const sortUp = document.getElementById('sort-up');
     const sortDown = document.getElementById('sort-down');
 
-    sortUp.classList.toggle('hidden');
-    sortDown.classList.toggle('hidden');
+    if (currentSortField === field) {
+        if (toggleDirection) {
+            currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+        }
+    } else {
+        currentSortField = field;
+        currentSortDirection = field === 'name' ? 'asc' : 'desc';
+    }
+
+    if (sortUp && sortDown) {
+        sortUp.classList.toggle('hidden', currentSortDirection === 'desc');
+        sortDown.classList.toggle('hidden', currentSortDirection === 'asc');
+    }
+
+    sortCards(currentSortField, currentSortDirection);
+}
+
+
+function onSortFieldChange(newField) {
+    if (newField !== currentSortField) {
+        currentSortDirection = newField === 'name' ? 'asc' : 'desc';
+    }
+
+    currentSortField = newField;
+    toggleSorting(currentSortField, false);
+}
+
+
+function sortCards(field, direction) {
+    const container = document.querySelector(currentTab === 'borrow' ? '#borrow-section .space-y-4' : '#return-section .space-y-4');
+    if (!container) return;
+
+    const cards = Array.from(container.children);
+
+    cards.sort((a, b) => {
+        let valA = a.dataset[field] || "";
+        let valB = b.dataset[field] || "";
+
+        // If sorting by name, compare strings case-insensitively
+        if (field === 'name') {
+            valA = valA.toLowerCase();
+            valB = valB.toLowerCase();
+        } else if (field === 'bd' || field === 'rd') {
+            // Convert dates for comparison if sorting by date fields
+            valA = new Date(valA);
+            valB = new Date(valB);
+        }
+
+        if (valA < valB) return direction === 'asc' ? -1 : 1;
+        if (valA > valB) return direction === 'asc' ? 1 : -1;
+        return 0;
+    });
+
+    cards.forEach(card => container.appendChild(card));
 }
 
 

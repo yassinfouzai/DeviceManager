@@ -7,6 +7,7 @@ from django.utils.dateformat import format
 from devices.models import Device
 import datetime
 from django.contrib import messages
+from django.core.management.base import BaseCommand
 
 @staff_member_required
 def return_detail_view(request, pk):
