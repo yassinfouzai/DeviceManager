@@ -7,10 +7,13 @@
 
 <li class="hover:text-[#a60000]  pr-6">
     <a href="{% url 'requests:request-list' %}">Request History
-    {% if unseed_borrows or unseed_returns %}
+    {% if unseen_borrows or unseen_returns %}
         <span>
-            ({{ unseed_borrows|add:unseed_returns }})
+            ({{ unseen_borrows|add:unseen_returns }})
         </span>
     {% endif %}
     </a>
+</li>
+<li class="hover:text-[#a60000]  pr-6">
+    <a href="/admin/">Notifications</a>
 </li>

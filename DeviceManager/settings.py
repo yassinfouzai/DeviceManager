@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     #third
     'tailwind',
     'theme',
+    'channels',
     'django_user_agents',
     'django_browser_reload',
 
@@ -96,7 +97,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'DeviceManager.wsgi.application'
-
+ASGI_APPLICATION = 'DeviceManager.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
@@ -157,3 +158,11 @@ LOGIN_REDIRECT_URL = '/'
 
 LOGIN_URL = '/accounts/log_in/'
 
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    }
+}
