@@ -3,11 +3,40 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render, get_object_or_404, redirect
 from .forms import BorrowRequestForm, ReturnRequestForm
 from .models import BorrowRequest, ReturnRequest
-from django.utils.dateformat import format
 from devices.models import Device
 import datetime
 from django.contrib import messages
-from django.core.management.base import BaseCommand
+import json
+from django.http import JsonResponse
+
+
+@staff_member_required
+def mark_seen(request, request_type, id):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Invalid HTTP method'}, status=405)
+
+    try:
+        data = json.loads(request.body)
+        seen = data.get('seen', False)
+
+        if request_type == 'borrow':
+            obj = BorrowRequest.objects.get(id=id)
+        elif request_type == 'return':
+            obj = ReturnRequest.objects.get(id=id)
+        else:
+            return JsonResponse({'error': 'Invalid request type'}, status=400)
+
+        obj.seen = seen
+        obj.save()
+
+        return JsonResponse({'status': 'success'})
+
+    except (BorrowRequest.DoesNotExist, ReturnRequest.DoesNotExist):
+        return JsonResponse({'error': f'{request_type.capitalize()}Request not found'}, status=404)
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
 
 @staff_member_required
 def return_detail_view(request, pk):
@@ -68,6 +97,9 @@ def request_list_view(request):
     borrows = BorrowRequest.objects.all()
     returns = ReturnRequest.objects.all()
 
+    unseed_borrows = BorrowRequest.objects.filter(seen=False).count()
+    unseed_returns = ReturnRequest.objects.filter(seen=False).count()
+
     conditions_qs = ReturnRequest.objects.values('condition').distinct()
     conditions = [c['condition'].replace('condition-', '') for c in conditions_qs]
 
@@ -86,14 +118,19 @@ def request_list_view(request):
     context = {
         "borrows": borrows,
         "returns": returns,
+
+        # Filters
         "breviews": breviews,
         "rreviews": rreviews,
         "conditions": conditions,
         "btypes": btypes,
         "rtypes": rtypes,
+
+        # Notifications
+        "unseed_borrows": unseed_borrows,
+        "unseed_returns": unseed_returns,
     }
     return render(request, "b_requests/request_list.html", context)
-
 
 
 @login_required

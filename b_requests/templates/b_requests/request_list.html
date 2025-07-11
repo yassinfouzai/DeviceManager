@@ -26,6 +26,9 @@
            disabled:bg-atb-g-50 disabled:text-atb-g-300 disabled:border-atb-g-200 disabled:opacity-70"
                 onclick="showTab('borrow')" disabled>
                 Borrows
+                {% if unseed_borrows > 0%}
+                <span> ({{ unseed_borrows }})</span>
+                {% endif %}
             </button>
             <button id="return-tab"
                 class="tab-button px-12 py-2 text-[18px] font-semibold rounded-[8px] transition-colors duration-200 border-[1px] border-atb-g-300 bg-white text-atb-g-700 shadow-[0px_1px_2px_0px_#1018280D]
@@ -34,6 +37,9 @@
            disabled:bg-atb-g-50 disabled:text-atb-g-300 disabled:border-atb-g-200 disabled:opacity-70"
                 onclick="showTab('return')" >
                 Returns
+                {% if unseed_returns > 0%}
+                <span> ({{ unseed_returns }})</span>
+                {% endif %}
             </button>
 
 
@@ -59,7 +65,7 @@
               {% for instance in borrows %}
                 <div 
                     class="group bg-atb-g-50 rounded-[12px] p-8 hover:bg-atb-g-200 transition duration-300 request-card cursor-pointer"
-                    onclick="toggleDetails('{{ instance.id }}')"
+                    onclick="toggleDetails('{{ instance.id }}','borrow')"
                     data-review='{{ instance.review }}' 
                     data-request-type='borrow'
                     data-name='{{ instance.name|lower }}'
@@ -155,7 +161,7 @@
             {% if returns %}
                 <div class="space-y-4">
                     {% for instance in returns %}
-                        <div onclick="toggleDetails('{{ instance.id }}')" 
+                        <div onclick="toggleDetails('{{ instance.id }}', 'return')" 
                              class="group cursor-pointer bg-atb-g-50 hover:bg-atb-g-200 rounded-[12px] p-8 transition duration-300 request-card"
                              data-review="{{ instance.review }}"
                              data-request-type="return"
@@ -497,20 +503,43 @@ function sortCards(field, direction) {
     cards.forEach(card => container.appendChild(card));
 }
 
+function toggleDetails(id, type) {
+    const allDetails = document.querySelectorAll('[id^="details-"]');
+  
+    allDetails.forEach(section => {
+        if (section.id !== `details-${id}`) {
+            section.classList.add('hidden');
+        }
+    });
 
-function toggleDetails(id) {
-  const allDetails = document.querySelectorAll('[id^="details-"]');
-  
-  allDetails.forEach(section => {
-    if (section.id !== `details-${id}`) {
-      section.classList.add('hidden');
-    }
-  });
-  
-  const currentSection = document.getElementById(`details-${id}`);
-  currentSection.classList.toggle('hidden');
+    const currentSection = document.getElementById(`details-${id}`);
+    currentSection.classList.toggle('hidden');
+
+    fetch(`/requests/mark_seen/${type}/${id}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ seen: true })
+    });
 }
 
+
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+      cookie = cookie.trim();
+      if (cookie.startsWith(name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
 </script>
 {% endblock content %}
 

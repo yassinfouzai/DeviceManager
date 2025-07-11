@@ -14,6 +14,11 @@
 
         <div class="mb-4">
             <p class="text-lg text-gray-700">
+                <span class="font-semibold text-[#475569]">Dimensions:</span> {{ object.dimension }}
+            </p>
+        </div>
+        <div class="mb-4">
+            <p class="text-lg text-gray-700">
                 <span class="font-semibold text-[#475569]">Status:</span>
                 {% if object.status == 'available' %}
                     <span class="text-atb-s-500 font-semibold capitalize">{{ object.status }}</span>

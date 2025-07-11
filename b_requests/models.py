@@ -15,6 +15,7 @@ class BorrowRequest(models.Model):
     return_date = models.DateField(null=False, blank=False)
     review = models.CharField(max_length=20, choices=Review.choices, default=Review.PENDING)
     date_reviewed = models.DateTimeField(null=True, blank=True)
+    seen = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Borrow: {self.borrower.username} → {self.device.name}"
@@ -43,6 +44,7 @@ class ReturnRequest(models.Model):
     feedback = models.TextField(blank=True, null=True)
     review = models.CharField(max_length=20, choices=Review.choices, default=Review.PENDING)
     date_reviewed = models.DateTimeField(null=True, blank=True)
+    seen = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Return: {self.borrower.username} ← {self.device.name} ({self.condition})"

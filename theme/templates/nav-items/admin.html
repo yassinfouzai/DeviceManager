@@ -6,5 +6,11 @@
 </li>
 
 <li class="hover:text-[#a60000]  pr-6">
-    <a href="{% url 'requests:request-list' %}">Request History</a>
+    <a href="{% url 'requests:request-list' %}">Request History
+    {% if unseed_borrows or unseed_returns %}
+        <span>
+            ({{ unseed_borrows|add:unseed_returns }})
+        </span>
+    {% endif %}
+    </a>
 </li>

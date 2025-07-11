@@ -54,12 +54,14 @@ INSTALLED_APPS = [
     'accounts',
     'devices',
     'b_requests',
+    'notifications',
 
 ]
 
 TAILWIND_APP_NAME = 'theme'
 
 NPM_BIN_PATH = "/usr/bin/npm"
+
 
 MIDDLEWARE = [
 
@@ -87,6 +89,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'b_requests.context_processors.unseen_request_counts',
             ],
         },
     },
