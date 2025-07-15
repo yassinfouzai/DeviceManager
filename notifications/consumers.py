@@ -1,21 +1,17 @@
 # chat/consumers.py
-import json
-from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 
-class NotificationConsumer(AsyncWebsocketConsumer):
+class NotificationConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
         await self.accept()
+        # Send welcome message immediately
+        await self.send_json({"message": "Welcome to the WebSocket!"})
 
     async def disconnect(self, close_code):
+        pass
 
-        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
-
-    async def receive(self, text_data):
-        text_data_json = json.loads(text_data)
-        message = text_data_json["message"]
-
-        # Send message to room group
-        await self.channel_layer.group_send(
-            self.room_group_name, {"type": "chat.message", "message": message}
-        )
+    async def send_notification(self, event):
+        await self.send_json({
+            "message": "its working"
+        })

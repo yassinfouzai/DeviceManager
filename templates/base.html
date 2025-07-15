@@ -63,6 +63,35 @@
         </button>
 
 <script>
+(function() {
+    const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+    const wsUrl = `${protocol}://${window.location.host}/ws/notifications/`;
+
+    const socket = new WebSocket(wsUrl);
+
+    socket.onopen = function(event) {
+      console.log("WebSocket connection opened.");
+    };
+
+    socket.onmessage = function(event) {
+      const data = JSON.parse(event.data);
+      console.log("WebSocket message received:", data);
+
+      // Display toast
+      if (data.message) {
+        showToast(data.message);
+        appendToNotificationList(data.message);
+      }
+    };
+
+    socket.onclose = function(event) {
+      console.log("WebSocket connection closed:", event);
+    };
+
+    socket.onerror = function(error) {
+      console.error("WebSocket error:", error);
+    };
+})();
 
 const toastContainer = document.getElementById("toast-container");
 const notificationList = document.getElementById("notification-list");
@@ -78,6 +107,26 @@ function toggleNotificationTab() {
     notificationBtn.style.display = "none";
   }
 }
+
+function showToast(message) {
+  const toast = document.createElement("div");
+  toast.className = "px-4 py-2 rounded shadow mb-2 border animate-fade-in-out-fast bg-atb-s-100 text-atb-s-500 border-atb-s-300 animate-fade-in-out";
+  toast.innerText = message;
+
+  toastContainer.appendChild(toast);
+
+  setTimeout(() => {
+    toast.remove();
+  }, 3000);
+}
+
+function appendToNotificationList(message) {
+  const item = document.createElement("div");
+  item.className = "bg-gray-100 p-2 rounded shadow-sm";
+  item.innerText = message;
+  notificationList.prepend(item);
+}
 </script>
+
 </body>
 </html>
