@@ -42,50 +42,42 @@
         {% block content %}
 
         {% endblock %}
-        <script>
-          setTimeout(() => {
-            const container = document.getElementById('flash-messages');
-            if (container) {
-              container.style.display = 'none';
-            }
-          }, 3000);
-        </script>
-    {{ room_name|json_script:"room-name" }}
-    <script>
-        const roomName = JSON.parse(document.getElementById('room-name').textContent);
 
-        const chatSocket = new WebSocket(
-            'ws://'
-            + window.location.host
-            + '/ws/chat/'
-            + roomName
-            + '/'
-        );
 
-        chatSocket.onmessage = function(e) {
-            const data = JSON.parse(e.data);
-            document.querySelector('#chat-log').value += (data.message + '\n');
-        };
 
-        chatSocket.onclose = function(e) {
-            console.error('Chat socket closed unexpectedly');
-        };
+        <!-- Toast Container -->
+        <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col space-y-2"></div>
 
-        document.querySelector('#chat-message-input').focus();
-        document.querySelector('#chat-message-input').onkeyup = function(e) {
-            if (e.key === 'Enter') {  // enter, return
-                document.querySelector('#chat-message-submit').click();
-            }
-        };
+        <!-- Notification History Tab -->
+        <div id="notification-tab" class="fixed bottom-5 right-5 w-80 max-h-96 bg-white border border-gray-300 shadow-lg rounded-md flex flex-col hidden font-sans text-sm">
+          <div class="px-4 py-2 border-b border-gray-200 font-semibold cursor-pointer select-none flex justify-between items-center" onclick="toggleNotificationTab()">
+            Notifications
+            <button aria-label="Close" class="text-gray-600 hover:text-gray-900 font-bold">&times;</button>
+          </div>
+          <div id="notification-list" class="overflow-y-auto px-4 py-2 flex flex-col space-y-3"></div>
+        </div>
 
-        document.querySelector('#chat-message-submit').onclick = function(e) {
-            const messageInputDom = document.querySelector('#chat-message-input');
-            const message = messageInputDom.value;
-            chatSocket.send(JSON.stringify({
-                'message': message
-            }));
-            messageInputDom.value = '';
-        };
-    </script>
-    </body>
+        <!-- Button to open Notification Tab -->
+        <button id="notification-btn" onclick="toggleNotificationTab()" class="fixed bottom-5 right-5 bg-atb-p-500 hover:bg-atb-p-600 text-white px-4 py-2 rounded-md shadow-lg font-semibold focus:outline-none focus:ring-2 focus:ring-atb-p-300">
+          Notifications
+        </button>
+
+<script>
+
+const toastContainer = document.getElementById("toast-container");
+const notificationList = document.getElementById("notification-list");
+const notificationTab = document.getElementById("notification-tab");
+const notificationBtn = document.getElementById("notification-btn");
+
+function toggleNotificationTab() {
+  if (notificationTab.style.display === "flex") {
+    notificationTab.style.display = "none";
+    notificationBtn.style.display = "block";
+  } else {
+    notificationTab.style.display = "flex";
+    notificationBtn.style.display = "none";
+  }
+}
+</script>
+</body>
 </html>
