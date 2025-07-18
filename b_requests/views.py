@@ -9,17 +9,15 @@ from django.contrib import messages
 import json
 from django.http import JsonResponse
 from main.utils import is_htmx
+from django.views.decorators.http import require_POST
+from django.core.mail import send_mail
+from django.conf import settings
 
 
 @staff_member_required
+@require_POST
 def mark_seen(request, request_type, id):
-    if request.method != 'POST':
-        return JsonResponse({'error': 'Invalid HTTP method'}, status=405)
-
     try:
-        data = json.loads(request.body)
-        seen = data.get('seen', False)
-
         if request_type == 'borrow':
             obj = BorrowRequest.objects.get(id=id)
         elif request_type == 'return':
@@ -27,7 +25,7 @@ def mark_seen(request, request_type, id):
         else:
             return JsonResponse({'error': 'Invalid request type'}, status=400)
 
-        obj.seen = seen
+        obj.seen = True
         obj.save()
 
         return JsonResponse({'status': 'success'})
@@ -44,6 +42,12 @@ def return_detail_view(request, pk):
     return_request = get_object_or_404(ReturnRequest, pk=pk)
 
     if request.method == 'POST':
+        user = return_request.borrower
+        user_email = user.email
+        device_name = return_request.device.name
+        subject = ''
+        message = ''
+
         if 'approve' in request.POST:
             return_request.review = ReturnRequest.Review.APPROVED
             return_request.save()
@@ -57,9 +61,39 @@ def return_detail_view(request, pk):
             else:
                 device.status = Device.Status.MISSING
             device.save()
+
+            subject = f"Return Request Approved – {device_name}"
+            message = (
+                f"Dear {user.username},\n\n"
+                f"Your return of the device '{device_name}' has been approved.\n"
+                f"The device status was recorded as: {return_request.get_condition_display()}.\n\n"
+                "Thank you for returning it.\n\n"
+                "Best regards,\n"
+                "Device Management Team"
+            )
+
         elif 'reject' in request.POST:
             return_request.review = ReturnRequest.Review.REJECTED
             return_request.save()
+
+            subject = f"Return Request Rejected – {device_name}"
+            message = (
+                f"Dear {user.username},\n\n"
+                f"Your return request for the device '{device_name}' has been rejected.\n"
+                "Please contact the administration for clarification.\n\n"
+                "Best regards,\n"
+                "Device Management Team"
+            )
+
+        # Send the email if a valid email exists
+        if user_email:
+            send_mail(
+                subject=subject,
+                message=message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user_email],
+                fail_silently=False,
+            )
 
         return redirect('requests:request-list')
 
@@ -69,11 +103,17 @@ def return_detail_view(request, pk):
     return render(request, 'b_requests/return_request_detail.html', context)
 
 
+
 @staff_member_required
 def borrow_detail_view(request, pk):
     borrow_request = get_object_or_404(BorrowRequest, pk=pk)
 
     if request.method == 'POST':
+        user_email = borrow_request.borrower.email
+        device_name = borrow_request.device.name
+        subject = ''
+        message = ''
+
         if 'approve' in request.POST:
             borrow_request.review = BorrowRequest.Review.APPROVED
             borrow_request.save()
@@ -82,9 +122,40 @@ def borrow_detail_view(request, pk):
             device.location = borrow_request.borrower.username
             device.status = Device.Status.BORROWED
             device.save()
+
+            # Email content
+            subject = f"Your borrow request for '{device_name}' has been approved"
+            message = (
+                f"Dear {borrow_request.borrower.username},\n\n"
+                f"Your request to borrow the device '{device_name}' has been approved.\n"
+                "Please make arrangements to collect the device.\n\n"
+                "Best regards,\n"
+                "Device Management Team"
+            )
+
         elif 'reject' in request.POST:
             borrow_request.review = BorrowRequest.Review.REJECTED
             borrow_request.save()
+
+            # Email content
+            subject = f"Your borrow request for '{device_name}' has been rejected"
+            message = (
+                f"Dear {borrow_request.borrower.username},\n\n"
+                f"Unfortunately, your request to borrow the device '{device_name}' has been rejected.\n"
+                "If you have any questions, please contact the administrator.\n\n"
+                "Best regards,\n"
+                "Device Management Team"
+            )
+
+        if user_email:
+            send_mail(
+                subject=subject,
+                message=message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user_email],
+                fail_silently=False,
+            )
+
         return redirect('requests:request-list')
 
     context = {

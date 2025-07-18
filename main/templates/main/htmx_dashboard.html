@@ -1,0 +1,71 @@
+                                'rgba( 71,  84, 103, 1)',
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom' }
+                        }
+                    }
+                });
+            }
+
+            // User Chart
+            const userCtx = document.getElementById('UserChart');
+            if (userCtx) {
+                this.charts.user = new Chart(userCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: {{ top_borrowers_labels|safe }},
+                        datasets: [{
+                            label: 'Requests',
+                            data: {{ top_borrowers_data|safe }},
+                                backgroundColor: 'rgba(172,   0,  51, 0.7)',
+                                borderColor: 'rgba(115,   0,  34, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                suggestedMax: 10,
+                                ticks: { stepSize: 1 },
+                                grid: { display: false }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                suggestedMax: 10,
+                                ticks: { stepSize: 1 },
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            }
+        },
+        destroyAll: function() {
+            Object.values(this.charts).forEach(chart => chart.destroy());
+            this.charts = {};
+        }
+    };
+
+    // Trigger initialization on page load and HTMX updates
+    document.addEventListener('DOMContentLoaded', () => window.chartManager.init());
+    document.body.addEventListener('htmx:afterSwap', () => window.chartManager.init());
+    document.body.addEventListener('htmx:beforeSwap', () => window.chartManager.destroyAll());
+}
+
+// Manually trigger once in case DOMContentLoaded already fired
+window.chartManager.init();
+</script>
+

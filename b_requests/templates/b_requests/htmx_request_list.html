@@ -90,10 +90,25 @@
                     {% endif %}
                     </div>
 
+
                 <div class="text-left grow">
                   <h3 class="text-xl font-semibold text-[#334155]">{{ instance }}</h3>
                   <p class="text-[#475569]">Requested at {{ instance.date_requested }} &bull; Returning on {{ instance.return_date }}</p>
                 </div>
+
+                
+                {% if not instance.seen %}
+                <div id="new-{{ instance.id }}"
+                     hx-post="/requests/mark_seen/borrow/{{ instance.id }}/"
+                     hx-trigger="revealed"
+                     hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                     hx-on::after-request="this.classList.add('hidden')"
+                     hx-swap="none">
+                    <p class="text-atb-p-500 font-semibold text-md">New</p>
+                </div>
+                {% endif %}
+
+
               </div>
 
               <!-- Collapsible Detail Section (Initially Hidden) -->

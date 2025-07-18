@@ -153,18 +153,23 @@
     };
     
     
+
     window.toggleDetails = function(id, type) {
     const allDetails = document.querySelectorAll('[id^="details-"]');
-  
+
+
+    // Hide all other detail sections
     allDetails.forEach(section => {
         if (section.id !== `details-${id}`) {
             section.classList.add('hidden');
         }
     });
 
+    // Toggle the selected details section
     const currentSection = document.getElementById(`details-${id}`);
     currentSection.classList.toggle('hidden');
 
+    // Mark as seen via POST request
     fetch(`/requests/mark_seen/${type}/${id}/`, {
         method: 'POST',
         headers: {
@@ -173,7 +178,7 @@
         },
         body: JSON.stringify({ seen: true })
     });
-    }
+}
 
     window.getCookie = function(name) {
     let cookieValue = null;
