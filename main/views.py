@@ -6,6 +6,7 @@ from devices.models import Device
 from b_requests.models import BorrowRequest, ReturnRequest
 from django.utils import timezone
 from datetime import timedelta
+from .utils import is_htmx
 
 
 @staff_member_required
@@ -48,6 +49,8 @@ def dashboard_view(request):
         "top_borrowers_labels": top_borrowers_labels,
         "top_borrowers_data": top_borrowers_data,
     }
+    if is_htmx(request):
+        return render(request, "main/htmx_dashboard.html", context)
     return render(request, 'main/dashboard.html', context)
 
 

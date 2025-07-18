@@ -8,6 +8,7 @@ import datetime
 from django.contrib import messages
 import json
 from django.http import JsonResponse
+from main.utils import is_htmx
 
 
 @staff_member_required
@@ -130,6 +131,8 @@ def request_list_view(request):
         "unseed_borrows": unseed_borrows,
         "unseed_returns": unseed_returns,
     }
+    if is_htmx(request):
+        return render(request, "b_requests/htmx_request_list.html", context)
     return render(request, "b_requests/request_list.html", context)
 
 

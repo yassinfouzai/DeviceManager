@@ -1,9 +1,18 @@
-<li class="hover:text-[#a60000]  pr-6">
-    <a href="{% url 'devices:device-list' %}">View Devices</a>
+<li class="hover:text-[#a60000] pr-6">
+  <a href="{% url 'devices:device-list' %}" 
+     hx-get="{% url 'devices:device-list' %}" 
+     hx-target="#main-content" 
+     hx-swap="innerHTML" 
+     hx-push-url="true">
+     View Devices
+  </a>
 </li>
-<li class="hover:text-[#a60000]  pr-6">
-    <a href="{% url 'accounts:profile' %}">Profile</a>
-</li>
-<li class="hover:text-[#a60000]  pr-6">
-    <a href="">Notifications</a>
+<li class="hover:text-[#a60000] pr-6">
+  <a href="{% url 'accounts:profile' %}" 
+     hx-get="{% url 'accounts:profile' %}" 
+     hx-target="#main-content" 
+     hx-swap="innerHTML" 
+     hx-push-url="true">
+     Profile
+  </a>
 </li>

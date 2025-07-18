@@ -5,13 +5,14 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 class NotificationConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
         await self.accept()
-        # Send welcome message immediately
+        await self.channel_layer.group_add("notifications", self.channel_name)
         await self.send_json({"message": "Welcome to the WebSocket!"})
 
     async def disconnect(self, close_code):
-        pass
+        await self.channel_layer.group_discard("notifications", self.channel_name)
 
     async def send_notification(self, event):
         await self.send_json({
-            "message": "its working"
+            "message": event.get("message", "its working")
         })
+

@@ -1,9 +1,8 @@
 @import "tailwindcss";
-@import "@fontsource/inter/index.css";
+
 
 @theme {
     /* font inter */
-    --font-primary : "Inter", sans-serif;
 
 
     /* Primary */

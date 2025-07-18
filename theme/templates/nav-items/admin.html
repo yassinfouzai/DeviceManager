@@ -1,19 +1,28 @@
-<li class="hover:text-[#a60000]  pr-6">
-    <a href="{% url 'dashboard' %}">Dashboard</a>
-</li>
-<li class="hover:text-[#a60000]  pr-6">
-    <a href="/admin/">Admin</a>
+
+<li class="hover:text-[#a60000] pr-6">
+<a href="{% url 'dashboard' %}" 
+   hx-get="{% url 'dashboard' %}" 
+   hx-target="#main-content" 
+   hx-swap="innerHTML"
+   hx-push-url="true">
+   Dashboard
+</a>
+
 </li>
 
-<li class="hover:text-[#a60000]  pr-6">
-    <a href="{% url 'requests:request-list' %}">Request History
+<li class="hover:text-[#a60000] pr-6">
+  <a href="/admin/">Admin</a>
+</li>
+<li class="hover:text-[#a60000] pr-6">
+  <a href="{% url 'requests:request-list' %}" 
+     hx-get="{% url 'requests:request-list' %}" 
+     hx-target="#main-content" 
+     hx-swap="innerHTML" 
+     hx-push-url="true">
+    Request History
     {% if unseen_borrows or unseen_returns %}
-        <span>
-            ({{ unseen_borrows|add:unseen_returns }})
-        </span>
+      <span>({{ unseen_borrows|add:unseen_returns }})</span>
     {% endif %}
-    </a>
+  </a>
 </li>
-<li class="hover:text-[#a60000]  pr-6">
-    <a href="/admin/">Notifications</a>
-</li>
+

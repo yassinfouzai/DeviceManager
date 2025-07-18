@@ -61,8 +61,10 @@
 </nav>
 
 <script>
-  function myFunction() {
+(function(){
+  window.myFunction = function() {
     const menu = document.getElementById("myLinks");
     menu.classList.toggle("hidden");
   }
+});
 </script>

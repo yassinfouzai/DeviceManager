@@ -7,13 +7,13 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Device Manager</title>
-        <link rel="stylesheet" href="{% static 'dist/styles.css' %}">
         <link rel="stylesheet" href="{% static 'css/flatpickr.min.css' %}">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-        <link rel="stylesheet" href="{% static 'fontawesome/css/font-awesome.min.css' %}">
-        <script src="{% static 'js/chart.js' %}"></script>
+        <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">--->
+        <link rel="stylesheet" href="{% static 'css/fonts.css' %}">
+        <script src="https://unpkg.com/htmx.org@1.9.2"></script>
         <script src="{% static 'js/flatpickr.min.js' %}"></script>
 		{% tailwind_css %}
+        <script src="{% static 'js/chart.js' %}"></script>
     </head>
     <body class="bg-atb-g-50 min-h-screen w-full" >
         {% include 'nav-bar.html'%}
@@ -39,11 +39,11 @@
             {% endfor %}
           {% endif %}
         </div>
-    
+        <div id="main-content" hx-target="this" hx-swap="innerHTML">
         {% block content %}
 
         {% endblock %}
-
+        </div>
 
 
         <!-- Toast Container -->
@@ -63,70 +63,134 @@
           Notifications
         </button>
 
+
+
+
+
+
 <script>
 (function() {
-    const protocol = window.location.protocol === "https:" ? "wss" : "ws";
-    const wsUrl = `${protocol}://${window.location.host}/ws/notifications/`;
+    // Your existing WebSocket and notification code here
+    if (!window.notificationSocket) {
+        const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+        const wsUrl = `${protocol}://${window.location.host}/ws/notifications/`;
+        
+        const socket = new WebSocket(wsUrl);
+        window.notificationSocket = socket;
 
-    const socket = new WebSocket(wsUrl);
+        socket.onopen = function(event) {
+            console.log("WebSocket connected");
+        };
 
-    socket.onopen = function(event) {
-      console.log("WebSocket connection opened.");
+        socket.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            console.log("WebSocket message received:", data);
+            if (data.message) {
+                showToast(data.message);
+                appendToNotificationList(data.message);
+            }
+        };
+
+        socket.onclose = function(event) {
+            console.log("WebSocket closed", event);
+        };
+
+        socket.onerror = function(error) {
+            console.error("WebSocket error:", error);
+        };
+    }
+
+    // Make these variables global by attaching to window
+    window.toastContainer = document.getElementById("toast-container");
+    window.notificationList = document.getElementById("notification-list");
+    window.notificationTab = document.getElementById("notification-tab");
+    window.notificationBtn = document.getElementById("notification-btn");
+
+    window.toggleNotificationTab = function() {
+        if (notificationTab.style.display === "flex") {
+            notificationTab.style.display = "none";
+            notificationBtn.style.display = "block";
+        } else {
+            notificationTab.style.display = "flex";
+            notificationBtn.style.display = "none";
+        }
     };
 
-    socket.onmessage = function(event) {
-      const data = JSON.parse(event.data);
-      console.log("WebSocket message received:", data);
+    window.showToast = function(message) {
+        const toast = document.createElement("div");
+        toast.className = "px-4 py-2 rounded shadow mb-2 border animate-fade-in-out-fast bg-atb-s-100 text-atb-s-500 border-atb-s-300 animate-fade-in-out";
+        toast.innerText = message;
 
-      // Display toast
-      if (data.message) {
-        showToast(data.message);
-        appendToNotificationList(data.message);
+        toastContainer.appendChild(toast);
+
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    };
+
+    window.showTab = function(selectedTab) {
+    var tabs = ['user', 'borrow', 'device', 'return'];
+
+    for (var i = 0; i < tabs.length; i++) {
+        var tab = tabs[i];
+
+        var btn = document.getElementById(tab + '-tab');
+        var section = document.getElementById(tab + '-section');
+        var filter = document.getElementById(tab + '-filter');
+
+        if (!btn || !section) continue; 
+
+        if (tab === selectedTab) {
+            section.classList.remove('hidden');
+            if (filter) filter.classList.remove('hidden');
+            btn.disabled = true;
+        } else {
+            section.classList.add('hidden');
+            if (filter) filter.classList.add('hidden');
+            btn.disabled = false;
+        }
+    }
+    };
+    
+    
+    window.toggleDetails = function(id, type) {
+    const allDetails = document.querySelectorAll('[id^="details-"]');
+  
+    allDetails.forEach(section => {
+        if (section.id !== `details-${id}`) {
+            section.classList.add('hidden');
+        }
+    });
+
+    const currentSection = document.getElementById(`details-${id}`);
+    currentSection.classList.toggle('hidden');
+
+    fetch(`/requests/mark_seen/${type}/${id}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ seen: true })
+    });
+    }
+
+    window.getCookie = function(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+          cookie = cookie.trim();
+          if (cookie.startsWith(name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
       }
-    };
+      return cookieValue;
+    }
 
-    socket.onclose = function(event) {
-      console.log("WebSocket connection closed:", event);
-    };
-
-    socket.onerror = function(error) {
-      console.error("WebSocket error:", error);
-    };
 })();
-
-const toastContainer = document.getElementById("toast-container");
-const notificationList = document.getElementById("notification-list");
-const notificationTab = document.getElementById("notification-tab");
-const notificationBtn = document.getElementById("notification-btn");
-
-function toggleNotificationTab() {
-  if (notificationTab.style.display === "flex") {
-    notificationTab.style.display = "none";
-    notificationBtn.style.display = "block";
-  } else {
-    notificationTab.style.display = "flex";
-    notificationBtn.style.display = "none";
-  }
-}
-
-function showToast(message) {
-  const toast = document.createElement("div");
-  toast.className = "px-4 py-2 rounded shadow mb-2 border animate-fade-in-out-fast bg-atb-s-100 text-atb-s-500 border-atb-s-300 animate-fade-in-out";
-  toast.innerText = message;
-
-  toastContainer.appendChild(toast);
-
-  setTimeout(() => {
-    toast.remove();
-  }, 3000);
-}
-
-function appendToNotificationList(message) {
-  const item = document.createElement("div");
-  item.className = "bg-gray-100 p-2 rounded shadow-sm";
-  item.innerText = message;
-  notificationList.prepend(item);
-}
 </script>
 
 </body>
