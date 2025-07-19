@@ -128,6 +128,13 @@
         }, 3000);
     };
 
+    window.appendToNotificationList = function(message) {
+      const item = document.createElement("div");
+      item.className = "bg-gray-100 p-2 rounded shadow-sm";
+      item.innerText = message;
+      notificationList.prepend(item);
+    }
+
     window.showTab = function(selectedTab) {
     var tabs = ['user', 'borrow', 'device', 'return'];
 
@@ -152,50 +159,72 @@
     }
     };
     
-    
+    window.updateFilterButtons = function(prefix, ids, type, activeSet) {
+    ids.forEach(id => {
+        const btn = document.getElementById(`${prefix}-${id}-${type}-tab`);
+        if (!btn) return;
 
-    window.toggleDetails = function(id, type) {
-    const allDetails = document.querySelectorAll('[id^="details-"]');
-
-
-    // Hide all other detail sections
-    allDetails.forEach(section => {
-        if (section.id !== `details-${id}`) {
-            section.classList.add('hidden');
+        if (activeSet.has(id)) {
+            btn.classList.remove('opacity-50','text-atb-g-700','bg-white','hover:bg-atb-g-50','hover:text-atb-g-800');
+            btn.classList.add('text-white','bg-atb-p-500','hover:bg-atb-p-700','hover:text-white');
+        } else {
+            btn.classList.add('opacity-50','text-atb-g-700','bg-white','hover:bg-atb-g-50','hover:text-atb-g-800');
+            btn.classList.remove('text-white','bg-atb-p-500','hover:bg-atb-p-700','hover:text-white');
         }
     });
+    }
 
-    // Toggle the selected details section
-    const currentSection = document.getElementById(`details-${id}`);
-    currentSection.classList.toggle('hidden');
 
-    // Mark as seen via POST request
-    fetch(`/requests/mark_seen/${type}/${id}/`, {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': getCookie('csrftoken'),
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ seen: true })
+
+    window.toggleDetails = function(id, type) {
+        const allDetails = document.querySelectorAll('[id^="details-"]');
+
+
+        // Hide all other detail sections
+        allDetails.forEach(section => {
+            if (section.id !== `details-${id}`) {
+                section.classList.add('hidden');
+            }
+        });
+
+        // Toggle the selected details section
+        const currentSection = document.getElementById(`details-${id}`);
+        currentSection.classList.toggle('hidden');
+
+        // Mark as seen via POST request
+        fetch(`/requests/mark_seen/${type}/${id}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ seen: true })
     });
 }
 
     window.getCookie = function(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-    const cookies = document.cookie.split(';');
-    for (let cookie of cookies) {
-          cookie = cookie.trim();
-          if (cookie.startsWith(name + '=')) {
-            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-            break;
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+              cookie = cookie.trim();
+              if (cookie.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+              }
+            }
           }
-        }
-      }
-      return cookieValue;
+          return cookieValue;
     }
 
 })();
+
+
+window.humberg = function() {
+    const menu = document.getElementById("myLinks");
+    menu.classList.toggle("hidden");
+}
+
 </script>
 
 </body>

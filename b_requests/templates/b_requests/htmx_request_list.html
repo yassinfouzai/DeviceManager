@@ -334,52 +334,6 @@ function toggleConditionFilter(condition) {
     applyFilters();
 }
 
-function updateConditionButtons() {
-    rRequestCondition.forEach(condition => {
-        const btn = document.getElementById(`${condition}-condition-tab`);
-        if (!btn) return;
-        if (activeConditionFilters.has(condition)) {
-            btn.classList.remove('opacity-50','text-atb-g-700','bg-white','hover:bg-atb-g-50','hover:text-atb-g-800');
-            btn.classList.add('text-white','bg-atb-p-500','hover:bg-atb-p-700','hover:text-white');
-        } else {
-            btn.classList.add('opacity-50','text-atb-g-700','bg-white','hover:bg-atb-g-50','hover:text-atb-g-800');
-            btn.classList.remove('text-white','bg-atb-p-500','hover:bg-atb-p-700','hover:text-white');
-        }
-    });
-}
-
-function updateReviewButtons(prefix, reviews, activeSet) {
-    reviews.forEach(review => {
-        const btn = document.getElementById(`${prefix}-${review}-review-tab`);
-        if (!btn) return;
-
-        if (activeSet.has(review)) {
-            btn.classList.remove('opacity-50','text-atb-g-700','bg-white','hover:bg-atb-g-50','hover:text-atb-g-800');
-            btn.classList.add('text-white','bg-atb-p-500','hover:bg-atb-p-700','hover:text-white');
-        } else {
-            btn.classList.add('opacity-50','text-atb-g-700','bg-white','hover:bg-atb-g-50','hover:text-atb-g-800');
-            btn.classList.remove('text-white','bg-atb-p-500','hover:bg-atb-p-700','hover:text-white');
-        }
-    });
-}
-
-function updateTypeButtons(prefix, types, activeSet) {
-    types.forEach(type => {
-        const btn = document.getElementById(`${prefix}-${type}-type-tab`);
-        if (!btn) return;
-
-        if (activeSet.has(type)) {
-            btn.classList.remove('opacity-50','text-atb-g-700','bg-white','hover:bg-atb-g-50','hover:text-atb-g-800');
-            btn.classList.add('text-white','bg-atb-p-500','hover:bg-atb-p-700','hover:text-white');
-        } else {
-            btn.classList.add('opacity-50','text-atb-g-700','bg-white','hover:bg-atb-g-50','hover:text-atb-g-800');
-            btn.classList.remove('text-white','bg-atb-p-500','hover:bg-atb-p-700','hover:text-white');
-        }
-    });
-}
-
-
-
 function applyFilters() {
     const cards = document.querySelectorAll('.request-card');
 
@@ -418,15 +372,13 @@ function resetFilters() {
     activeBTFilters.clear();
     activeRTFilters.clear();
     activeConditionFilters.clear();
-    updateReviewButtons('borrow',bRequestReview,activeBRRFilters);
-    updateReviewButtons('return',rRequestReview,activeRRRFilters);
-    updateTypeButtons('borrow',bRequestType,activeBTFilters);
-    updateTypeButtons('return',rRequestType,activeRTFilters);
-    updateConditionButtons();
+    updateFilterButtons('borrow',bRequestReview,    'review',activeBRRFilters);
+    updateFilterButtons('return',rRequestReview,    'review',activeRRRFilters);
+    updateFilterButtons('borrow',bRequestType,      'type'  ,activeBTFilters);
+    updateFilterButtons('return',rRequestType,      'type'  ,activeRTFilters);
+    updateConditionButtons(''   ,rRequestCondition, 'condition', activeConditionFilters);
     applyFilters();
 }
-
-
 
 function toggleSorting(field, toggleDirection = true) {
     const sortUp = document.getElementById('sort-up');

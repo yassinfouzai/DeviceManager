@@ -6,12 +6,12 @@ from .models import BorrowRequest, ReturnRequest
 from devices.models import Device
 import datetime
 from django.contrib import messages
-import json
 from django.http import JsonResponse
 from main.utils import is_htmx
 from django.views.decorators.http import require_POST
 from django.core.mail import send_mail
 from django.conf import settings
+from main.utils import notify_user
 
 
 @staff_member_required
@@ -109,7 +109,8 @@ def borrow_detail_view(request, pk):
     borrow_request = get_object_or_404(BorrowRequest, pk=pk)
 
     if request.method == 'POST':
-        user_email = borrow_request.borrower.email
+        user = borrow_request.borrower
+        user_email = user.email
         device_name = borrow_request.device.name
         subject = ''
         message = ''
@@ -133,6 +134,9 @@ def borrow_detail_view(request, pk):
                 "Device Management Team"
             )
 
+            # WS
+            notify_user(user.id, f"Your borrow request for '{device_name}' has been approved.")
+
         elif 'reject' in request.POST:
             borrow_request.review = BorrowRequest.Review.REJECTED
             borrow_request.save()
@@ -146,6 +150,9 @@ def borrow_detail_view(request, pk):
                 "Best regards,\n"
                 "Device Management Team"
             )
+
+            # WS
+            notify_user(user.id, f"Your borrow request for '{device_name}' has been rejected.")
 
         if user_email:
             send_mail(

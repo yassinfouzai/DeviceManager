@@ -7,7 +7,7 @@
       <img class="w-16" src="{% static 'assets/icons/Atb39logo.jpg' %}" alt="ATB Logo">
 
       <!-- Growing button (right side, large click area) -->
-      <button onclick="myFunction()" 
+      <button onclick="humberg()" 
               class="flex-grow flex justify-end items-center pr-4 py-2 text-atb-g-600 focus:outline-none border rounded-md">
         <img src="{% static 'assets/icons/menu.svg' %}" alt="Menu Icon" class="w-6 h-6">
       </button>
@@ -62,9 +62,5 @@
 
 <script>
 (function(){
-  window.myFunction = function() {
-    const menu = document.getElementById("myLinks");
-    menu.classList.toggle("hidden");
-  }
 });
 </script>
