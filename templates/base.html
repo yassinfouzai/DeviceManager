@@ -5,6 +5,7 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
+        <link rel="shortcut icon" href="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Device Manager</title>
         <link rel="stylesheet" href="{% static 'css/flatpickr.min.css' %}">
@@ -16,7 +17,8 @@
         <script src="{% static 'js/chart.js' %}"></script>
     </head>
     <body class="bg-atb-g-50 min-h-screen w-full" >
-        {% include 'nav-bar.html'%}
+            {% if not is_htmx %}
+            {% include 'nav-bar.html' %}
         
         <div class="fixed top-25 left-1/2 transform -translate-x-1/2 w-96 z-50" id="flash-messages">
           {% if messages %}
@@ -39,13 +41,17 @@
             {% endfor %}
           {% endif %}
         </div>
+
+        {% endif %}
+
         <div id="main-content" hx-target="this" hx-swap="innerHTML">
         {% block content %}
 
         {% endblock %}
         </div>
 
-
+        
+{% if not is_htmx %}
         <!-- Toast Container -->
         <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col space-y-2"></div>
 
@@ -67,10 +73,9 @@
 
 
 
-
 <script>
 (function() {
-    // Your existing WebSocket and notification code here
+    // WS
     if (!window.notificationSocket) {
         const protocol = window.location.protocol === "https:" ? "wss" : "ws";
         const wsUrl = `${protocol}://${window.location.host}/ws/notifications/`;
@@ -100,7 +105,8 @@
         };
     }
 
-    // Make these variables global by attaching to window
+    // REST 
+
     window.toastContainer = document.getElementById("toast-container");
     window.notificationList = document.getElementById("notification-list");
     window.notificationTab = document.getElementById("notification-tab");
@@ -161,7 +167,7 @@
     
     window.updateFilterButtons = function(prefix, ids, type, activeSet) {
     ids.forEach(id => {
-        const btn = document.getElementById(`${prefix}-${id}-${type}-tab`);
+        const btn = document.getElementById(`${prefix}${id}-${type}-tab`);
         if (!btn) return;
 
         if (activeSet.has(id)) {
@@ -174,7 +180,15 @@
     });
     }
 
-
+    window.toggleFilter = function(types , prefix, ids, type, activeSet) {
+        if (activeSet.has(types)) {
+            activeSet.delete(types);
+        } else {
+            activeSet.add(types);
+        }
+        updateFilterButtons(prefix,ids,type,activeSet);
+        applyFilters();
+    }
 
     window.toggleDetails = function(id, type) {
         const allDetails = document.querySelectorAll('[id^="details-"]');
@@ -200,7 +214,7 @@
             },
             body: JSON.stringify({ seen: true })
     });
-}
+    }
 
     window.getCookie = function(name) {
         let cookieValue = null;
@@ -217,15 +231,15 @@
           return cookieValue;
     }
 
-})();
+    })();
 
 
-window.humberg = function() {
-    const menu = document.getElementById("myLinks");
-    menu.classList.toggle("hidden");
-}
+    window.humberg = function() {
+        const menu = document.getElementById("myLinks");
+        menu.classList.toggle("hidden");
+    }
 
 </script>
-
+{% endif %}
 </body>
 </html>

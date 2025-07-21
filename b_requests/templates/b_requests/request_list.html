@@ -1,4 +1,426 @@
 {% extends "base.html" %}
 {% block content %}
-  {% include "b_requests/htmx_request_list.html" %}
+
+
+{% load static %}
+<div class="min-h-screen flex flex-col bg-atb-g-50 text-left py-24 px-4 md:px-12 lg:px-32 font-primary">
+
+    <div class="flex flex-col gap-2">
+        <h2 class="text-[30px]  font-[600] text-atb-g-900 font-primary">Requests</h2>
+        <p class="text-[16px] text-atb-g-600">View and manage both borrow and return requests.</p>
+    </div>
+
+    <hr class="border-atb-g-200 mt-6">
+    
+    
+
+    <div class="w-full flex flex-col items-start  md:flex-row p-4 md:p-6 gap-6 md:gap-8">
+
+        <!-- Tabs -->
+
+        <div class="flex flex-col gap-4 p-4 sm:p-6 md:p-8 lg:p-12 bg-white border border-white rounded-[12px] w-full md:w-1/3">
+            <button id="borrow-tab"
+                class="tab-button px-12 py-2 text-[18px] font-semibold rounded-[8px] transition-colors duration-200 border-[1px] border-atb-g-300 bg-white text-atb-g-700 shadow-[0px_1px_2px_0px_#1018280D]
+           hover:bg-atb-g-50 hover:text-atb-g-800 
+           focus:bg-white focus:text-atb-g-700 focus:shadow-[0_0_0_4px_#F2F4F7]
+           disabled:bg-atb-g-50 disabled:text-atb-g-300 disabled:border-atb-g-200 disabled:opacity-70"
+                onclick="showTab('borrow')" disabled>
+                Borrows
+                {% if unseed_borrows > 0%}
+                <span> ({{ unseed_borrows }})</span>
+                {% endif %}
+            </button>
+            <button id="return-tab"
+                class="tab-button px-12 py-2 text-[18px] font-semibold rounded-[8px] transition-colors duration-200 border-[1px] border-atb-g-300 bg-white text-atb-g-700 shadow-[0px_1px_2px_0px_#1018280D]
+           hover:bg-atb-g-50 hover:text-atb-g-800 
+           focus:bg-white focus:text-atb-g-700 focus:shadow-[0_0_0_4px_#F2F4F7]
+           disabled:bg-atb-g-50 disabled:text-atb-g-300 disabled:border-atb-g-200 disabled:opacity-70"
+                onclick="showTab('return')" >
+                Returns
+                {% if unseed_returns > 0%}
+                <span> ({{ unseed_returns }})</span>
+                {% endif %}
+            </button>
+
+
+
+            <div id="borrow-filter" class="flex flex-col gap-2">
+                {% include 'sort-filter/borrow_sort.html' %}
+                {% include 'sort-filter/borrow_filter.html' %}
+            </div>
+
+            <div id="return-filter" class="flex flex-col gap-2 hidden">
+                {% include 'sort-filter/return_sort.html' %}
+                {% include 'sort-filter/return_filter.html' %}
+            </div>
+
+        </div>
+
+        <!-- Borrow Request List -->
+
+        <div id="borrow-section" class="tab-section w-full md:w-2/3 border border-white bg-white rounded-[12px] p-4 sm:p-6 md:p-12">
+            {% if borrows %}
+
+            <div class="space-y-4">
+              {% for instance in borrows %}
+                <div 
+                    class="group bg-atb-g-50 rounded-[12px] p-8 hover:bg-atb-g-200 transition duration-300 request-card cursor-pointer"
+                    onclick="toggleDetails('{{ instance.id }}','borrow')"
+                    data-review='{{ instance.review }}' 
+                    data-request-type='borrow'
+                    data-name='{{ instance.name|lower }}'
+                    data-bd='{{ instance.date_requested }}'
+                    data-rd='{{ instance.return_date }}'
+                    data-device-type='{{ instance.device.type }}'>
+
+              <!-- Summary (Always Visible) -->
+              <div class="flex flex-row items-center gap-4 w-full">
+
+                    <div class="flex justify-start mt-2 ">
+                        {% if instance.review == 'approved' %}
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-16 text-atb-s-500">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                    {% elif instance.review == 'pending' %}
+
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-16 text-atb-w-500">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                    {% else %}
+
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-16 text-atb-e-500">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                    {% endif %}
+                    </div>
+
+
+                <div class="text-left grow">
+                  <h3 class="text-xl font-semibold text-[#334155]">{{ instance }}</h3>
+                  <p class="text-[#475569]">Requested at {{ instance.date_requested }} &bull; Returning on {{ instance.return_date }}</p>
+                </div>
+
+                
+                {% if not instance.seen %}
+                <div id="new-{{ instance.id }}"
+                     hx-post="/requests/mark_seen/borrow/{{ instance.id }}/"
+                     hx-trigger="revealed"
+                     hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                     hx-on::after-request="this.classList.add('hidden')"
+                     hx-swap="none">
+                    <p class="text-atb-p-500 font-semibold text-md">New</p>
+                </div>
+                {% endif %}
+
+
+              </div>
+
+              <!-- Collapsible Detail Section (Initially Hidden) -->
+                <div id="details-{{ instance.id }}" class="hidden mt-6 border-t border-atb-g-200 group-hover:border-atb-g-300 transition-colors duration-300 pt-4">
+                <ul class="text-sm text-atb-g-700 mb-4">
+                  <li><strong>User:</strong> {{ instance.borrower.username }}</li>
+                  <li><strong>Device:</strong> {{ instance.device.name }}</li>
+                  <li><strong>Requested On:</strong> {{ instance.date_requested }}</li>
+                  <li><strong>Return Date:</strong> {{ instance.return_date }}</li>
+                  <li><strong>Status:</strong> 
+                    {% if instance.review == 'approved' %}
+                      <span class="text-atb-s-500">Approved</span>
+                    {% elif instance.review == 'pending' %}
+                      <span class="text-atb-w-500">Pending</span>
+                    {% else %}
+                      <span class="text-atb-e-500">Rejected</span>
+                    {% endif %}
+                  </li>
+                </ul>
+
+                {% if instance.review == 'pending' %}
+                <form method="post" action="{% url 'requests:borrow-detail' instance.id %}">
+                  {% csrf_token %}
+                      <div class="flex flex-col sm:flex-row justify-end gap-4 pt-2"> 
+                        <button name="reject" type="submit" class="w-full sm:w-fit text-center whitespace-nowrap 
+                   px-4 sm:px-6 py-2 text-[15px] sm:text-[16px] font-semibold 
+                   rounded-[8px] transition-colors duration-200 
+                   border border-atb-g-300 bg-white text-atb-g-700 shadow-[0px_1px_2px_0px_#1018280D]
+                   hover:bg-atb-g-50 hover:text-atb-g-800 
+                   focus:bg-white focus:text-atb-g-700 focus:shadow-[0_0_0_4px_#F2F4F7]">
+                        Reject
+                      </button>
+                      <button name="approve" type="submit" class="bg-atb-p-600 rounded-[8px] font-semibold text-white text-[18px] py-2 px-4 sm:px-6 hover:bg-atb-p-700 focus:bg-atb-p-600 focus:ring-atb-p-200 focus:outline-none focus:shadow-[0_0_0_4px_#FDE3E6] transition duration-200 cursor-pointer">
+                        Approve
+                      </button>
+                      </div>
+                </form>
+                {% else %}
+                <p class="text-sm text-atb-g-700">
+                  {% if instance.review == 'approved' %}
+                    This request has already been approved.
+                  {% else %}
+                    This request has already been rejected.
+                  {% endif %}
+                </p>
+                {% endif %}
+              </div>
+
+            </div>
+          {% endfor %}
+        </div>
+
+            {% else %}
+                <p class="text-center text-atb-g-500">No borrow requests available.</p>
+            {% endif %}
+        </div>
+
+
+        <!-- Return Request List -->
+        <div id="return-section" class="tab-section w-full md:w-2/3 border border-white bg-white rounded-[12px] p-4 sm:p-6 md:p-12 hidden">
+            {% if returns %}
+                <div class="space-y-4">
+                    {% for instance in returns %}
+                        <div onclick="toggleDetails('{{ instance.id }}', 'return')" 
+                             class="group cursor-pointer bg-atb-g-50 hover:bg-atb-g-200 rounded-[12px] p-8 transition duration-300 request-card"
+                             data-review="{{ instance.review }}"
+                             data-request-type="return"
+                             data-condition="{{ instance.condition }}"
+                             data-device-type="{{ instance.device.type }}">
+
+                            <!-- Summary Header -->
+                            <div class="flex flex-row items-center gap-4 w-full">
+                                <div class="flex justify-start mt-2">
+                                    {% if instance.review == 'approved' %}
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-16 text-atb-s-500">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                        </svg>
+                                    {% elif instance.review == 'pending' %}
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-16 text-atb-w-500">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                        </svg>
+                                    {% else %}
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-16 text-atb-e-500">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                        </svg>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-semibold text-[#334155]">{{ instance }}</h3>
+                                    <p class="text-[#475569]">Condition: {{ instance.condition }} &bull; Feedback: {{ instance.feedback|slice:":20" }}</p>
+                                </div>
+                            </div>
+
+                            <!-- Collapsible Details -->
+                            <div id="details-{{ instance.id }}" class="hidden mt-6 border-t border-atb-g-200 group-hover:border-atb-g-300 pt-4 transition-colors duration-300">
+                                <form method="post" action="{% url 'requests:return-detail' instance.id %}" class="space-y-6">
+                                    {% csrf_token %}
+                                    <div class="space-y-2 text-sm font-semibold text-atb-g-700">
+                                        <p><strong>User:</strong> <span class="text-atb-g-600">{{ instance.borrower.username }}</span></p>
+                                        <p><strong>Device:</strong> <span class="text-atb-g-600">{{ instance.device.name }}</span></p>
+                                        <p><strong>Condition:</strong> <span class="text-atb-g-600">{{ instance.condition }}</span></p>
+                                        <p><strong>Feedback:</strong> <span class="text-atb-g-600">{{ instance.feedback|default:"No feedback provided" }}</span></p>
+                                    </div>
+                                    {% if instance.review == 'pending' %}
+                                      <div class="flex flex-col sm:flex-row justify-end gap-4 pt-2"> 
+                                        <button name="reject" type="submit" class="w-full sm:w-fit text-center whitespace-nowrap 
+                                   px-4 sm:px-6 py-2 text-[15px] sm:text-[16px] font-semibold 
+                                   rounded-[8px] transition-colors duration-200 
+                                   border border-atb-g-300 bg-white text-atb-g-700 shadow-[0px_1px_2px_0px_#1018280D]
+                                   hover:bg-atb-g-50 hover:text-atb-g-800 
+                                   focus:bg-white focus:text-atb-g-700 focus:shadow-[0_0_0_4px_#F2F4F7]">
+                                        Reject
+                                      </button>
+                                      <button name="approve" type="submit" class="bg-atb-p-600 rounded-[8px] font-semibold text-white text-[18px] py-2 px-4 sm:px-6 hover:bg-atb-p-700 focus:bg-atb-p-600 focus:ring-atb-p-200 focus:outline-none focus:shadow-[0_0_0_4px_#FDE3E6] transition duration-200 cursor-pointer">
+                                        Approve
+                                      </button>
+                                      </div>
+                                    {% else %}
+                                        <p class="text-atb-g-500 pt-2">
+                                            {% if instance.review == 'approved' %}
+                                                This request has already been <strong>approved</strong>.
+                                            {% else %}
+                                                This request has already been <strong>rejected</strong>.
+                                            {% endif %}
+                                        </p>
+                                    {% endif %}
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-center text-atb-g-500">No return requests available.</p>
+            {% endif %}
+        </div>
+
+
+    </div>
+</div>
+
+
+{{ breviews|json_script:"b-request-review" }}
+{{ rreviews|json_script:"r-request-review" }}
+{{ btypes|json_script:"b-request-type" }}
+{{ rtypes|json_script:"r-request-type" }}
+{{ conditions|json_script:"r-request-condition" }}
+
+<script>
+let currentSortField = 'name';
+let currentSortDirection = 'asc';
+let currentTab = 'borrow';
+
+const activeBRRFilters = new Set();
+const activeRRRFilters = new Set();
+const activeBTFilters = new Set();
+const activeRTFilters = new Set();
+const activeConditionFilters = new Set();
+
+let bRequestReview = [];
+let rRequestReview = [];
+let bRequestType = [];
+let rRequestType = [];
+let rRequestCondition = [];
+
+
+function toggleTypeFilter(type, prefix) {
+    const isBorrow = prefix === 'borrow';
+    const activeSet = isBorrow ? activeBTFilters : activeRTFilters;
+    if (activeSet.has(type)) {
+        activeSet.delete(type);
+    } else {
+        activeSet.add(type);
+    }
+
+    const types = isBorrow ? bRequestType : rRequestType;
+    updateFilterButtons(`${prefix}-`, types, "type", activeSet);
+    applyFilters();
+}
+
+function toggleReviewFilter(review, prefix) {
+    const isBorrow = prefix === 'borrow';
+    const activeSet = isBorrow ? activeBRRFilters : activeRRRFilters;
+    if (activeSet.has(review)) {
+        activeSet.delete(review);
+    } else {
+        activeSet.add(review);
+    }
+
+    const reviews = isBorrow ? bRequestReview : rRequestReview;
+    updateFilterButtons(`${prefix}-`, reviews, "review", activeSet);
+    applyFilters();
+}
+
+function toggleConditionFilter(condition) {
+    if (activeConditionFilters.has(condition)) {
+        activeConditionFilters.delete(condition);
+    } else {
+        activeConditionFilters.add(condition);
+    }
+    updateFilterButtons("return-", rRequestCondition, "condition", activeConditionFilters);
+    applyFilters();
+}
+
+
+function applyFilters() {
+    const cards = document.querySelectorAll('.request-card');
+    cards.forEach(card => {
+        const review = card.getAttribute('data-review');
+        const type = card.getAttribute('data-request-type');
+        const condition = card.getAttribute('data-condition');
+        const deviceType = card.getAttribute('data-device-type');
+
+        let reviewMatch = true, typeMatch = true, conditionMatch = true;
+
+        if (type === 'borrow') {
+            if (activeBRRFilters.size && !activeBRRFilters.has(review)) reviewMatch = false;
+            if (activeBTFilters.size && !activeBTFilters.has(deviceType)) typeMatch = false;
+        } else if (type === 'return') {
+            if (activeRRRFilters.size && !activeRRRFilters.has(review)) reviewMatch = false;
+            if (activeRTFilters.size && !activeRTFilters.has(deviceType)) typeMatch = false;
+            if (activeConditionFilters.size && !activeConditionFilters.has(condition)) conditionMatch = false;
+        }
+
+        card.style.display = (reviewMatch && typeMatch && conditionMatch) ? 'block' : 'none';
+    });
+}
+
+function resetFilters() {
+    activeBRRFilters.clear();
+    activeRRRFilters.clear();
+    activeBTFilters.clear();
+    activeRTFilters.clear();
+    activeConditionFilters.clear();
+
+    updateFilterButtons("borrow-", bRequestReview, "review", activeBRRFilters);
+    updateFilterButtons("return-", rRequestReview, "review", activeRRRFilters);
+    updateFilterButtons("borrow-", bRequestType, "type", activeBTFilters);
+    updateFilterButtons("return-", rRequestType, "type", activeRTFilters);
+    updateFilterButtons("return-", rRequestCondition, "condition", activeConditionFilters);
+
+    applyFilters();
+}
+
+
+function toggleSorting(field, toggleDirection = true) {
+    const sortUp = document.getElementById('sort-up');
+    const sortDown = document.getElementById('sort-down');
+
+    if (currentSortField === field) {
+        if (toggleDirection) {
+            currentSortDirection = (currentSortDirection === 'asc') ? 'desc' : 'asc';
+        }
+    } else {
+        currentSortField = field;
+        currentSortDirection = field === 'name' ? 'asc' : 'desc';
+    }
+
+    if (sortUp && sortDown) {
+        sortUp.classList.toggle('hidden', currentSortDirection === 'desc');
+        sortDown.classList.toggle('hidden', currentSortDirection === 'asc');
+    }
+
+    sortCards(currentSortField, currentSortDirection);
+}
+
+function sortCards(field, direction = 'asc') {
+    const container = document.querySelector(currentTab === 'borrow' ? '#borrow-section .space-y-4' : '#return-section .space-y-4');
+    if (!container) return;
+
+    const cards = Array.from(container.querySelectorAll('.request-card'));
+
+    cards.sort((a, b) => {
+        let aVal = a.dataset[field] || '';
+        let bVal = b.dataset[field] || '';
+
+        if (field === 'bd' || field === 'rd') {
+            aVal = new Date(aVal);
+            bVal = new Date(bVal);
+        } else {
+            aVal = aVal.toLowerCase();
+            bVal = bVal.toLowerCase();
+        }
+
+        if (aVal < bVal) return direction === 'asc' ? -1 : 1;
+        if (aVal > bVal) return direction === 'asc' ? 1 : -1;
+        return 0;
+    });
+
+    cards.forEach(card => container.appendChild(card));
+}
+
+
+function initializeRequestFiltersAndSorting() {
+    bRequestReview = JSON.parse(document.getElementById('b-request-review').textContent);
+    rRequestReview = JSON.parse(document.getElementById('r-request-review').textContent);
+    bRequestType = JSON.parse(document.getElementById('b-request-type').textContent);
+    rRequestType = JSON.parse(document.getElementById('r-request-type').textContent);
+    rRequestCondition = JSON.parse(document.getElementById('r-request-condition').textContent);
+
+    resetFilters();
+    applyFilters();
+    sortCards(currentSortField, currentSortDirection);
+    toggleSorting(currentSortField, false);
+}
+
+document.addEventListener('DOMContentLoaded', initializeRequestFiltersAndSorting);
+document.body.addEventListener('htmx:afterSettle', initializeRequestFiltersAndSorting);
+</script>
+
 {% endblock %}
+

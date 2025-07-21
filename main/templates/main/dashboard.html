@@ -1,5 +1,209 @@
 {% extends "base.html" %}
 {% block content %}
-  {% include "main/htmx_dashboard.html" %}
+
+<div class="flex flex-col min-w-full md:min-w-4xl py-24 gap-8 font-primary text-left px-4 md:px-32">
+    <div class="flex flex-col gap-2">
+        <h2 class="text-[30px] font-[600] text-atb-g-900 font-primary">Dashboard</h2>
+        <p class="text-[16px] text-atb-g-600">
+            Get an insight about the users, devices and requests.
+        </p>
+    </div>
+
+    <hr class="border-atb-g-200" />
+
+    <div class="text-[#334155]">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+            <!-- Row 1 -->
+            <div class="p-6 md:p-12 bg-white rounded-[12px]">
+                <div class="relative h-32 md:h-100 flex items-center justify-center">
+                    <span class="text-6xl md:text-8xl font-bold text-atb-g-900">
+                        {{ device_count }}
+                    </span>
+                    <span class="absolute bottom-4 text-lg md:text-xl font-semibold text-atb-g-900">
+                        Total Devices
+                    </span>
+                </div>
+            </div>
+
+            <div class="md:col-span-2 p-6 md:p-12 bg-white rounded-[12px]">
+                <h2 class="text-lg font-semibold text-atb-g-900 mb-4">Requested Devices Frequency</h2>
+                <div class="p-4 h-fit text-atb-g-900">
+                    <canvas id="DeviceChart" class="w-full max-h-80"></canvas>
+                </div>
+            </div>
+
+            <!-- Row 2 -->
+            <div class="p-6 md:p-12 bg-white rounded-[12px]">
+                <div class="relative h-32 md:h-100 flex items-center justify-center">
+                    <span class="text-6xl md:text-8xl font-bold text-atb-g-900">
+                        {{ user_count }}
+                    </span>
+                    <span class="absolute bottom-4 text-lg md:text-xl font-semibold text-atb-g-900">
+                        Total Users
+                    </span>
+                </div>
+            </div>
+
+            <div class="md:col-span-2 p-6 md:p-12 bg-white rounded-[12px]">
+                <h2 class="text-lg font-semibold text-gray-800 mb-4">Top Requesting Users</h2>
+                <div class="p-4 h-fit">
+                    <canvas id="UserChart" class="w-full max-h-80"></canvas>
+                </div>
+            </div>
+
+            <!-- Row 3 -->
+            <div class="p-6 md:p-12 bg-white rounded-[12px] transition">
+                <div class="relative h-32 md:h-100 flex items-center justify-center">
+                    <span class="text-6xl md:text-8xl font-bold text-atb-g-900">
+                        {{ borrow_request_count|add:return_request_count }}
+                    </span>
+                    <span class="absolute bottom-4 text-lg md:text-xl font-semibold text-atb-g-900">
+                        Total Requests
+                    </span>
+                </div>
+            </div>
+
+            <div class="md:col-span-2 p-6 md:p-12 bg-white rounded-[12px]">
+                <h2 class="text-lg font-semibold text-atb-g-900 mb-4">Requests</h2>
+                <div class="p-4 h-fit">
+                    <canvas id="RequestChart" class="w-full max-h-80"></canvas>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script>
+if (typeof window.chartManager === 'undefined') {
+    window.chartManager = {
+        charts: {},
+        init: function() {
+            this.destroyAll();
+
+            // Device Chart
+            const deviceCtx = document.getElementById('DeviceChart');
+            if (deviceCtx) {
+                this.charts.device = new Chart(deviceCtx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: {{ device_type_labels|safe }},
+                        datasets: [{
+                            label: 'Devices',
+                            data: {{ device_type_data|safe }},
+                            backgroundColor: [
+                                'rgba(172, 0, 51, 0.75)',
+                                'rgba(186, 43, 85, 0.75)',
+                                'rgba(200, 85, 119, 0.75)',
+                                'rgba(213, 128, 153, 0.75)',
+                                'rgba(227, 170, 187, 0.75)'
+                            ],
+                            borderColor: [
+                                'rgba(115, 0, 34, 1)',
+                                'rgba(172, 0, 51, 1)',
+                                'rgba(186, 43, 85, 1)',
+                                'rgba(200, 85, 119, 1)',
+                                'rgba(213, 128, 153, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom' }
+                        }
+                    }
+                });
+            }
+
+            // Request Chart
+            const requestCtx = document.getElementById('RequestChart');
+            if (requestCtx) {
+                this.charts.request = new Chart(requestCtx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Borrows','Returns'],
+                        datasets: [{
+                            label: 'Devices',
+                            data: [{{ borrow_request_count|safe }}, {{ return_request_count|safe }}],
+                            backgroundColor: [
+                                'rgba(172,   0,  51, 0.7)',
+                                'rgba(102, 122, 133, 0.7)',
+                            ],
+                            borderColor: [
+                                'rgba(115,   0,  34, 1)',
+                                'rgba( 71,  84, 103, 1)',
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom' }
+                        }
+                    }
+                });
+            }
+
+            // User Chart
+            const userCtx = document.getElementById('UserChart');
+            if (userCtx) {
+                this.charts.user = new Chart(userCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: {{ top_borrowers_labels|safe }},
+                        datasets: [{
+                            label: 'Requests',
+                            data: {{ top_borrowers_data|safe }},
+                                backgroundColor: 'rgba(172,   0,  51, 0.7)',
+                                borderColor: 'rgba(115,   0,  34, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                suggestedMax: 10,
+                                ticks: { stepSize: 1 },
+                                grid: { display: false }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                suggestedMax: 10,
+                                ticks: { stepSize: 1 },
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            }
+        },
+        destroyAll: function() {
+            Object.values(this.charts).forEach(chart => chart.destroy());
+            this.charts = {};
+        }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => window.chartManager.init());
+    document.body.addEventListener('htmx:afterSwap', () => window.chartManager.init());
+    document.body.addEventListener('htmx:beforeSwap', () => window.chartManager.destroyAll());
+}
+
+window.chartManager.init();
+</script>
+
 {% endblock %}
 

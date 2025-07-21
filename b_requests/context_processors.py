@@ -12,3 +12,4 @@ def unseen_request_counts(request):
         'unseen_borrows': unseen_borrows,
         'unseen_returns': unseen_returns,
     }
+

@@ -34,10 +34,18 @@
                     {% for instance in object_list %}
                         <a href="{% url 'devices:device-detail' instance.id %}" 
                            class="device-card block bg-atb-g-50 rounded-[12px] p-8 hover:bg-atb-g-200 focus:border-none focus:ring-0 focus:shadow-[0_0_0_4px_#F2F4F7] transition duration-300"
+                            hx-get="{% url 'devices:device-detail' instance.id %}" 
+                            hx-target="#main-content" 
+                            hx-swap="innerHTML" 
+                            hx-push-url="true"
                             data-type="{{ instance.type }}"
                             data-status="{{ instance.status }}"
                             data-name="{{ instance.name|lower }}" 
-                            data-id="{{ instance.id }}">
+                            data-id="{{ instance.id }}"
+
+
+
+                            >
                             <h3 class="text-xl font-semibold text-[#334155]">{{ instance.name }}</h3>
                     <p class="text-[#475569]">{{ instance.type }} &bull; {{ instance.status }}</p> 
                         </a> 
@@ -55,23 +63,17 @@
 {{ types|json_script:"device-types" }}
 {{ status|json_script:"device-status" }}
 
+
+
 <script>
 let currentSortField = 'name';
 let currentSortDirection = 'desc';
 
-const deviceTypes = JSON.parse(document.getElementById('device-types').textContent);
-const deviceStatus = JSON.parse(document.getElementById('device-status').textContent);
+let activeTypeFilters = new Set();
+let activeStatusFilters = new Set();
 
-const activeTypeFilters = new Set();
-const activeStatusFilters = new Set();
-
-document.addEventListener('DOMContentLoaded', function () {
-    resetFilters();
-    applyFilters();
-    sortCards(currentSortField, currentSortDirection);
-    toggleSorting(currentSortField, false);
-});
-
+let deviceTypes = [];
+let deviceStatus = [];
 
 function toggleTypeFilter(type) {
     if (activeTypeFilters.has(type)) {
@@ -79,7 +81,7 @@ function toggleTypeFilter(type) {
     } else {
         activeTypeFilters.add(type);
     }
-    updateTypeButtons();
+    updateFilterButtons("device-", deviceTypes, "type", activeTypeFilters);
     applyFilters();
 }
 
@@ -89,35 +91,10 @@ function toggleStatusFilter(status) {
     } else {
         activeStatusFilters.add(status);
     }
-    updateStatusButtons();
+    updateFilterButtons(""      ,deviceStatus   ,"status"   ,activeStatusFilters);
     applyFilters();
 }
 
-function updateTypeButtons() {
-    deviceTypes.forEach(type => {
-        const btn = document.getElementById(`device-${type}-type-tab`);
-        if (activeTypeFilters.has(type)) {
-            btn.classList.remove('opacity-50','text-atb-g-700','bg-white','hover:bg-atb-g-50','hover:text-atb-g-800');
-            btn.classList.add('text-white','bg-atb-p-500','hover:bg-atb-p-700','hover:text-white');
-        } else {
-            btn.classList.add('opacity-50','text-atb-g-700','bg-white','hover:bg-atb-g-50','hover:text-atb-g-800');
-            btn.classList.remove('text-white','bg-atb-p-500','hover:bg-atb-p-700','hover:text-white');
-        }
-    });
-}
-
-function updateStatusButtons() {
-    deviceStatus.forEach(status => {
-        const btn = document.getElementById(`${status}-status-tab`);
-        if (activeStatusFilters.has(status)) {
-            btn.classList.remove('opacity-50','text-atb-g-700','bg-white','hover:bg-atb-g-50','hover:text-atb-g-800');
-            btn.classList.add('text-white','bg-atb-p-500','hover:bg-atb-p-700','hover:text-white');
-        } else {
-            btn.classList.add('opacity-50','text-atb-g-700','bg-white','hover:bg-atb-g-50','hover:text-atb-g-800');
-            btn.classList.remove('text-white','bg-atb-p-500','hover:bg-atb-p-700','hover:text-white');
-        }
-    });
-}
 
 function applyFilters() {
     const cards = document.querySelectorAll('.device-card');
@@ -128,22 +105,17 @@ function applyFilters() {
         const typeMatch = activeTypeFilters.size === 0 || activeTypeFilters.has(deviceType);
         const statusMatch = activeStatusFilters.size === 0 || activeStatusFilters.has(deviceStat);
 
-        if (typeMatch && statusMatch) {
-            card.style.display = 'block';
-        } else {
-            card.style.display = 'none';
-        }
+        card.style.display = typeMatch && statusMatch ? 'block' : 'none';
     });
 }
 
 function resetFilters() {
     activeTypeFilters.clear();
     activeStatusFilters.clear();
-    updateTypeButtons();
-    updateStatusButtons();
+    updateFilterButtons("device-",deviceTypes    ,"type"     ,activeTypeFilters);
+    updateFilterButtons(""      ,deviceStatus   ,"status"   ,activeStatusFilters);
     applyFilters();
 }
-
 
 function toggleSorting(field, toggleDirection = true) {
     const sortUp = document.getElementById('sort-up');
@@ -153,28 +125,28 @@ function toggleSorting(field, toggleDirection = true) {
         if (toggleDirection) {
             currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
         }
-        sortCards(currentSortField, currentSortDirection);
     } else {
         currentSortField = field;
         currentSortDirection = (field === 'name') ? 'asc' : 'desc';
-        sortCards(currentSortField, currentSortDirection);
     }
 
-    sortUp.classList.toggle('hidden', currentSortDirection === 'desc');
-    sortDown.classList.toggle('hidden', currentSortDirection === 'asc');
+    sortCards(currentSortField, currentSortDirection);
+
+    if (sortUp && sortDown) {
+        sortUp.classList.toggle('hidden', currentSortDirection === 'desc');
+        sortDown.classList.toggle('hidden', currentSortDirection === 'asc');
+    }
 }
-
-
 
 function sortCards(field, direction = 'asc') {
     const container = document.getElementById('device-list');
+    if (!container) return;
     const cards = Array.from(container.querySelectorAll('.device-card'));
 
     cards.sort((a, b) => {
         const aValue = a.dataset[field];
         const bValue = b.dataset[field];
 
-        // Determine if we are comparing numbers or strings
         const isNumeric = !isNaN(parseFloat(aValue)) && isFinite(aValue);
 
         let comparison;
@@ -190,7 +162,19 @@ function sortCards(field, direction = 'asc') {
     cards.forEach(card => container.appendChild(card));
 }
 
+function initializeDeviceFiltersAndSorting() {
+    deviceTypes = JSON.parse(document.getElementById('device-types').textContent);
+    deviceStatus = JSON.parse(document.getElementById('device-status').textContent);
+    resetFilters();
+    applyFilters();
+    sortCards(currentSortField, currentSortDirection);
+    toggleSorting(currentSortField, false);
+}
 
+// ✅ Ensure everything is available before interaction
+document.addEventListener('DOMContentLoaded', initializeDeviceFiltersAndSorting);
+document.body.addEventListener('htmx:afterSettle', initializeDeviceFiltersAndSorting);
+
+// ✅ Functions are in global scope already, no need for window.X assignment
 </script>
-
 {% endblock content %} 

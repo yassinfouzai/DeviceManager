@@ -33,7 +33,12 @@
                rounded-[8px] transition-colors duration-200 
                border border-atb-g-300 bg-white text-atb-g-700 shadow-[0px_1px_2px_0px_#1018280D]
                hover:bg-atb-g-50 hover:text-atb-g-800 
-               focus:bg-white focus:text-atb-g-700 focus:shadow-[0_0_0_4px_#F2F4F7]">
+               focus:bg-white focus:text-atb-g-700 focus:shadow-[0_0_0_4px_#F2F4F7]"
+                hx-get="{% url 'devices:device-detail' device.id %}" 
+                hx-target="#main-content" 
+                hx-swap="innerHTML" 
+                hx-push-url="true"
+                >
                 Cancel
             </a>
             <button type="submit"

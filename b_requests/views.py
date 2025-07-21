@@ -12,6 +12,7 @@ from django.views.decorators.http import require_POST
 from django.core.mail import send_mail
 from django.conf import settings
 from main.utils import notify_user
+from django.http import HttpResponse
 
 
 @staff_member_required
@@ -95,7 +96,7 @@ def return_detail_view(request, pk):
                 fail_silently=False,
             )
 
-        return redirect('requests:request-list')
+        return HttpResponse("Success", status=204)
 
     context = {
         'request_obj': return_request
@@ -163,7 +164,7 @@ def borrow_detail_view(request, pk):
                 fail_silently=False,
             )
 
-        return redirect('requests:request-list')
+        return HttpResponse("Success", status=204)
 
     context = {
         'request_obj': borrow_request
@@ -209,8 +210,7 @@ def request_list_view(request):
         "unseed_borrows": unseed_borrows,
         "unseed_returns": unseed_returns,
     }
-    if is_htmx(request):
-        return render(request, "b_requests/htmx_request_list.html", context)
+
     return render(request, "b_requests/request_list.html", context)
 
 

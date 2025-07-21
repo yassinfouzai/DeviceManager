@@ -90,6 +90,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'b_requests.context_processors.unseen_request_counts',
+                'main.context_processors.htmx_flag',
             ],
         },
     },
