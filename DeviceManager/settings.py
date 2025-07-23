@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'channels',
     'django_user_agents',
 
+
     #my own
     'main',
     'accounts',

@@ -59,122 +59,159 @@
     </div>
 </div>
 
-
 {{ types|json_script:"device-types" }}
 {{ status|json_script:"device-status" }}
 
 
+<script type="module">
+const DeviceManager = (function() {
+    const state = {
+        currentSortField: 'name',
+        activeTypeFilters: new Set(),
+        activeStatusFilters: new Set(),
+        currentSortDirection: 'desc',
+        deviceTypes: [],
+        deviceStatus: []
+    };
 
-<script>
-let currentSortField = 'name';
-let currentSortDirection = 'desc';
+    function updateFilterButtons(prefix, items, suffix, activeSet) {
+        items.forEach(item => {
+            const btn = document.getElementById(`${prefix}${item}-${suffix}-tab`);
+            if (!btn) return;
 
-let activeTypeFilters = new Set();
-let activeStatusFilters = new Set();
-
-let deviceTypes = [];
-let deviceStatus = [];
-
-function toggleTypeFilter(type) {
-    if (activeTypeFilters.has(type)) {
-        activeTypeFilters.delete(type);
-    } else {
-        activeTypeFilters.add(type);
+            if (activeSet.has(item)) {
+                btn.classList.remove('opacity-50', 'text-atb-g-700', 'bg-white', 'hover:bg-atb-g-50', 'hover:text-atb-g-800');
+                btn.classList.add('text-white', 'bg-atb-p-500', 'hover:bg-atb-p-700', 'hover:text-white');
+            } else {
+                btn.classList.add('opacity-50', 'text-atb-g-700', 'bg-white', 'hover:bg-atb-g-50', 'hover:text-atb-g-800');
+                btn.classList.remove('text-white', 'bg-atb-p-500', 'hover:bg-atb-p-700', 'hover:text-white');
+            }
+        });
     }
-    updateFilterButtons("device-", deviceTypes, "type", activeTypeFilters);
-    applyFilters();
-}
 
-function toggleStatusFilter(status) {
-    if (activeStatusFilters.has(status)) {
-        activeStatusFilters.delete(status);
-    } else {
-        activeStatusFilters.add(status);
+    function applyFilters() {
+        const cards = document.querySelectorAll('.device-card');
+        cards.forEach(card => {
+            const deviceType = card.getAttribute('data-type');
+            const deviceStat = card.getAttribute('data-status');
+
+            const typeMatch = state.activeTypeFilters.size === 0 || state.activeTypeFilters.has(deviceType);
+            const statusMatch = state.activeStatusFilters.size === 0 || state.activeStatusFilters.has(deviceStat);
+
+            card.style.display = typeMatch && statusMatch ? 'block' : 'none';
+        });
     }
-    updateFilterButtons(""      ,deviceStatus   ,"status"   ,activeStatusFilters);
-    applyFilters();
-}
 
+    function sortCards(field, direction = 'asc') {
+        const container = document.getElementById('device-list');
+        if (!container) return;
+        const cards = Array.from(container.querySelectorAll('.device-card'));
 
-function applyFilters() {
-    const cards = document.querySelectorAll('.device-card');
-    cards.forEach(card => {
-        const deviceType = card.getAttribute('data-type');
-        const deviceStat = card.getAttribute('data-status');
+        cards.sort((a, b) => {
+            const aValue = a.dataset[field];
+            const bValue = b.dataset[field];
 
-        const typeMatch = activeTypeFilters.size === 0 || activeTypeFilters.has(deviceType);
-        const statusMatch = activeStatusFilters.size === 0 || activeStatusFilters.has(deviceStat);
+            const isNumeric = !isNaN(parseFloat(aValue)) && isFinite(aValue);
 
-        card.style.display = typeMatch && statusMatch ? 'block' : 'none';
-    });
-}
+            let comparison;
+            if (isNumeric) {
+                comparison = parseFloat(aValue) - parseFloat(bValue);
+            } else {
+                comparison = aValue.toLowerCase().localeCompare(bValue.toLowerCase());
+            }
 
-function resetFilters() {
-    activeTypeFilters.clear();
-    activeStatusFilters.clear();
-    updateFilterButtons("device-",deviceTypes    ,"type"     ,activeTypeFilters);
-    updateFilterButtons(""      ,deviceStatus   ,"status"   ,activeStatusFilters);
-    applyFilters();
-}
+            return direction === 'asc' ? comparison : -comparison;
+        });
 
-function toggleSorting(field, toggleDirection = true) {
-    const sortUp = document.getElementById('sort-up');
-    const sortDown = document.getElementById('sort-down');
+        cards.forEach(card => container.appendChild(card));
+    }
 
-    if (currentSortField === field) {
-        if (toggleDirection) {
-            currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+    //API
+    return {
+        toggleTypeFilter: function(type) {
+            if (state.activeTypeFilters.has(type)) {
+                state.activeTypeFilters.delete(type);
+            } else {
+                state.activeTypeFilters.add(type);
+            }
+            updateFilterButtons("device-", state.deviceTypes, "type", state.activeTypeFilters);
+            applyFilters();
+        },
+
+        toggleStatusFilter: function(status) {
+            if (state.activeStatusFilters.has(status)) {
+                state.activeStatusFilters.delete(status);
+            } else {
+                state.activeStatusFilters.add(status);
+            }
+            updateFilterButtons("", state.deviceStatus, "status", state.activeStatusFilters);
+            applyFilters();
+        },
+
+        resetFilters: function() {
+            state.activeTypeFilters.clear();
+            state.activeStatusFilters.clear();
+            updateFilterButtons("device-", state.deviceTypes, "type", state.activeTypeFilters);
+            updateFilterButtons("", state.deviceStatus, "status", state.activeStatusFilters);
+            applyFilters();
+        },
+
+        toggleSorting: function(field, toggleDirection = true) {
+            const sortUp = document.getElementById('sort-up');
+            const sortDown = document.getElementById('sort-down');
+
+            if (state.currentSortField === field) {
+                if (toggleDirection) {
+                    state.currentSortDirection = state.currentSortDirection === 'asc' ? 'desc' : 'asc';
+                }
+            } else {
+                state.currentSortField = field;
+                state.currentSortDirection = (field === 'name') ? 'asc' : 'desc';
+            }
+
+            this.sortCards(state.currentSortField, state.currentSortDirection);
+
+            if (sortUp && sortDown) {
+                sortUp.classList.toggle('hidden', state.currentSortDirection === 'desc');
+                sortDown.classList.toggle('hidden', state.currentSortDirection === 'asc');
+            }
+        },
+
+        sortCards: sortCards,
+
+        initializeDeviceFiltersAndSorting: function() {
+            const typesScript = document.getElementById('device-types');
+            const statusScript = document.getElementById('device-status');
+
+            if (!typesScript || !statusScript) {
+                console.warn("Device types or status data not found in DOM. Skipping filter initialization.");
+                return;
+            }
+
+            state.deviceTypes = JSON.parse(typesScript.textContent);
+            state.deviceStatus = JSON.parse(statusScript.textContent);
+
+            this.resetFilters();
+            applyFilters();
+            this.sortCards(state.currentSortField, state.currentSortDirection);
+            this.toggleSorting(state.currentSortField, false);
+        },
+
+        init: function() {
+            document.addEventListener('DOMContentLoaded', () => {
+                this.initializeDeviceFiltersAndSorting();
+            });
+
+            document.body.addEventListener('htmx:afterSettle', () => {
+                this.initializeDeviceFiltersAndSorting();
+            });
         }
-    } else {
-        currentSortField = field;
-        currentSortDirection = (field === 'name') ? 'asc' : 'desc';
-    }
+    };
+})();
 
-    sortCards(currentSortField, currentSortDirection);
-
-    if (sortUp && sortDown) {
-        sortUp.classList.toggle('hidden', currentSortDirection === 'desc');
-        sortDown.classList.toggle('hidden', currentSortDirection === 'asc');
-    }
-}
-
-function sortCards(field, direction = 'asc') {
-    const container = document.getElementById('device-list');
-    if (!container) return;
-    const cards = Array.from(container.querySelectorAll('.device-card'));
-
-    cards.sort((a, b) => {
-        const aValue = a.dataset[field];
-        const bValue = b.dataset[field];
-
-        const isNumeric = !isNaN(parseFloat(aValue)) && isFinite(aValue);
-
-        let comparison;
-        if (isNumeric) {
-            comparison = parseFloat(aValue) - parseFloat(bValue);
-        } else {
-            comparison = aValue.toLowerCase().localeCompare(bValue.toLowerCase());
-        }
-
-        return direction === 'asc' ? comparison : -comparison;
-    });
-
-    cards.forEach(card => container.appendChild(card));
-}
-
-function initializeDeviceFiltersAndSorting() {
-    deviceTypes = JSON.parse(document.getElementById('device-types').textContent);
-    deviceStatus = JSON.parse(document.getElementById('device-status').textContent);
-    resetFilters();
-    applyFilters();
-    sortCards(currentSortField, currentSortDirection);
-    toggleSorting(currentSortField, false);
-}
-
-// ✅ Ensure everything is available before interaction
-document.addEventListener('DOMContentLoaded', initializeDeviceFiltersAndSorting);
-document.body.addEventListener('htmx:afterSettle', initializeDeviceFiltersAndSorting);
-
-// ✅ Functions are in global scope already, no need for window.X assignment
-</script>
-{% endblock content %} 
+DeviceManager.init();
+window.toggleTypeFilter = DeviceManager.toggleTypeFilter.bind(DeviceManager);
+window.toggleStatusFilter = DeviceManager.toggleStatusFilter.bind(DeviceManager);
+window.resetFilters = DeviceManager.resetFilters.bind(DeviceManager);
+window.toggleSorting = DeviceManager.toggleSorting.bind(DeviceManager);
+</script>{% endblock content %} 

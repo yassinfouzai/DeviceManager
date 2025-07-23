@@ -208,8 +208,6 @@
     </div>
 </div>
 
-
-
 {{ breviews|json_script:"b-request-review" }}
 {{ rreviews|json_script:"r-request-review" }}
 {{ btypes|json_script:"b-request-type" }}
@@ -217,202 +215,245 @@
 {{ types|json_script:"device-type" }}
 {{ status|json_script:"device-status" }}
 {{ conditions|json_script:"r-request-condition" }}
-<script>
-const bRequestReview = JSON.parse(document.getElementById('b-request-review').textContent);
-const rRequestReview = JSON.parse(document.getElementById('r-request-review').textContent);
-const bRequestType = JSON.parse(document.getElementById('b-request-type').textContent);
-const rRequestType = JSON.parse(document.getElementById('r-request-type').textContent);
-const deviceType = JSON.parse(document.getElementById('device-type').textContent);
-const rRequestCondition = JSON.parse(document.getElementById('r-request-condition').textContent);
-
-const activeBRRFilters = new Set();
-const activeRRRFilters = new Set();
-const activeBTFilters = new Set();
-const activeRTFilters = new Set();
-const activeDTFilters = new Set();
-const activeConditionFilters = new Set();
-
-document.addEventListener('DOMContentLoaded', function () {
-    showTab('user');
-});
 
 
-function toggleTypeFilter(type, prefix) {
-    const activeFilterMap = {
-        borrow: activeBTFilters,
-        return: activeRTFilters,
-        device: activeDTFilters,
+<script type="module">
+const RequestManager = (function() {
+    //private state
+    const state = {
+        rRequestCondition: [],
+        rRequestReview: [],
+        bRequestReview: [],
+        bRequestType: [],
+        rRequestType: [],
+        deviceType: [],
+        activeBRRFilters: new Set(),
+        activeRRRFilters: new Set(),
+        activeBTFilters: new Set(),
+        activeRTFilters: new Set(),
+        activeDTFilters: new Set(),
+        activeConditionFilters: new Set()
     };
 
-    const requestTypeMap = {
-        borrow: bRequestType,
-        return: rRequestType,
-        device: deviceType,
+    //private method
+    function updateConditionButtons() {
+        state.rRequestCondition.forEach(condition => {
+            const btn = document.getElementById(`${condition}-condition-tab`);
+            if (!btn) return;
+            if (state.activeConditionFilters.has(condition)) {
+                btn.classList.remove('opacity-50','text-atb-g-700','bg-white','hover:bg-atb-g-50','hover:text-atb-g-800');
+                btn.classList.add('text-white','bg-atb-p-500','hover:bg-atb-p-700','hover:text-white');
+            } else {
+                btn.classList.add('opacity-50','text-atb-g-700','bg-white','hover:bg-atb-g-50','hover:text-atb-g-800');
+                btn.classList.remove('text-white','bg-atb-p-500','hover:bg-atb-p-700','hover:text-white');
+            }
+        });
+    }
+
+    function updateTypeButtons(prefix, types, activeSet) {
+        types.forEach(type => {
+            const btn = document.getElementById(`${prefix}-${type}-type-tab`);
+            if (!btn) return;
+
+            if (activeSet.has(type)) {
+                btn.classList.remove('opacity-50','text-atb-g-700','bg-white','hover:bg-atb-g-50','hover:text-atb-g-800');
+                btn.classList.add('text-white','bg-atb-p-500','hover:bg-atb-p-700','hover:text-white');
+            } else {
+                btn.classList.add('opacity-50','text-atb-g-700','bg-white','hover:bg-atb-g-50','hover:text-atb-g-800');
+                btn.classList.remove('text-white','bg-atb-p-500','hover:bg-atb-p-700','hover:text-white');
+            }
+        });
+    }
+
+    function updateReviewButtons(prefix, reviews, activeSet) {
+        reviews.forEach(review => {
+            const btn = document.getElementById(`${prefix}-${review}-review-tab`);
+            if (!btn) return;
+
+            if (activeSet.has(review)) {
+                btn.classList.remove('opacity-50','text-atb-g-700','bg-white','hover:bg-atb-g-50','hover:text-atb-g-800');
+                btn.classList.add('text-white','bg-atb-p-500','hover:bg-atb-p-700','hover:text-white');
+            } else {
+                btn.classList.add('opacity-50','text-atb-g-700','bg-white','hover:bg-atb-g-50','hover:text-atb-g-800');
+                btn.classList.remove('text-white','bg-atb-p-500','hover:bg-atb-p-700','hover:text-white');
+            }
+        });
+    }
+
+    function applyFilters() {
+        const cards = document.querySelectorAll('.card');
+
+        cards.forEach(card => {
+            const review = card.getAttribute('data-review');
+            const type = card.getAttribute('data-request-type');
+            const condition = card.getAttribute('data-condition');
+            const deviceType = card.getAttribute('data-device-type');
+
+            let reviewMatch = true;
+            let typeMatch = true;
+            let conditionMatch = true;
+
+            if (type === 'borrow') {
+                if (state.activeBRRFilters.size > 0 && !state.activeBRRFilters.has(review)) reviewMatch = false;
+                if (state.activeBTFilters.size > 0 && !state.activeBTFilters.has(deviceType)) typeMatch = false;
+            } else if (type === 'return') {
+                if (state.activeRRRFilters.size > 0 && !state.activeRRRFilters.has(review)) reviewMatch = false;
+                if (state.activeRTFilters.size > 0 && !state.activeRTFilters.has(deviceType)) typeMatch = false;
+                if (state.activeConditionFilters.size > 0 && !state.activeConditionFilters.has(condition)) conditionMatch = false;
+            } else if (type === 'device') {
+                if (state.activeDTFilters.size > 0 && !state.activeDTFilters.has(deviceType)) typeMatch = false;
+            }
+
+            if (reviewMatch && typeMatch && conditionMatch) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+
+    //API
+    return {
+        toggleTypeFilter: function(type, prefix) {
+            const activeFilterMap = {
+                borrow: state.activeBTFilters,
+                return: state.activeRTFilters,
+                device: state.activeDTFilters,
+            };
+
+            const requestTypeMap = {
+                borrow: state.bRequestType,
+                return: state.rRequestType,
+                device: state.deviceType,
+            };
+
+            const activeSet = activeFilterMap[prefix];
+            const requestTypeList = requestTypeMap[prefix];
+            const btnId = `${prefix}-${type}-type-tab`;
+            const btn = document.getElementById(btnId);
+
+            if (!btn || !activeSet || !requestTypeList) return;
+
+            if (activeSet.has(type)) {
+                activeSet.delete(type);
+            } else {
+                activeSet.add(type);
+            }
+
+            updateTypeButtons(prefix, requestTypeList, activeSet);
+            applyFilters();
+        },
+
+        toggleReviewFilter: function(review, prefix) {
+            const isBorrow = prefix === 'borrow';
+            const activeSet = isBorrow ? state.activeBRRFilters : state.activeRRRFilters;
+            const btnId = `${prefix}-${review}-review-tab`;
+            const btn = document.getElementById(btnId);
+
+            if (!btn) return;
+
+            if (activeSet.has(review)) {
+                activeSet.delete(review);
+            } else {
+                activeSet.add(review);
+            }
+
+            updateReviewButtons(prefix, isBorrow ? state.bRequestReview : state.rRequestReview, activeSet);
+            applyFilters();
+        },
+
+        toggleConditionFilter: function(condition) {
+            if (state.activeConditionFilters.has(condition)) {
+                state.activeConditionFilters.delete(condition);
+            } else {
+                state.activeConditionFilters.add(condition);
+            }
+            updateConditionButtons();
+            applyFilters();
+        },
+
+        resetFilters: function() {
+            state.activeBRRFilters.clear();
+            state.activeRRRFilters.clear();
+            state.activeBTFilters.clear();
+            state.activeRTFilters.clear();
+            state.activeConditionFilters.clear();
+            updateReviewButtons('borrow', state.bRequestReview, state.activeBRRFilters);
+            updateReviewButtons('return', state.rRequestReview, state.activeRRRFilters);
+            updateTypeButtons('borrow', state.bRequestType, state.activeBTFilters);
+            updateTypeButtons('return', state.rRequestType, state.activeRTFilters);
+            updateTypeButtons('device', state.deviceType, state.activeDTFilters);
+            updateConditionButtons();
+            applyFilters();
+        },
+
+        showTab: function(selectedTab) {
+            const tabs = ['user', 'borrow', 'device', 'return'];
+
+            for (let i = 0; i < tabs.length; i++) {
+                const tab = tabs[i];
+                const btn = document.getElementById(tab + '-tab');
+                const section = document.getElementById(tab + '-section');
+                const filter = document.getElementById(tab + '-filter');
+
+                if (tab === selectedTab) {
+                    section.classList.remove('hidden');
+                    if (filter) filter.classList.remove('hidden');
+                    btn.disabled = true;
+                } else {
+                    section.classList.add('hidden');
+                    if (filter) filter.classList.add('hidden');
+                    btn.disabled = false;
+                }
+            }
+        },
+
+        initializeDeviceFiltersAndSorting: function() {
+            const rRequestReviewS = document.getElementById('r-request-review');
+            const bRequestReviewS = document.getElementById('b-request-review');
+            const bRequestTypeS = document.getElementById('b-request-type');
+            const rRequestTypeS = document.getElementById('r-request-type');
+            const deviceTypeS = document.getElementById('device-type');
+            const rRequestConditionS = document.getElementById('r-request-condition');
+
+            if (!rRequestReviewS || !bRequestReviewS || !bRequestTypeS || !rRequestTypeS || !deviceTypeS || !rRequestConditionS) {
+                console.warn("Profile data not found in DOM. Skipping filter initialization.");
+                return;
+            }
+
+            state.rRequestReview = JSON.parse(rRequestReviewS.textContent);
+            state.bRequestType = JSON.parse(bRequestTypeS.textContent);
+            state.rRequestType = JSON.parse(rRequestTypeS.textContent);
+            state.deviceType = JSON.parse(deviceTypeS.textContent);
+            state.rRequestCondition = JSON.parse(rRequestConditionS.textContent);
+            state.bRequestReview = JSON.parse(bRequestReviewS.textContent);
+
+            this.resetFilters();
+            applyFilters();
+        },
+
+        init: function() {
+            document.addEventListener('DOMContentLoaded', () => {
+                this.showTab('user');
+                this.initializeDeviceFiltersAndSorting();
+            });
+
+            document.body.addEventListener('htmx:afterSettle', () => {
+                this.initializeDeviceFiltersAndSorting();
+            });
+        }
     };
+})();
 
-    const activeSet = activeFilterMap[prefix];
-    const requestTypeList = requestTypeMap[prefix];
-    const btnId = `${prefix}-${type}-type-tab`;
-    const btn = document.getElementById(btnId);
+// Initialize the RequestManager
+RequestManager.init();
 
-    if (!btn || !activeSet || !requestTypeList) return;
-
-    if (activeSet.has(type)) {
-        activeSet.delete(type);
-    } else {
-        activeSet.add(type);
-    }
-
-    updateTypeButtons(prefix, requestTypeList, activeSet);
-    applyFilters();
-}
-
-
-function toggleReviewFilter(review, prefix) {
-    const isBorrow = prefix === 'borrow';
-    const activeSet = isBorrow ? activeBRRFilters : activeRRRFilters;
-    const btnId = `${prefix}-${review}-review-tab`;
-    const btn = document.getElementById(btnId);
-
-    if (!btn) return;
-
-    if (activeSet.has(review)) {
-        activeSet.delete(review);
-    } else {
-        activeSet.add(review);
-    }
-
-    updateReviewButtons(prefix, isBorrow ? bRequestReview : rRequestReview, activeSet);
-    applyFilters();
-}
-
-function updateConditionButtons() {
-    rRequestCondition.forEach(condition => {
-        const btn = document.getElementById(`${condition}-condition-tab`);
-        if (!btn) return;
-        if (activeConditionFilters.has(condition)) {
-            btn.classList.remove('opacity-50','text-atb-g-700','bg-white','hover:bg-atb-g-50','hover:text-atb-g-800');
-            btn.classList.add('text-white','bg-atb-p-500','hover:bg-atb-p-700','hover:text-white');
-        } else {
-            btn.classList.add('opacity-50','text-atb-g-700','bg-white','hover:bg-atb-g-50','hover:text-atb-g-800');
-            btn.classList.remove('text-white','bg-atb-p-500','hover:bg-atb-p-700','hover:text-white');
-        }
-    });
-}
-
-function toggleConditionFilter(condition) {
-    if (activeConditionFilters.has(condition)) {
-        activeConditionFilters.delete(condition);
-    } else {
-        activeConditionFilters.add(condition);
-    }
-    updateConditionButtons();
-    applyFilters();
-}
-
-function updateTypeButtons(prefix, types, activeSet) {
-    types.forEach(type => {
-        const btn = document.getElementById(`${prefix}-${type}-type-tab`);
-        if (!btn) return;
-
-        if (activeSet.has(type)) {
-            btn.classList.remove('opacity-50','text-atb-g-700','bg-white','hover:bg-atb-g-50','hover:text-atb-g-800');
-            btn.classList.add('text-white','bg-atb-p-500','hover:bg-atb-p-700','hover:text-white');
-        } else {
-            btn.classList.add('opacity-50','text-atb-g-700','bg-white','hover:bg-atb-g-50','hover:text-atb-g-800');
-            btn.classList.remove('text-white','bg-atb-p-500','hover:bg-atb-p-700','hover:text-white');
-        }
-    });
-}
-
-
-function updateReviewButtons(prefix, reviews, activeSet) {
-    reviews.forEach(review => {
-        const btn = document.getElementById(`${prefix}-${review}-review-tab`);
-        if (!btn) return;
-
-        if (activeSet.has(review)) {
-            btn.classList.remove('opacity-50','text-atb-g-700','bg-white','hover:bg-atb-g-50','hover:text-atb-g-800');
-            btn.classList.add('text-white','bg-atb-p-500','hover:bg-atb-p-700','hover:text-white');
-        } else {
-            btn.classList.add('opacity-50','text-atb-g-700','bg-white','hover:bg-atb-g-50','hover:text-atb-g-800');
-            btn.classList.remove('text-white','bg-atb-p-500','hover:bg-atb-p-700','hover:text-white');
-        }
-    });
-}
-
-function applyFilters() {
-    const cards = document.querySelectorAll('.card');
-
-    cards.forEach(card => {
-        const review = card.getAttribute('data-review');
-        const type = card.getAttribute('data-request-type');
-        const condition = card.getAttribute('data-condition');
-        const deviceType = card.getAttribute('data-device-type');
-
-        let reviewMatch = true;
-        let typeMatch = true;
-        let conditionMatch = true;
-
-        if (type === 'borrow') {
-            if (activeBRRFilters.size > 0 && !activeBRRFilters.has(review)) reviewMatch = false;
-            if (activeBTFilters.size > 0 && !activeBTFilters.has(deviceType)) typeMatch = false;
-        } else if (type === 'return') {
-            if (activeRRRFilters.size > 0 && !activeRRRFilters.has(review)) reviewMatch = false;
-            if (activeRTFilters.size > 0 && !activeRTFilters.has(deviceType)) typeMatch = false;
-            if (activeConditionFilters.size > 0 && !activeConditionFilters.has(condition)) conditionMatch = false;
-        } else if (type === 'device') {
-            if (activeDTFilters.size > 0 && !activeDTFilters.has(deviceType)) typeMatch = false;
-        }
-
-        if (reviewMatch && typeMatch && conditionMatch) {
-            card.style.display = 'block';
-        } else {
-            card.style.display = 'none';
-        }
-    });
-}
-
-
-
-function resetFilters() {
-    activeBRRFilters.clear();
-    activeRRRFilters.clear();
-    activeBTFilters.clear();
-    activeRTFilters.clear();
-    activeConditionFilters.clear();
-    updateReviewButtons('borrow',bRequestReview,activeBRRFilters);
-    updateReviewButtons('return',rRequestReview,activeRRRFilters);
-    updateTypeButtons('borrow',bRequestType,activeBTFilters);
-    updateTypeButtons('return',rRequestType,activeRTFilters);
-    updateTypeButtons('device',deviceType,activeDTFilters);
-    updateConditionButtons();
-    applyFilters();
-}
-
-function showTab(selectedTab) {
-    var tabs = ['user', 'borrow', 'device', 'return'];
-
-    for (var i = 0; i < tabs.length; i++) {
-        var tab = tabs[i];
-
-        var btn = document.getElementById(tab + '-tab');
-        var section = document.getElementById(tab + '-section');
-        var filter = document.getElementById(tab + '-filter');
-
-        if (tab === selectedTab) {
-            section.classList.remove('hidden');
-            if (filter) filter.classList.remove('hidden');
-            btn.disabled = true;
-        } else {
-            section.classList.add('hidden');
-            if (filter) filter.classList.add('hidden');
-            btn.disabled = false;
-        }
-    }
-}
-
+window.toggleTypeFilter = RequestManager.toggleTypeFilter.bind(RequestManager);
+window.toggleReviewFilter = RequestManager.toggleReviewFilter.bind(RequestManager);
+window.toggleConditionFilter = RequestManager.toggleConditionFilter.bind(RequestManager);
+window.resetFilters = RequestManager.resetFilters.bind(RequestManager);
+window.showTab = RequestManager.showTab.bind(RequestManager);
 </script>
-
 {% endblock content %}
 
