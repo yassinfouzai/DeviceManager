@@ -238,7 +238,7 @@ def borrow_request_view(request, id):
             form.save()
             return redirect('devices:device-list')
         else:
-            messages.error(request, ("Invalid date!"))
+            messages.error(request, form.errors.as_text())
     else:
         form = BorrowRequestForm(min_date=today)
 

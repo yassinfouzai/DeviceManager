@@ -260,9 +260,9 @@
 {{ conditions|json_script:"r-request-condition" }}
 
 <script>
-let currentSortField = 'name';
-let currentSortDirection = 'asc';
-let currentTab = 'borrow';
+var currentSortField = 'name';
+var currentSortDirection = 'asc';
+var currentTab = 'borrow';
 
 const activeBRRFilters = new Set();
 const activeRRRFilters = new Set();

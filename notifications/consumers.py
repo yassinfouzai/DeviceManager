@@ -1,7 +1,22 @@
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
+from channels.db import database_sync_to_async
+from .models import Notification
 
 
 class NotificationConsumer(AsyncJsonWebsocketConsumer):
+    @database_sync_to_async
+    def get_user_notifications(self):
+        notifications_qs = Notification.objects.filter(user=self.user).order_by("-timestamp")
+        return [
+            {
+                "id": n.id,
+                "message": n.message,
+                "timestamp": n.timestamp.isoformat() if n.timestamp else None,
+                "read": n.read,
+            }
+            for n in notifications_qs
+        ]
+
     async def connect(self):
         self.user = self.scope["user"]
         if self.user.is_authenticated:
@@ -9,6 +24,11 @@ class NotificationConsumer(AsyncJsonWebsocketConsumer):
             await self.channel_layer.group_add(self.group_name, self.channel_name)
             await self.accept()
             await self.send_json({"message": "WebSocket connected"})
+            notifications = await self.get_user_notifications()
+            await self.send_json({
+                "type": "all_notifications",
+                "notifications": notifications,
+            })
         else:
             await self.close()
 
@@ -18,5 +38,8 @@ class NotificationConsumer(AsyncJsonWebsocketConsumer):
 
     async def send_notification(self, event):
         await self.send_json({
-            "message": event.get("message", "You have a new notification.")
+            "id": event.get("id"),
+            "message": event.get("message", "You have a new notification."),
+            "timestamp": event.get("timestamp"),
+            "read": event.get("read", False)
         })

@@ -52,8 +52,11 @@
 
         
 {% if not is_htmx %}
+
+{% if request.user.is_authenticated %}
         <!-- Toast Container -->
         <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col space-y-2"></div>
+
 
         <!-- Notification History Tab -->
         <div id="notification-tab" class="fixed bottom-5 right-5 w-80 max-h-96 bg-white border border-gray-300 shadow-lg rounded-md flex flex-col hidden font-sans text-sm">
@@ -68,7 +71,7 @@
         <button id="notification-btn" onclick="toggleNotificationTab()" class="fixed bottom-5 right-5 bg-atb-p-500 hover:bg-atb-p-600 text-white px-4 py-2 rounded-md shadow-lg font-semibold focus:outline-none focus:ring-2 focus:ring-atb-p-300">
           Notifications
         </button>
-
+{% endif %}
 
 <script>
 
@@ -92,7 +95,7 @@
             console.log("WebSocket message received:", data);
             if (data.message) {
                 showToast(data.message);
-                appendToNotificationList(data.message);
+                appendToNotificationList(data);
             }
         };
 
@@ -134,12 +137,23 @@
         }, 3000);
     };
 
-    window.appendToNotificationList = function(message) {
-      const item = document.createElement("div");
-      item.className = "bg-gray-100 p-2 rounded shadow-sm";
-      item.innerText = message;
-      notificationList.prepend(item);
-    }
+    window.appendToNotificationList = function(notification) {
+        const list = document.getElementById("notification-list");
+
+        const item = document.createElement("div");
+        item.className = "bg-gray-100 p-2 rounded shadow-sm border border-gray-200";
+
+        const timestamp = notification.timestamp 
+            ? new Date(notification.timestamp).toLocaleString() 
+            : '';
+
+        item.innerHTML = `
+            <div class="text-sm font-medium text-gray-800">${notification.message}</div>
+            ${timestamp ? `<div class="text-xs text-gray-500">${timestamp}</div>` : ''}
+        `;
+
+        list.prepend(item);
+    };
 
     window.showTab = function(selectedTab) {
     var tabs = ['user', 'borrow', 'device', 'return'];
@@ -239,6 +253,16 @@
         menu.classList.toggle("hidden");
     }
 
+      document.addEventListener('DOMContentLoaded', () => {
+        const flashContainer = document.getElementById('flash-messages');
+        if (flashContainer) {
+          setTimeout(() => {
+            flashContainer.style.transition = 'opacity 0.5s ease';
+            flashContainer.style.opacity = '0';
+            setTimeout(() => flashContainer.remove(), 500); // remove after fade out
+          }, 3500);
+        }
+      });
 </script>
 {% endif %}
 </body>
