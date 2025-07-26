@@ -46,33 +46,49 @@
 
 {{ reserved_dates|json_script:"reservedDates" }}
 
+
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const disabledDates = JSON.parse(document.getElementById('reservedDates').textContent);
+  function initFlatpickr() {
+    const reservedEl = document.getElementById('reservedDates');
+    if (!reservedEl) return;
 
-    const disabledDateObjects = disabledDates.map(dateStr => new Date(dateStr));
+    try {
+      const disabledDates = JSON.parse(reservedEl.textContent);
+      const disabledDateObjects = disabledDates.map(dateStr => new Date(dateStr));
 
-    flatpickr('.flatpickr', {
+      flatpickr('.flatpickr', {
         dateFormat: "Y-m-d",
         minDate: "today",
         disable: [
-            function(date) {
-            return (date.getDay() === 0 || date.getDay() === 6);
-        },
-        ...disabledDateObjects
-      ],
-    });
-  });
-</script>
+          function(date) {
+            return date.getDay() === 0 || date.getDay() === 6;
+          },
+          ...disabledDateObjects
+        ],
+      });
+    } catch (e) {
+      console.error("Flatpickr initialization error:", e);
+    }
+  }
 
-<script>
-  setTimeout(() => {
+  function initFlashTimeout() {
     const container = document.getElementById('flash-messages');
     if (container) {
-      container.style.display = 'none';
+      setTimeout(() => {
+        container.style.display = 'none';
+      }, 3000);
     }
-  }, 3000);
+  }
+
+  function initAll() {
+    initFlatpickr();
+    initFlashTimeout();
+  }
+
+  document.addEventListener('DOMContentLoaded', initAll);
+  document.body.addEventListener('htmx:afterSettle', initAll);
 </script>
+
 
 {% endblock %}
 

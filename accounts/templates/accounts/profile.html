@@ -96,7 +96,12 @@
         <br>
         <a href="{% url 'accounts:password' %}"
            class="w-full sm:w-fit text-center whitespace-nowrap 
-                px-4 sm:px-6 py-2  bg-atb-p-600 rounded-[8px] font-semibold text-white text-[18px] py-2 px-8 hover:bg-atb-p-700 focus:bg-atb-p-600 focus:ring-atb-p-200 focus:outline-none focus:shadow-[0_0_0_4px_#FDE3E6] transition duration-200 cursor-pointer">
+                px-4 sm:px-6 py-2  bg-atb-p-600 rounded-[8px] font-semibold text-white text-[18px] py-2 px-8 hover:bg-atb-p-700 focus:bg-atb-p-600 focus:ring-atb-p-200 focus:outline-none focus:shadow-[0_0_0_4px_#FDE3E6] transition duration-200 cursor-pointer"
+                    hx-get="{% url 'accounts:password' %}" 
+                    hx-target="#main-content" 
+                    hx-swap="innerHTML" 
+                    hx-push-url="true"
+                >
             Change Password
         </a>
         </div>
@@ -154,7 +159,13 @@
                 data-device-type="{{ instance.device.type }}"
                 data-request-type="device"
                 data-name="{{ instance.device.name|lower }}" 
-                data-id="{{ instance.device.id }}">
+                data-id="{{ instance.device.id }}"
+
+                hx-get="{% url 'devices:device-detail' instance.device.id %}" 
+                hx-target="#main-content" 
+                hx-swap="innerHTML" 
+                hx-push-url="true"
+                >
                 <h3 class="text-xl font-semibold text-[#334155]">{{ instance.device.name }}</h3>
                 <p class="text-[#475569]">
                     {{ instance.device.type }}<br> Borrowed on {{ instance.date_requested }} &bull; Return by {{ instance.return_date }}
