@@ -1,16 +1,12 @@
 {% extends "admin/base.html" %}
 
-{% block title %}Admin Panel | {{ block.super }}{% endblock %}
-
-{% block content %}
-  {% block branding %}
-    <h1 id="site-name"><a href="{% url 'admin:index' %}">Admin</a></h1>
-  {% endblock %}
-
-  {% block nav-global %}{{ block.super }}{% endblock %}
-  {% block breadcrumbs %}{{ block.super }}{% endblock %}
-  {% block messages %}{{ block.super }}{% endblock %}
-  {% block content_title %}{{ block.super }}{% endblock %}
-  {{ block.super }}
+{% block branding %}
+<nav class="bg-gray-900 text-white px-6 py-4 flex justify-between items-center">
+    <a href="{% url 'admin:index' %}" class="text-xl font-bold">My Admin Panel</a>
+    <ul class="flex space-x-4">
+        <li><a href="{% url 'admin:index' %}" class="hover:underline">Dashboard</a></li>
+        <li><a href="/" class="hover:underline">Home</a></li>
+        <li><a href="{% url 'admin:logout' %}" class="hover:underline">Logout</a></li>
+    </ul>
+</nav>
 {% endblock %}
-

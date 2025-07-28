@@ -59,13 +59,17 @@
 
 
         <!-- Notification History Tab -->
-        <div id="notification-tab" class="fixed bottom-5 right-5 w-80 max-h-96 bg-white border border-gray-300 shadow-lg rounded-md flex flex-col hidden font-sans text-sm">
-          <div class="px-4 py-2 border-b border-gray-200 font-semibold cursor-pointer select-none flex justify-between items-center" onclick="toggleNotificationTab()">
+        
+        <div id="notification-tab" 
+             class="fixed bottom-5 right-5 w-80 max-h-80 bg-white border border-gray-300 shadow-lg rounded-md flex flex-col hidden font-sans text-sm">
+          <div class="px-4 py-2 border-b border-gray-200 font-semibold cursor-pointer select-none flex justify-between items-center" 
+               onclick="toggleNotificationTab()">
             Notifications
             <button aria-label="Close" class="text-gray-600 hover:text-gray-900 font-bold">&times;</button>
           </div>
-          <div id="notification-list" class="overflow-y-auto px-4 py-2 flex flex-col space-y-3"></div>
+          <div id="notification-list" class="flex-grow overflow-y-auto px-4 py-2 flex flex-col space-y-3"></div>
         </div>
+
 
         <!-- Button to open Notification Tab -->
         <button id="notification-btn" onclick="toggleNotificationTab()" class="fixed bottom-5 right-5 bg-atb-p-500 hover:bg-atb-p-600 text-white px-4 py-2 rounded-md shadow-lg font-semibold focus:outline-none focus:ring-2 focus:ring-atb-p-300">
@@ -90,14 +94,21 @@
             console.log("WebSocket connected");
         };
 
+
         socket.onmessage = function(event) {
             const data = JSON.parse(event.data);
             console.log("WebSocket message received:", data);
-            if (data.message) {
-                showToast(data.message);
+
+            if (data.type === "all_notifications" && Array.isArray(data.notifications)) {
+                data.notifications.forEach(notification => {
+                    appendToNotificationList(notification);
+                });
+            } else if (data.message) {
+                showToast(data.message); 
                 appendToNotificationList(data);
             }
         };
+
 
         socket.onclose = function(event) {
             console.log("WebSocket closed", event);
@@ -207,19 +218,22 @@
     window.toggleDetails = function(id, type) {
         const allDetails = document.querySelectorAll('[id^="details-"]');
 
-
-        // Hide all other detail sections
+        //hide all other detail sections
         allDetails.forEach(section => {
             if (section.id !== `details-${id}`) {
                 section.classList.add('hidden');
             }
         });
 
-        // Toggle the selected details section
+        //toggle the selected details section
         const currentSection = document.getElementById(`details-${id}`);
         currentSection.classList.toggle('hidden');
 
-        // Mark as seen via POST request
+        //hide the new label if it exists
+        const label = document.getElementById(`new-label-${id}`);
+        if (label) label.classList.add('hidden');
+
+        //send seen update
         fetch(`/requests/mark_seen/${type}/${id}/`, {
             method: 'POST',
             headers: {
@@ -227,8 +241,11 @@
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({ seen: true })
-    });
+        }).catch(err => {
+            console.error("Failed to mark as seen:", err);
+        });
     }
+
 
     window.getCookie = function(name) {
         let cookieValue = null;
@@ -259,7 +276,7 @@
           setTimeout(() => {
             flashContainer.style.transition = 'opacity 0.5s ease';
             flashContainer.style.opacity = '0';
-            setTimeout(() => flashContainer.remove(), 500); // remove after fade out
+            setTimeout(() => flashContainer.remove(), 500);
           }, 3500);
         }
       });

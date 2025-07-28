@@ -117,6 +117,7 @@
                     data-review='{{ req.review }}' 
                     data-request-type='borrow'
                     data-device-type='{{ req.device.type }}'>
+                <div class="flex flex-row gap-4 w-full items-center ">
                     <div class="flex justify-start mt-2 ">
                         {% if req.review == 'approved' %}
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-16 text-atb-s-500">
@@ -137,6 +138,7 @@
                     <div class="text-left">
                     <h3 class="text-xl font-semibold text-[#334155]">{{ req }}</h3>
                     <p class="text-[#475569]">Requested at {{ req.date_requested }} &bull; Returning on {{ req.return_date }}</p>
+                    </div>
                 </div>
             </a>
             {% empty %}
@@ -189,6 +191,7 @@
                              data-request-type="return"
                              data-condition="{{ req.condition }}"
                              data-device-type="{{ req.device.type }}">
+                <div class="flex flex-row gap-4 w-full items-center ">
                     <div class="flex justify-start mt-2 ">
                         {% if req.review == 'approved' %}
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-16 text-atb-s-500">
@@ -206,9 +209,10 @@
                     </svg>
                     {% endif %}
                     </div>
-                <div>
-                <h3 class="text-xl font-semibold text-[#334155]">{{ req }}</h3>
-                <p class="text-[#475569]">Condition : {{ req.condition }} &bull; Feedback : {{ req.feedback|slice:":20" }}</p>
+                    <div>
+                    <h3 class="text-xl font-semibold text-[#334155]">{{ req }}</h3>
+                    <p class="text-[#475569]">Condition : {{ req.condition }} &bull; Feedback : {{ req.feedback|slice:":20" }}</p>
+                    </div>
                 </div>
             </a>
             {% empty %}

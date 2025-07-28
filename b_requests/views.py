@@ -73,6 +73,9 @@ def return_detail_view(request, pk):
                 "Device Management Team"
             )
 
+            # WS
+            notify_user(user.id, f"Your return request for '{device_name}' has been approved.")
+
         elif 'reject' in request.POST:
             return_request.review = ReturnRequest.Review.REJECTED
             return_request.save()
@@ -85,6 +88,9 @@ def return_detail_view(request, pk):
                 "Best regards,\n"
                 "Device Management Team"
             )
+
+            # WS
+            notify_user(user.id, f"Your borrow request for '{device_name}' has been rejected.")
 
         # Send the email if a valid email exists
         if user_email:

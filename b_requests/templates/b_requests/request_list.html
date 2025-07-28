@@ -102,14 +102,7 @@
 
                 
                 {% if not instance.seen %}
-                <div id="new-{{ instance.id }}"
-                     hx-post="/requests/mark_seen/borrow/{{ instance.id }}/"
-                     hx-trigger="revealed"
-                     hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-                     hx-on::after-request="this.classList.add('hidden')"
-                     hx-swap="none">
-                    <p class="text-atb-p-500 font-semibold text-md">New</p>
-                </div>
+                <p id="new-label-{{ instance.id }}" class="text-atb-p-500 font-semibold text-md">New</p>
                 {% endif %}
 
 
@@ -176,7 +169,7 @@
             {% if returns %}
                 <div class="space-y-4">
                     {% for instance in returns %}
-                        <div onclick="toggleDetails('{{ instance.id }}', 'return')" 
+                    <div onclick="toggleDetails('{{ instance.id }}','borrow'); markSeen('{{ instance.id }}')"
                              class="group cursor-pointer bg-atb-g-50 hover:bg-atb-g-200 rounded-[12px] p-8 transition duration-300 request-card"
                              data-review="{{ instance.review }}"
                              data-request-type="return"
@@ -275,6 +268,15 @@ let rRequestReview = [];
 let bRequestType = [];
 let rRequestType = [];
 let rRequestCondition = [];
+
+
+function markSeen(id) {
+  const trigger = document.getElementById(`seen-trigger-${id}`);
+  const label = document.getElementById(`new-label-${id}`);
+
+  if (trigger) trigger.click();
+  if (label) label.classList.add('hidden');
+}
 
 
 function toggleTypeFilter(type, prefix) {
