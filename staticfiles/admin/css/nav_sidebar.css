@@ -36,9 +36,11 @@
     flex: 0 0 275px;
     left: -276px;
     margin-left: -276px;
-    border-top: 1px solid transparent;
-    border-right: 1px solid var(--hairline-color);
-    background-color: var(--body-bg);
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: white;
+    border-radius: 12px
     overflow: auto;
 }
 

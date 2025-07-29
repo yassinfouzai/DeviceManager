@@ -7,12 +7,13 @@ from devices.models import Device
 import datetime
 from django.contrib import messages
 from django.http import JsonResponse
-from main.utils import is_htmx
 from django.views.decorators.http import require_POST
 from django.core.mail import send_mail
 from django.conf import settings
 from main.utils import notify_user
 from django.http import HttpResponse
+from django.contrib.auth import get_user_model
+from django.template.loader import render_to_string
 
 
 @staff_member_required
@@ -240,11 +241,29 @@ def borrow_request_view(request, id):
         form = BorrowRequestForm(request.POST, min_date=today)
         form.instance.device = device
         form.instance.borrower = request.user
+
         if form.is_valid():
             form.save()
-            return redirect('devices:device-list')
+
+            # Notify superuser
+            User = get_user_model()
+            superuser = User.objects.filter(is_superuser=True).first()
+            notify_user(superuser.id, f"{request.user} requested to borrow for '{device}'.")
+
+            if request.headers.get('HX-Request'):
+                success_html = "<p class='text-green-600 font-semibold'>Borrow request submitted successfully.</p>"
+                return HttpResponse(success_html)
+            else:
+                messages.success(request, "Borrow request submitted successfully.")
+                return redirect('some-view-name')
+
         else:
-            messages.error(request, form.errors.as_text())
+            if request.headers.get('HX-Request'):
+                error_html = render_to_string('partials/form_errors.html', {'form': form})
+                return HttpResponse(error_html, status=400)
+            else:
+                messages.error(request, form.errors.as_text())
+
     else:
         form = BorrowRequestForm(min_date=today)
 
@@ -261,8 +280,14 @@ def return_request_view(request, id):
     device = get_object_or_404(Device, id=id)
 
     borrow_request = BorrowRequest.objects.filter(device=device, borrower=request.user, review='approved').first()
-
     if not borrow_request:
+        if request.headers.get('HX-Request'):
+            return HttpResponse(
+                render_to_string('partials/error_message.html', {
+                    'message': 'You do not have an approved borrow request for this device.'
+                }),
+                status=400
+            )
         return redirect('devices:device-detail', id=device.id)
 
     if request.method == 'POST':
@@ -272,7 +297,29 @@ def return_request_view(request, id):
             return_request.borrower = request.user
             return_request.device = device
             return_request.save()
-            return redirect('devices:device-list')
+
+            # Notify superuser
+            User = get_user_model()
+            superuser = User.objects.filter(is_superuser=True).first()
+            notify_user(superuser.id, f"{request.user} requested to return for '{device}'.")
+
+            if request.headers.get('HX-Request'):
+                return HttpResponse(
+                    "<p class='text-green-600 font-semibold'>Return request submitted successfully.</p>",
+                    status=200
+                )
+            else:
+                messages.success(request, "Return request submitted successfully.")
+                return redirect('devices:device-detail', id=device.id)
+        else:
+            if request.headers.get('HX-Request'):
+                return HttpResponse(
+                    render_to_string('b_requests/return_request.html', {'form': form, 'device': device}),
+                    status=400
+                )
+            else:
+                messages.error(request, form.errors.as_text())
+
     else:
         form = ReturnRequestForm()
 

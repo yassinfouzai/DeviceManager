@@ -2,11 +2,18 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from channels.db import sync_to_async
 from .models import Notification
 from typing import List, Dict, Optional
+from django.utils import timezone
 
 
 class NotificationConsumer(AsyncJsonWebsocketConsumer):
     def _get_user_notifications_sync(self) -> List[Dict[str, Optional[str]]]:
-        notifications_qs = Notification.objects.filter(recipient=self.user).order_by("-timestamp")
+        now = timezone.now()
+        notifications_qs = Notification.objects.filter(
+            recipient=self.user,
+            timestamp__year=now.year,
+            timestamp__month=now.month
+        ).order_by("-timestamp")
+
         return [
             {
                 "id": n.id,

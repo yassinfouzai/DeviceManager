@@ -98,8 +98,8 @@ body {
     padding: 0;
     font-size: 0.875rem;
     font-family: var(--font-family-primary);
-    color: var(--body-fg);
-    background: var(--body-bg);
+    color: #667085;
+    background: #F9FAFB;
 }
 
 /* LINKS */

@@ -1,12 +1,81 @@
 {% extends "admin/base.html" %}
+{% load static tailwind_tags %}
+
+{% block extrastyle %}
+{% endblock %}
 
 {% block branding %}
-<nav class="bg-gray-900 text-white px-6 py-4 flex justify-between items-center">
-    <a href="{% url 'admin:index' %}" class="text-xl font-bold">My Admin Panel</a>
-    <ul class="flex space-x-4">
-        <li><a href="{% url 'admin:index' %}" class="hover:underline">Dashboard</a></li>
-        <li><a href="/" class="hover:underline">Home</a></li>
-        <li><a href="{% url 'admin:logout' %}" class="hover:underline">Logout</a></li>
-    </ul>
-</nav>
+    <img class="atblogo" src="{% static 'assets/icons/Atb39logo.jpg' %}" alt="ATB Logo">
 {% endblock %}
+
+
+{% block usertools %}
+<div id="user-tools">
+        <div class="left">
+        <a href="/">Dashboard</a>
+        <a href="#">Admin</a>
+        <a href="">Request History</a>
+        </div>
+        <div class="right">
+        <a href="{% url 'admin:logout' %}">Log out</a>
+        </div>
+</div>
+{% endblock %}
+
+{% block extrahead %}
+  {{ block.super }}
+  {% tailwind_css %}
+  <style>
+    #user-tools{
+        width: 100%;
+        box-sizing: border-box;
+        text-transform: none !important;
+    }
+
+
+    .right{
+        float: right;
+    }
+
+    .left{
+        float: left;
+    }
+
+    .atblogo{
+        width: 4rem;
+    }
+    #header {
+        background-color: white;
+        padding-top: 1.5rem;
+        padding-bottom: 1.5rem; 
+        min-height: 92px;
+        width: 100%;
+        color: #475467;
+        font-size: 18px;
+        font-weight: 600;
+        border-bottom: 1px solid #EAECF0; 
+    }
+
+    #branding #site-name a {
+    }
+
+      #user-tools a,
+      #user-tools a:visited,
+      #logout-form button {
+        color: #475467 !important;
+        font-weight: 600;
+        font-size: 16px;
+        letter-spacing: 0.05em;
+        padding: 0.25rem 0.5rem;
+        background: none;
+        border: none;
+      }
+
+      #user-tools a:hover,
+      #logout-form button:hover {
+        color: #dc2626 !important;
+        cursor: pointer;
+      }
+  </style>
+{% endblock %}
+
