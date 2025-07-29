@@ -5,8 +5,8 @@
 /* VARIABLE DEFINITIONS */
 html[data-theme="light"],
 :root {
-    --primary: #79aec8;
-    --secondary: #417690;
+    --primary: #ac0033;
+    --secondary: #ac0033;
     --accent: #f5dd5d;
     --primary-fg: #fff;
 
@@ -105,7 +105,7 @@ body {
 /* LINKS */
 
 a:link, a:visited {
-    color: var(--link-fg);
+    color: #667085;
     text-decoration: none;
     transition: color 0.15s, background 0.15s;
 }
