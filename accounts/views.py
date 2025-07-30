@@ -26,16 +26,28 @@ class PasswordsChangeView(PasswordChangeView):
         return super().form_invalid(form)
 
 
+def get_unique_borrow_requests_by_device(borrow_requests):
+    seen_devices = set()
+    unique_requests = []
+
+    for request in reversed(borrow_requests):
+        device_id = request.device_id
+        if device_id not in seen_devices:
+            unique_requests.append(request)
+            seen_devices.add(device_id)
+
+    return list(reversed(unique_requests))
+
 
 @login_required
 def profile_view(request):
     borrow_requests = BorrowRequest.objects.filter(borrower=request.user)
     return_requests = ReturnRequest.objects.filter(borrower=request.user)
-    approved_borrows = BorrowRequest.objects.filter(
+    approved_borrows = get_unique_borrow_requests_by_device(BorrowRequest.objects.filter(
         borrower=request.user,
         review='approved',
         device__location=request.user
-    )
+    ))
 
     conditions_qs = ReturnRequest.objects.values('condition').distinct().filter(borrower=request.user)
     conditions = [c['condition'].replace('condition-', '') for c in conditions_qs]

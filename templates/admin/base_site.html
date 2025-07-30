@@ -14,7 +14,7 @@
         <div class="left">
         <a href="/">Dashboard</a>
         <a href="#">Admin</a>
-        <a href="">Request History</a>
+        <a href="/requests/">Request History</a>
         </div>
         <div class="right">
         <a href="{% url 'admin:logout' %}">Log out</a>
@@ -64,16 +64,17 @@
       #logout-form button {
         color: #475467 !important;
         font-weight: 600;
-        font-size: 16px;
+        font-size: 18px;
         letter-spacing: 0.05em;
         padding: 0.25rem 0.5rem;
         background: none;
+        margin-right: 20px;
         border: none;
       }
 
       #user-tools a:hover,
       #logout-form button:hover {
-        color: #dc2626 !important;
+        color: #AC0033 !important;
         cursor: pointer;
       }
   </style>

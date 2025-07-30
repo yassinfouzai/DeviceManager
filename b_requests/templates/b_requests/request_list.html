@@ -279,6 +279,11 @@ function markSeen(id) {
 }
 
 
+function onSortFieldChange(selectElement) {
+    const selectedField = selectElement.value;
+    toggleSorting(selectedField);
+}
+
 function toggleTypeFilter(type, prefix) {
     const isBorrow = prefix === 'borrow';
     const activeSet = isBorrow ? activeBTFilters : activeRTFilters;
@@ -358,25 +363,13 @@ function resetFilters() {
 }
 
 
-function toggleSorting(field, toggleDirection = true) {
-    const sortUp = document.getElementById('sort-up');
-    const sortDown = document.getElementById('sort-down');
-
-    if (currentSortField === field) {
-        if (toggleDirection) {
-            currentSortDirection = (currentSortDirection === 'asc') ? 'desc' : 'asc';
-        }
-    } else {
+function toggleSorting(value) {
+    const [field, direction] = value.split('-');
+    if (field && direction) {
         currentSortField = field;
-        currentSortDirection = field === 'name' ? 'asc' : 'desc';
+        currentSortDirection = direction;
+        sortCards(field, direction);
     }
-
-    if (sortUp && sortDown) {
-        sortUp.classList.toggle('hidden', currentSortDirection === 'desc');
-        sortDown.classList.toggle('hidden', currentSortDirection === 'asc');
-    }
-
-    sortCards(currentSortField, currentSortDirection);
 }
 
 function sortCards(field, direction = 'asc') {
@@ -386,20 +379,22 @@ function sortCards(field, direction = 'asc') {
     const cards = Array.from(container.querySelectorAll('.request-card'));
 
     cards.sort((a, b) => {
-        let aVal = a.dataset[field] || '';
-        let bVal = b.dataset[field] || '';
+        const aValue = (a.dataset[field] || '').toString();
+        const bValue = (b.dataset[field] || '').toString();
 
-        if (field === 'bd' || field === 'rd') {
-            aVal = new Date(aVal);
-            bVal = new Date(bVal);
+        const aNum = parseFloat(aValue);
+        const bNum = parseFloat(bValue);
+
+        const isNumeric = !isNaN(aNum) && !isNaN(bNum);
+
+        let comparison;
+        if (isNumeric) {
+            comparison = aNum - bNum;
         } else {
-            aVal = aVal.toLowerCase();
-            bVal = bVal.toLowerCase();
+            comparison = aValue.toLowerCase().localeCompare(bValue.toLowerCase());
         }
 
-        if (aVal < bVal) return direction === 'asc' ? -1 : 1;
-        if (aVal > bVal) return direction === 'asc' ? 1 : -1;
-        return 0;
+        return direction === 'asc' ? comparison : -comparison;
     });
 
     cards.forEach(card => container.appendChild(card));
@@ -416,7 +411,7 @@ function initializeRequestFiltersAndSorting() {
     resetFilters();
     applyFilters();
     sortCards(currentSortField, currentSortDirection);
-    toggleSorting(currentSortField, false);
+    toggleSorting(currentSortField);
 }
 
 document.addEventListener('DOMContentLoaded', initializeRequestFiltersAndSorting);

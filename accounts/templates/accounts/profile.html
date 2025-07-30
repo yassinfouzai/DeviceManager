@@ -157,7 +157,7 @@
             <a href="{% url 'devices:device-detail' instance.device.id %}" 
                 class="block bg-atb-g-50 rounded-[12px] p-8 hover:bg-atb-g-200
                 focus:border-none focus:ring-0 focus:shadow-[0_0_0_4px_#F2F4F7]
-                transition duration-300 card"
+                transition duration-300 device-card card"
                 data-device-type="{{ instance.device.type }}"
                 data-request-type="device"
                 data-name="{{ instance.device.name|lower }}" 
@@ -247,7 +247,9 @@ const RequestManager = (function() {
         activeBTFilters: new Set(),
         activeRTFilters: new Set(),
         activeDTFilters: new Set(),
-        activeConditionFilters: new Set()
+        activeConditionFilters: new Set(),
+        currentSortDirection: 'desc',
+        currentSortField: 'name'
     };
 
     //private method
@@ -327,6 +329,29 @@ const RequestManager = (function() {
         });
     }
 
+    function sortCards(field, direction = 'asc') {
+        const container = document.getElementById('device-section');
+        if (!container) return;
+        const cards = Array.from(container.querySelectorAll('.device-card'));
+
+        cards.sort((a, b) => {
+            const aValue = a.dataset[field];
+            const bValue = b.dataset[field];
+
+            const isNumeric = !isNaN(parseFloat(aValue)) && isFinite(aValue);
+
+            let comparison;
+            if (isNumeric) {
+                comparison = parseFloat(aValue) - parseFloat(bValue);
+            } else {
+                comparison = aValue.toLowerCase().localeCompare(bValue.toLowerCase());
+            }
+
+            return direction === 'asc' ? comparison : -comparison;
+        });
+
+        cards.forEach(card => container.appendChild(card));
+    }
 
     //API
     return {
@@ -424,6 +449,17 @@ const RequestManager = (function() {
             }
         },
 
+        toggleSorting: function(value) {
+            const [field, direction] = value.split('-');
+            if (field && direction) {
+                state.currentSortField = field;
+                state.currentSortDirection = direction;
+                this.sortCards(field, direction);
+            }
+        },
+
+        sortCards: sortCards,
+
         initializeDeviceFiltersAndSorting: function() {
             const rRequestReviewS = document.getElementById('r-request-review');
             const bRequestReviewS = document.getElementById('b-request-review');
@@ -433,7 +469,6 @@ const RequestManager = (function() {
             const rRequestConditionS = document.getElementById('r-request-condition');
 
             if (!rRequestReviewS || !bRequestReviewS || !bRequestTypeS || !rRequestTypeS || !deviceTypeS || !rRequestConditionS) {
-                console.warn("Profile data not found in DOM. Skipping filter initialization.");
                 return;
             }
 
@@ -469,6 +504,7 @@ window.toggleReviewFilter = RequestManager.toggleReviewFilter.bind(RequestManage
 window.toggleConditionFilter = RequestManager.toggleConditionFilter.bind(RequestManager);
 window.resetFilters = RequestManager.resetFilters.bind(RequestManager);
 window.showTab = RequestManager.showTab.bind(RequestManager);
+window.toggleSorting = RequestManager.toggleSorting.bind(RequestManager); 
 </script>
 {% endblock content %}
 

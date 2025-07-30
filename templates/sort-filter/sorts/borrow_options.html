@@ -1,6 +1,10 @@
-<select onchange="onSortFieldChange(this.value)" 
+<select onchange="toggleSorting(this.value)" 
     class="w-full grow py-2 pr-8 pl-4 rounded-[8px] bg-white text-[16px] text-atb-g-900 border border-atb-g-300 placeholder-atb-g-500 hover:text-atb-g-900 focus:text-atb-g-900 focus:ring-atb-p-200 focus:border-atb-p-200 focus:outline-none focus:shadow-[0_0_0_4px_#FDE3E6]">
-    <option id="o-name" value="name" selected>Alphabet</option>
-    <option id="o-BD"   value="bd" >Borrow Date</option>
-    <option id="o-RD"   value="rd" >Return Date</option>
+    <option value="name-asc" selected>Alphabet A-Z</option>
+    <option value="name-desc">Alphabet Z-A</option>
+    <option value="bd-asc" >Borrow Date ASC</option>
+    <option value="bd-des" >Borrow Date DES</option>
+    <option value="rd-asc">Return Date ASC</option>
+    <option value="rd-des">Return Date DES</option>
 </select>
+
