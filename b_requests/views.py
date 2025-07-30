@@ -230,8 +230,11 @@ def borrow_request_view(request, id):
     reserved_dates = set()
 
     for r in reservations:
+        actual_return = ReturnRequest.objects.filter(device=device, borrower=r.borrower).order_by('-date_returned').first()
+        end_date = actual_return.date_returned.date() if actual_return else r.return_date
+
         current = r.date_requested
-        while current <= r.return_date:
+        while current <= end_date:
             reserved_dates.add(current)
             current += datetime.timedelta(days=1)
 

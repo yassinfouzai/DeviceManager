@@ -309,7 +309,6 @@ p.datetime {
     line-height: 20px;
     margin: 0;
     padding: 0;
-    color: var(--body-quiet-color);
     font-weight: bold;
 }
 

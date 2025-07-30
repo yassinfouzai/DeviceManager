@@ -44,8 +44,8 @@ html[data-theme="light"],
 
     --button-fg: #fff;
     --button-bg: var(--secondary);
-    --button-hover-bg: #205067;
-    --default-button-bg: #205067;
+    --button-hover-bg: #8F002B;
+    --default-button-bg: #8F002B;
     --default-button-hover-bg: var(--secondary);
     --close-button-bg: #747474;
     --close-button-hover-bg: #333;
@@ -105,7 +105,7 @@ body {
 /* LINKS */
 
 a:link, a:visited {
-    color: #667085;
+    color: #344054;
     text-decoration: none;
     transition: color 0.15s, background 0.15s;
 }
@@ -496,7 +496,7 @@ Add input:not([type]) to make the CSS stylesheet work the same.
 input:not([type]), input[type=text], input[type=password], input[type=email],
 input[type=url], input[type=number], input[type=tel], textarea, select,
 .vTextField {
-    border: 1px solid var(--border-color);
+    border: 1px solid #D0D5DD;
     border-radius: 4px;
     padding: 5px 6px;
     margin-top: 0;
@@ -551,15 +551,17 @@ a.button {
 }
 
 .button.default, input[type=submit].default, .submit-row input.default {
-    border: none;
+    border: solid 1px #D0D5DD;
+    color: #344054;
     font-weight: 400;
-    background: var(--default-button-bg);
+    background: #fff;
 }
 
 .button.default:active, input[type=submit].default:active,
 .button.default:focus, input[type=submit].default:focus,
 .button.default:hover, input[type=submit].default:hover {
-    background: var(--default-button-hover-bg);
+    background: #F9FAFB;
+    color: #1D2939;
 }
 
 .button[disabled].default,

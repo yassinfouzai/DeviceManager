@@ -3,7 +3,7 @@
       --primary: #ac0033;
       --primary-fg: #f7f7f7;
   
-      --body-fg: #eeeeee;
+      --body-fg: #475467;
       --body-bg: #ffffff;
       --body-quiet-color: #d0d0d0;
       --body-medium-color: #e0e0e0;
@@ -15,7 +15,6 @@
       --link-fg: #81d4fa;
       --link-selected-fg: #6f94c6;
   
-      --hairline-color: #272727;
       --border-color: #ffffff;
   
       --error-fg: #e35f5f;
@@ -25,12 +24,11 @@
   
       --darkened-bg: #fff;
       --selected-bg: #1b1b1b;
-      --selected-row: #00363a;
+      --selected-row: #EAECF0;
   
       --close-button-bg: #333333;
       --close-button-hover-bg: #666666;
 
-      color-scheme: dark;
     }
   }
 
