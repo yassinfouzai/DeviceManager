@@ -319,7 +319,7 @@ function toggleConditionFilter(condition) {
     } else {
         activeConditionFilters.add(condition);
     }
-    updateFilterButtons("return-", rRequestCondition, "condition", activeConditionFilters);
+    updateFilterButtons("", rRequestCondition, "condition", activeConditionFilters);
     applyFilters();
 }
 
@@ -358,7 +358,7 @@ function resetFilters() {
     updateFilterButtons("return-", rRequestReview, "review", activeRRRFilters);
     updateFilterButtons("borrow-", bRequestType, "type", activeBTFilters);
     updateFilterButtons("return-", rRequestType, "type", activeRTFilters);
-    updateFilterButtons("return-", rRequestCondition, "condition", activeConditionFilters);
+    updateFilterButtons("", rRequestCondition, "condition", activeConditionFilters);
 
     applyFilters();
 }
