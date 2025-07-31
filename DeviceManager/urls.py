@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.conf.urls.static import static
-import os
 from django.contrib import admin
 from django.urls import path, include
 from pathlib import Path
@@ -9,7 +8,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 urlpatterns = [
-    #path('accounts/', include('django.contrib.auth.urls')),
+    # path('accounts/', include('django.contrib.auth.urls')),
     path('accounts/', include('accounts.urls', namespace='accounts')),
     path('', include('main.urls')),
     path('devices/', include('devices.urls', namespace='devices')),

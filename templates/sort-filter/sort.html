@@ -1,9 +1,10 @@
 {% load static %}
-<div class="flex flex-row gap-4 justify-start items-center ">
-
-    <h3 class="text-[18px]  font-[600] text-atb-g-900 font-primary">Sort by</h3>
-
-    {% block sort_content %}{% endblock %}
+<div class="flex flex-wrap gap-4 items-start">
+    <h3 class="text-[18px] font-[600] text-atb-g-900 font-primary">Sort by</h3>
+    <div class="min-w-[200px]">
+        {% block sort_content %}{% endblock %}
+    </div>
+</div>
 
 <!---
     <button class="flex min-w-8 items-center justify-center p-1.5 rounded-[8px] transition-colors duration-200 border-[1px] border-atb-g-300 bg-white text-atb-g-700 shadow-[0px_1px_2px_0px_#1018280D]
@@ -17,5 +18,4 @@
     </button>
 --->
 
-</div>
 

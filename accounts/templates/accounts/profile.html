@@ -353,10 +353,6 @@ const RequestManager = (function() {
 
         container.innerHTML = '';
         cards.forEach(card => container.appendChild(card));
-
-        console.log("Sorting field:", field);
-        console.log("Sorting direction:", direction);
-        console.log("Sorted Values:", cards.map(c => c.dataset[field]));
     }
 
 
