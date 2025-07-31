@@ -68,9 +68,9 @@
                     onclick="toggleDetails('{{ instance.id }}','borrow')"
                     data-review='{{ instance.review }}' 
                     data-request-type='borrow'
-                    data-name='{{ instance.name|lower }}'
-                    data-bd='{{ instance.date_requested }}'
-                    data-rd='{{ instance.return_date }}'
+                    data-name='{{ instance|lower }}'
+                    data-bd='{{ instance.date_requested|date:"Y-m-d" }}'
+                    data-rd='{{ instance.return_date|date:"Y-m-d" }}'
                     data-device-type='{{ instance.device.type }}'>
 
               <!-- Summary (Always Visible) -->
@@ -171,6 +171,7 @@
                     {% for instance in returns %}
                     <div onclick="toggleDetails('{{ instance.id }}','borrow'); markSeen('{{ instance.id }}')"
                              class="group cursor-pointer bg-atb-g-50 hover:bg-atb-g-200 rounded-[12px] p-8 transition duration-300 request-card"
+                             data-name="{{ instance|lower }}"
                              data-review="{{ instance.review }}"
                              data-request-type="return"
                              data-condition="{{ instance.condition }}"
@@ -373,31 +374,29 @@ function toggleSorting(value) {
 }
 
 function sortCards(field, direction = 'asc') {
-    const container = document.querySelector(currentTab === 'borrow' ? '#borrow-section .space-y-4' : '#return-section .space-y-4');
+
+    console.log(currentTab);
+    const container = document.querySelector(
+        currentTab === 'borrow' ? '#borrow-section .space-y-4' : '#return-section .space-y-4'
+    );
     if (!container) return;
 
     const cards = Array.from(container.querySelectorAll('.request-card'));
 
     cards.sort((a, b) => {
-        const aValue = (a.dataset[field] || '').toString();
-        const bValue = (b.dataset[field] || '').toString();
+        const aValue = (a.dataset[field] || '').trim().toLowerCase();
+        const bValue = (b.dataset[field] || '').trim().toLowerCase();
 
-        const aNum = parseFloat(aValue);
-        const bNum = parseFloat(bValue);
-
-        const isNumeric = !isNaN(aNum) && !isNaN(bNum);
-
-        let comparison;
-        if (isNumeric) {
-            comparison = aNum - bNum;
-        } else {
-            comparison = aValue.toLowerCase().localeCompare(bValue.toLowerCase());
-        }
-
+        const comparison = aValue.localeCompare(bValue);
         return direction === 'asc' ? comparison : -comparison;
     });
 
+    container.innerHTML = '';
     cards.forEach(card => container.appendChild(card));
+
+    console.log("Sorting field:", field);
+    console.log("Sorting direction:", direction);
+    console.log("Sorted Values:", cards.map(c => c.dataset[field]));
 }
 
 
@@ -410,8 +409,7 @@ function initializeRequestFiltersAndSorting() {
 
     resetFilters();
     applyFilters();
-    sortCards(currentSortField, currentSortDirection);
-    toggleSorting(currentSortField);
+    toggleSorting(`${currentSortField}-${currentSortDirection}`);
 }
 
 document.addEventListener('DOMContentLoaded', initializeRequestFiltersAndSorting);

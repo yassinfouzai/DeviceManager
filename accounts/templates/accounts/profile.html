@@ -116,7 +116,11 @@
             <a href="#" class="block bg-atb-g-50 rounded-[12px] p-8 flex flex-row items-center gap-8 card"
                     data-review='{{ req.review }}' 
                     data-request-type='borrow'
-                    data-device-type='{{ req.device.type }}'>
+                    data-device-type='{{ req.device.type }}'
+                    data-name='{{ req|lower }}'
+                    data-bd='{{ req.date_requested|date:"Y-m-d" }}'
+                    data-rd='{{ req.return_date|date:"Y-m-d" }}'
+                    >
                 <div class="flex flex-row gap-4 w-full items-center ">
                     <div class="flex justify-start mt-2 ">
                         {% if req.review == 'approved' %}
@@ -187,6 +191,7 @@
             <div class="flex flex-col space-y-4">
             {% for req in returns %}
             <a href="#" class="block bg-atb-g-50 rounded-[12px] p-8 flex flex-row items-center gap-8 card"
+                             data-name="{{ instance|lower }}"
                              data-review="{{ req.review }}"
                              data-request-type="return"
                              data-condition="{{ req.condition }}"
@@ -249,7 +254,8 @@ const RequestManager = (function() {
         activeDTFilters: new Set(),
         activeConditionFilters: new Set(),
         currentSortDirection: 'desc',
-        currentSortField: 'name'
+        currentSortField: 'name',
+        currentTab: 'borrow' 
     };
 
     //private method
@@ -330,28 +336,29 @@ const RequestManager = (function() {
     }
 
     function sortCards(field, direction = 'asc') {
-        const container = document.getElementById('device-section');
+        console.log(state.currentTab);
+        const container = document.querySelector(`#${state.currentTab}-section .space-y-4`);
+
         if (!container) return;
-        const cards = Array.from(container.querySelectorAll('.device-card'));
+
+        const cards = Array.from(container.querySelectorAll('.card'));
 
         cards.sort((a, b) => {
-            const aValue = a.dataset[field];
-            const bValue = b.dataset[field];
+            const aValue = (a.dataset[field] || '').trim().toLowerCase();
+            const bValue = (b.dataset[field] || '').trim().toLowerCase();
 
-            const isNumeric = !isNaN(parseFloat(aValue)) && isFinite(aValue);
-
-            let comparison;
-            if (isNumeric) {
-                comparison = parseFloat(aValue) - parseFloat(bValue);
-            } else {
-                comparison = aValue.toLowerCase().localeCompare(bValue.toLowerCase());
-            }
-
+            const comparison = aValue.localeCompare(bValue);
             return direction === 'asc' ? comparison : -comparison;
         });
 
+        container.innerHTML = '';
         cards.forEach(card => container.appendChild(card));
+
+        console.log("Sorting field:", field);
+        console.log("Sorting direction:", direction);
+        console.log("Sorted Values:", cards.map(c => c.dataset[field]));
     }
+
 
     //API
     return {
@@ -429,6 +436,7 @@ const RequestManager = (function() {
         },
 
         showTab: function(selectedTab) {
+            state.currentTab = selectedTab;
             const tabs = ['user', 'borrow', 'device', 'return'];
 
             for (let i = 0; i < tabs.length; i++) {
