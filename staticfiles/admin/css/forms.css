@@ -38,6 +38,7 @@ form .form-row p {
 
 label {
     font-weight: normal;
+    color: var(--body-quiet-color);
     font-size: 0.8125rem;
 }
 

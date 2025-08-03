@@ -15,7 +15,11 @@ if os.path.exists(env_file):
 SECRET_KEY = env('SECRET_KEY')
 DEBUG = env.bool('DEBUG', default=False)
 
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
+
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[
+    'device-manager-x6xo.onrender.com',
+    'render.com',
+])
 
 
 CSRF_TRUSTED_ORIGINS = [
@@ -56,6 +60,7 @@ NPM_BIN_PATH = "/usr/bin/npm"
 MIDDLEWARE = [
 
     'django_user_agents.middleware.UserAgentMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -130,11 +135,15 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# Production settings
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # important!
 STATICFILES_DIRS = [
-
+    os.path.join(BASE_DIR, 'static'),  # if you have custom static dir
 ]
 
-STATIC_ROOT = BASE_DIR / 'staticfiles'  # Where collectstatic puts everything
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+# Security headers (optional)
+SECURE_CONTENT_TYPE_NOSNIFF = True
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
