@@ -15,7 +15,7 @@ if os.path.exists(env_file):
 SECRET_KEY = env('SECRET_KEY')
 DEBUG = env.bool('DEBUG', default=False)
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '192.168.1.15', '192.168.1.6','10.138.31.28', '192.168.126.28', "8fa2-2c0f-f698-c141-dfb6-c916-df6c-226c-4bb1.ngrok-free.app"]
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
 
 
 CSRF_TRUSTED_ORIGINS = [
