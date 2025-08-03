@@ -1,1 +1,2 @@
 whitenoise
+uvicorn[standard]
