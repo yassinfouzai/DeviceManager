@@ -3,16 +3,13 @@ import os
 import environ
 import dj_database_url
 
-
 BASE_DIR = Path(__file__).resolve().parent.parent
+
 env = environ.Env()
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
+env_file = os.path.join(BASE_DIR, '.env')
+if os.path.exists(env_file):
+    environ.Env.read_env(env_file)
 
 
 SECRET_KEY = env('SECRET_KEY')
