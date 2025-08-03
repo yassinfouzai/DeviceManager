@@ -17,7 +17,7 @@ django-tailwind = "*"
 django-user-agents = "*"
 daphne = "*"
 whitenoise = "*"
-uvicorn = "*"
+uvicorn = {extras = ["standard"], version = "*"}
 
 [dev-packages]
 
