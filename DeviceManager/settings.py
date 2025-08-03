@@ -22,6 +22,8 @@ ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[
 ])
 
 
+PORT = os.environ.get("PORT", 8000)
+
 CSRF_TRUSTED_ORIGINS = [
     'https://8fa2-2c0f-f698-c141-dfb6-c916-df6c-226c-4bb1.ngrok-free.app',
 ]
