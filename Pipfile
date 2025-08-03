@@ -13,7 +13,7 @@ django-htmx = "*"
 channels = "*"
 channels-redis = "*"
 redis = "*"
-
+django-tailwind = "*"
 
 [dev-packages]
 
