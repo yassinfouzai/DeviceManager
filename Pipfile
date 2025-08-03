@@ -16,6 +16,7 @@ redis = "*"
 django-tailwind = "*"
 django-user-agents = "*"
 daphne = "*"
+whitenoise = "*"
 
 [dev-packages]
 
