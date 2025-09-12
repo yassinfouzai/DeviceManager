@@ -19,6 +19,12 @@ A centralized web platform enabling administrators to manage organizational devi
 
 ---
 
+## Link
+
+https://device-manager-x6xo.onrender.com/
+
+---
+
 ## ✅ Functional Requirements
 
 ### 👥 User Roles
