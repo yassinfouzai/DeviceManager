@@ -110,10 +110,8 @@ Top navigation bar includes:
 
 ---
 
-![Alt text](.img/img1.png)
-![Alt text](.img/img2.png)
-![Alt text](.img/img3.png)
-
+![Alt text](.img1.png)
+![Alt text](.img2.png)
 
 
 
