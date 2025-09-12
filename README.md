@@ -109,7 +109,9 @@ Top navigation bar includes:
 - **SMTP or console backend** (for email handling)
 
 ---
+## Preview
 
+[Download demo video](device%20manager.mp4)
 ![Alt text](img1.png)
 ![Alt text](img2.png)
 
